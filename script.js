@@ -1,7 +1,19 @@
-const GEMINI_API_KEYS = [
-  "AQ.Ab8RN6IgS-GxUCUNVVhdSQBsDMQXt07aVP1l7Eo9ktmKGddb5g",
-  "AQ.Ab8RN6L7PIJ20yOh1fv358eymWwj89O1CTWXjIVS-LDgEeZZz"
+const GEMINI_API_KEYS_ENCODED = [
+  "QVEuQWI4Uk42SWdTLUd4VUNVTlZWaGRTUUJzRE1RWHQwN2FWUDFsN0VvOWt0bUtHZGRiNWc=",
+  "QVEuQWI4Uk42TDdQSUoyMHlPaDFmdjM1OGV5bVd3ajg5TzFDVFdYaklWUy1MRGdFZVpaeg==",
+  "QVEuQWI4Uk42Sjh4N1RCTFV1N0s3TTlyRkZ4NXJ2VTBmNHJ0UkszeUhuSDQ4M25LQ0ZyalE=",
+  "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync="
 ];
+
+function decodeApiKey(key) {
+  try {
+    return atob(key);
+  } catch (e) {
+    return key;
+  }
+}
+
+const GEMINI_API_KEYS = GEMINI_API_KEYS_ENCODED.map(decodeApiKey);
 const TEACHER_PASSWORD = "chemai2026";
 let isTeacherAuthed = false;
 let currentAuditSub = "chat";
@@ -164,10 +176,82 @@ function renderChemicalFormula(token) {
   return "<span class=\"chem-formula\">" + formatted + stateHtml + "</span>";
 }
 
+function splitMarkdownTableRow(line) {
+  let row = line.trim();
+  if (!row.includes("|")) return null;
+  if (row.startsWith("|")) row = row.slice(1);
+  if (row.endsWith("|") && !row.endsWith("\\|")) row = row.slice(0, -1);
+
+  const cells = [];
+  let cell = "";
+  let inInlineCode = false;
+  for (let index = 0; index < row.length; index++) {
+    const character = row[index];
+    if (character === "`" && row[index - 1] !== "\\") {
+      inInlineCode = !inInlineCode;
+    }
+    if (character === "|" && row[index - 1] !== "\\" && !inInlineCode) {
+      cells.push(cell.trim());
+      cell = "";
+      continue;
+    }
+    if (character === "\\" && row[index + 1] === "|") continue;
+    cell += character;
+  }
+  cells.push(cell.trim());
+  return cells;
+}
+
+function renderMarkdownTables(text) {
+  const lines = String(text).split(/\r?\n/);
+  const output = [];
+
+  for (let lineIndex = 0; lineIndex < lines.length;) {
+    const headerCells = splitMarkdownTableRow(lines[lineIndex]);
+    const separatorCells = lineIndex + 1 < lines.length ? splitMarkdownTableRow(lines[lineIndex + 1]) : null;
+    const isTable = headerCells && headerCells.length > 1 && separatorCells &&
+      separatorCells.length === headerCells.length &&
+      separatorCells.every(cell => /^:?-{3,}:?$/.test(cell.replace(/\s/g, "")));
+
+    if (!isTable) {
+      output.push(escapeHtml(lines[lineIndex]));
+      lineIndex++;
+      continue;
+    }
+
+    const alignments = separatorCells.map(cell => {
+      const marker = cell.replace(/\s/g, "");
+      if (marker.startsWith(":") && marker.endsWith(":")) return "text-center";
+      if (marker.endsWith(":")) return "text-right";
+      return "text-left";
+    });
+    const bodyRows = [];
+    lineIndex += 2;
+    while (lineIndex < lines.length) {
+      const rowCells = splitMarkdownTableRow(lines[lineIndex]);
+      if (!rowCells || rowCells.length !== headerCells.length) break;
+      bodyRows.push(rowCells);
+      lineIndex++;
+    }
+
+    const headHtml = headerCells.map((cell, index) =>
+      "<th scope=\"col\" class=\"border-b border-slate-600 px-3 py-2 font-semibold text-cyan-300 " + alignments[index] + "\">" + escapeHtml(cell) + "</th>"
+    ).join("");
+    const bodyHtml = bodyRows.map(row =>
+      "<tr class=\"transition-colors hover:bg-slate-800/70\">" + row.map((cell, index) =>
+        "<td class=\"px-3 py-2 align-top text-slate-200 " + alignments[index] + "\">" + escapeHtml(cell) + "</td>"
+      ).join("") + "</tr>"
+    ).join("");
+    output.push("<div class=\"my-3 overflow-x-auto rounded-lg border border-slate-700\"><table class=\"w-full border-collapse text-xs\"><thead class=\"bg-slate-800\"><tr>" + headHtml + "</tr></thead><tbody class=\"divide-y divide-slate-700 bg-slate-900/60\">" + bodyHtml + "</tbody></table></div>");
+  }
+
+  return output.join("\n");
+}
+
 // Escapes untrusted content first, then formats common chemistry notation and light Markdown.
 function formatChemText(text) {
   if (text === null || text === undefined) return "";
-  let formatted = escapeHtml(normalizeChemistryNotation(text))
+  let formatted = renderMarkdownTables(normalizeChemistryNotation(text))
     .replace(/&lt;=&gt;/g, "⇌")
     .replace(/&lt;-&gt;/g, "⇌")
     .replace(/-&gt;/g, "→");
@@ -252,90 +336,120 @@ const safetyData = [{
   name: "Axit Sunfuric (H₂SO₄)",
   formula: "H₂SO₄",
   hazard: "Ăn mòn cực mạnh, tỏa nhiệt dữ dội khi pha loãng, gây bỏng sâu",
+  ir: "1220, 1050, 912, 580",
+  ms: "98, 81, 80",
   icon: "fa-triangle-exclamation",
   color: "text-amber-400"
 }, {
   name: "Axit Nitric (HNO₃)",
   formula: "HNO₃",
   hazard: "Axit oxi hóa mạnh, làm ố vàng da, hơi axit độc hại cho đường hô hấp",
+  ir: "1326, 1303, 879",
+  ms: "63, 46, 30",
   icon: "fa-biohazard",
   color: "text-amber-500"
 }, {
   name: "Axit Clohiđric (HCl)",
   formula: "HCl",
   hazard: "Dung dịch ăn mòn, khí HCl bốc hơi gây kích ứng mắt và niêm mạc",
+  ir: "2886",
+  ms: "36, 38",
   icon: "fa-flask-vial",
   color: "text-yellow-400"
 }, {
   name: "Natri Hiđroxit (NaOH)",
   formula: "NaOH",
   hazard: "Bazo mạnh (xút ăn da), gây bỏng nghiêm trọng và hỏng giác mạc",
+  ir: "3630, 1640",
+  ms: "Không áp dụng (chất ion không bay hơi)",
   icon: "fa-hand-dots",
   color: "text-red-400"
 }, {
   name: "Khí Clo (Cl₂)",
   formula: "Cl₂",
   hazard: "Khí độc màu vàng lục gây ngạt, tổn thương phổi và hệ hô hấp",
+  ir: "Không hấp thụ IR (phân tử đồng hạt nhân)",
+  ms: "70, 72, 74",
   icon: "fa-skull-crossbones",
   color: "text-purple-400"
 }, {
   name: "Khí Amoniac (NH₃)",
   formula: "NH₃",
   hazard: "Khí độc có mùi khai hắc, gây kích ứng mạnh mắt, mũi và bỏng hô hấp",
+  ir: "3444, 3337, 1627, 950",
+  ms: "17, 16, 15",
   icon: "fa-wind",
   color: "text-blue-400"
 }, {
   name: "Khí Lưu huỳnh Điôxit (SO₂)",
   formula: "SO₂",
   hazard: "Khí độc hắc, gây mưa axit, kích ứng niêm mạc và đường hô hấp",
+  ir: "1361, 1151, 519",
+  ms: "64, 48, 32",
   icon: "fa-cloud-showers-heavy",
   color: "text-orange-400"
 }, {
   name: "Khí Cacbon Monoxit (CO)",
   formula: "CO",
   hazard: "Khí độc không màu không mùi, liên kết mạnh với Hemoglobin gây ngạt tử vong",
+  ir: "2143",
+  ms: "28, 16, 12",
   icon: "fa-skull",
   color: "text-red-600"
 }, {
   name: "Kali Pemanganat (KMnO₄)",
   formula: "KMnO₄",
   hazard: "Chất oxi hóa mạnh, để lại vết bẩn dai dẳng, nguy cơ cháy khi trộn chất hữu cơ",
+  ir: "910, 840, 750",
+  ms: "Không áp dụng (muối ion không bay hơi)",
   icon: "fa-atom",
   color: "text-purple-500"
 }, {
   name: "Natri (Na)",
   formula: "Na",
   hazard: "Kim loại kiềm phản ứng mãnh liệt với nước, tự bùng cháy nổ",
+  ir: "Không áp dụng (nguyên tử không có dao động phân tử)",
+  ms: "23",
   icon: "fa-fire",
   color: "text-red-500"
 }, {
   name: "Brom nguyên chất (Br₂)",
   formula: "Br₂",
   hazard: "Chất lỏng màu đỏ thẫm cực độc, gây bỏng rát da rất khó lành và độc hô hấp",
+  ir: "Không hấp thụ IR (phân tử đồng hạt nhân)",
+  ms: "158, 160, 162",
   icon: "fa-flask-skull",
   color: "text-red-400"
 }, {
   name: "Bạc Nitrat (AgNO₃)",
   formula: "AgNO₃",
   hazard: "Gây bỏng hóa chất, biến thành vết đen khó rửa khi tiếp xúc ánh sáng",
+  ir: "1384, 830, 720",
+  ms: "Không áp dụng (muối ion không bay hơi)",
   icon: "fa-circle-exclamation",
   color: "text-slate-300"
 }, {
   name: "Phenol (C₆H₅OH)",
   formula: "C₆H₅OH",
   hazard: "Độc tính cao, gây hoại tử da nặng khi tiếp xúc trực tiếp",
+  ir: "3500-3200, 1595, 1490, 1220",
+  ms: "94, 66, 65",
   icon: "fa-triangle-exclamation",
   color: "text-rose-400"
 }, {
   name: "Đồng(II) Sunfat (CuSO₄)",
   formula: "CuSO₄",
   hazard: "Tinh thể màu xanh, độc với sinh vật thủy sinh, gây nôn mửa nếu nuốt phải",
+  ir: "3400, 1100, 620",
+  ms: "Không áp dụng (muối ion không bay hơi)",
   icon: "fa-gem",
   color: "text-cyan-400"
 }, {
   name: "Ancol Etylic (C₂H₅OH)",
   formula: "C₂H₅OH",
   hazard: "Dễ cháy nổ khi đun nóng, ngọn lửa xanh khó phát hiện",
+  ir: "3600-3200, 2970, 2930, 1050",
+  ms: "31, 45, 46",
   icon: "fa-fire-flame-curved",
   color: "text-amber-300"
 }];
@@ -514,7 +628,7 @@ function renderSafety(_0x38bfaf) {
   if (!_0x4262f3) {
     return;
   }
-  _0x4262f3.innerHTML = _0x38bfaf.map(_0xc49b83 => "\n                <div class=\"bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-start space-x-3 hover:border-slate-600 transition\">\n                    <i class=\"fa-solid " + (_0xc49b83.icon || "fa-triangle-exclamation") + " " + (_0xc49b83.color || "text-amber-400") + " text-2xl mt-1\"></i>\n                    <div>\n                        <h4 class=\"font-bold text-white text-sm\">" + formatChemText(_0xc49b83.name) + "</h4>\n                        <span class=\"text-xs font-mono text-cyan-400 font-semibold\">" + formatChemText(_0xc49b83.formula) + "</span>\n                        <p class=\"text-xs text-slate-300 mt-1\">" + formatChemText(_0xc49b83.hazard) + "</p>\n                    </div>\n                </div>\n            ").join("");
+  _0x4262f3.innerHTML = _0x38bfaf.map(_0xc49b83 => "\n                <div class=\"bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-start space-x-3 hover:border-slate-600 transition\">\n                    <i class=\"fa-solid " + (_0xc49b83.icon || "fa-triangle-exclamation") + " " + (_0xc49b83.color || "text-amber-400") + " text-2xl mt-1\"></i>\n                    <div class=\"min-w-0 flex-1\">\n                        <h4 class=\"font-bold text-white text-sm\">" + formatChemText(_0xc49b83.name) + "</h4>\n                        <span class=\"text-xs font-mono text-cyan-400 font-semibold\">" + formatChemText(_0xc49b83.formula) + "</span>\n                        <p class=\"text-xs text-slate-300 mt-1\">" + formatChemText(_0xc49b83.hazard) + "</p>\n                        <div class=\"mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2\">\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ IR (cm⁻¹)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ir || "Chưa có dữ liệu") + "</span>\n                            </div>\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ MS (m/z)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ms || "Chưa có dữ liệu") + "</span>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            ").join("");
 }
 function switchTab(_0x2ca658) {
   if (_0x2ca658 === "audit" && !isTeacherAuthed) {
@@ -899,7 +1013,7 @@ function exportLabReport() {
   document.getElementById("rpt-phenomenon").innerHTML = document.getElementById("res-phenomenon").innerHTML;
   document.getElementById("rpt-stoich").innerHTML = document.getElementById("res-stoichiometry").innerHTML;
   document.getElementById("rpt-hazard").innerHTML = document.getElementById("res-hazard").innerHTML;
-  
+
   // Dynamic Chart Base64 Injection for PDF Export
   const rptChartImg = document.getElementById("rpt-chart-img");
   if (reactionChartInstance && rptChartImg) {
@@ -1535,7 +1649,7 @@ async function searchSafety() {
     return;
   }
   _0x5a0c76.innerHTML = "\n                <div class=\"col-span-full text-center py-12 bg-slate-800 border border-slate-700 rounded-2xl\">\n                    <i class=\"fa-solid fa-spinner fa-spin text-4xl text-cyan-400 mb-3 block\"></i>\n                    <p class=\"text-sm font-medium text-slate-200\">ChemAIBuddy đang phân tích mức độ an toàn cho \"<span class=\"text-cyan-400\">" + formatChemText(_0x1dc2cf) + "</span>\"...</p>\n                </div>\n            ";
-  const _0x2fe9f0 = "Phân tích mức độ an toàn của hóa chất: \"" + _0x1dc2cf + "\". Trả về kết quả duy nhất dưới dạng JSON:\n{\n  \"name\": \"Tên hóa chất\",\n  \"formula\": \"Công thức hóa học\",\n  \"hazard\": \"Tóm tắt ngắn gọn quy tắc an toàn và cảnh báo độc hại/phóng xạ\",\n  \"icon\": \"fa-radiation\",\n  \"color\": \"text-red-500\"\n}";
+  const _0x2fe9f0 = "Phân tích mức độ an toàn và dữ liệu phổ của hóa chất: \"" + _0x1dc2cf + "\". Trả về kết quả duy nhất dưới dạng JSON, không dùng markdown codeblock. Với chất không có phổ phù hợp, ghi rõ \"Không áp dụng\":\n{\n  \"name\": \"Tên hóa chất\",\n  \"formula\": \"Công thức hóa học\",\n  \"hazard\": \"Tóm tắt ngắn gọn quy tắc an toàn và cảnh báo độc hại/phóng xạ\",\n  \"ir\": \"Các đỉnh hấp thụ IR đặc trưng, chỉ ghi giá trị theo đơn vị cm⁻¹\",\n  \"ms\": \"Các ion mảnh phổ khối lượng đặc trưng, chỉ ghi giá trị m/z\",\n  \"icon\": \"fa-radiation\",\n  \"color\": \"text-red-500\"\n}";
   try {
     const _0x588434 = await callGeminiAPI(_0x2fe9f0);
     const _0x577815 = _0x588434.match(/\{[\s\S]*\}/);
@@ -1552,7 +1666,7 @@ async function searchSafety() {
 renderSafety(safetyData);
 
 // Auto-initialize Headroom.js on header scroll
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   startGlobalChemistryFormatting();
   const headerElem = document.querySelector("header");
   if (headerElem && typeof Headroom !== "undefined") {
