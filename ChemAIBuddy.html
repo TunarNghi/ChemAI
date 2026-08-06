@@ -423,7 +423,7 @@
         </section>
 
         <!-- TAB 2: GIA SƯ AI CHATBOT -->
-        <section id="content-tutor" class="hidden max-w-4xl mx-auto">
+        <section id="content-tutor" class="hidden max-w-4xl mx-auto space-y-6">
             <div class="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[550px]">
                 <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center space-x-3">
                     <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-robot"></i></div>
@@ -443,6 +443,46 @@
                 <div class="p-3 bg-slate-900/80 border-t border-slate-700 flex gap-2">
                     <input type="text" id="chat-input" placeholder="Hỏi ChemAIBuddy về lý thuyết, bài tập Hóa THPT..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" onkeypress="handleKeyPress(event)">
                     <button onclick="sendMessage()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-4 border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-bold text-sm text-cyan-300 flex items-center gap-2"><i class="fa-solid fa-wave-square"></i>Bộ phân tích phổ IR AI</h3>
+                        <p class="text-[11px] text-slate-400 mt-1">Phổ FTIR tham chiếu với thông số đo và gán đỉnh cơ bản.</p>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-wide text-amber-300 border border-amber-700/60 bg-amber-950/50 rounded px-2 py-1">Tham chiếu AI</span>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input id="ir-compound-input" type="text" value="Sulfuric Acid (H2SO4)" placeholder="Tên chất tiếng Anh hoặc công thức" class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                        <button id="ir-spectrum-submit" onclick="analyzeIRSpectrum()" class="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2"><i class="fa-solid fa-chart-line"></i>Phân tích IR</button>
+                    </div>
+                    <p id="ir-spectrum-status" aria-live="polite" class="text-xs text-slate-400">Hỏi về phổ IR trong khung Gia sư AI để tạo một hoặc nhiều slide.</p>
+                    <div id="ir-slide-controls" class="hidden flex flex-col sm:flex-row sm:items-end justify-between gap-3 rounded-lg border border-cyan-800/60 bg-cyan-950/30 p-3">
+                        <div>
+                            <span class="block text-[10px] uppercase font-semibold text-cyan-300">Slide phổ IR</span>
+                            <h4 id="ir-slide-title" class="mt-1 text-sm font-bold text-white">Đồ thị IR của NT ABC</h4>
+                        </div>
+                        <select id="ir-slide-select" onchange="selectIRSlide(this.value)" class="w-full sm:w-auto bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-cyan-200 focus:outline-none focus:border-cyan-500"></select>
+                    </div>
+                    <div id="ir-spectrum-meta" class="grid grid-cols-2 md:grid-cols-3 gap-2"></div>
+                    <div class="rounded-lg border border-slate-700 bg-slate-950/70 p-3">
+                        <div class="h-72 w-full relative"><canvas id="irSpectrumChart"></canvas></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                        <div class="lg:col-span-3 overflow-x-auto rounded-lg border border-slate-700 bg-slate-900/70">
+                            <table class="min-w-full text-xs text-left">
+                                <thead class="bg-slate-800 text-cyan-300"><tr><th class="px-2.5 py-2">Số sóng (cm⁻¹)</th><th class="px-2.5 py-2">Dải</th><th class="px-2.5 py-2">Cường độ tương đối</th><th class="px-2.5 py-2">Gán đỉnh</th></tr></thead>
+                                <tbody id="ir-spectrum-peaks"><tr><td colspan="4" class="px-2.5 py-3 text-center text-slate-400">Chưa tạo phổ.</td></tr></tbody>
+                            </table>
+                        </div>
+                        <div class="lg:col-span-2 space-y-3">
+                            <div><h4 class="text-[10px] uppercase font-semibold text-slate-400 mb-1">Nhóm chức</h4><div id="ir-spectrum-groups" class="flex flex-wrap gap-1.5"><span class="text-xs text-slate-400">Chưa có tóm tắt.</span></div></div>
+                            <div><h4 class="text-[10px] uppercase font-semibold text-slate-400 mb-1">Diễn giải</h4><p id="ir-spectrum-interpretation" class="text-xs leading-relaxed text-slate-300">Diễn giải AI sẽ hiển thị ở đây.</p></div>
+                        </div>
+                    </div>
+                    <p id="ir-spectrum-note" class="text-[11px] leading-relaxed text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i>Đây là phổ tham chiếu do AI ước tính, không thay thế kết quả FTIR đo thực tế.</p>
                 </div>
             </div>
         </section>

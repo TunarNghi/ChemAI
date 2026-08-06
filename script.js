@@ -40,6 +40,9 @@ const SUPABASE_ANON_KEY = "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
 const supabaseClient = typeof window.supabase !== "undefined" && SUPABASE_URL && !SUPABASE_URL.includes("your-supabase") ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"];
 let reactionChartInstance = null;
+let irSpectrumChartInstance = null;
+let irSpectrumSlides = [];
+let irSpectrumSlideIndex = 0;
 
 const CHEMICAL_ELEMENTS = new Set([
   "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca",
@@ -202,6 +205,15 @@ function splitMarkdownTableRow(line) {
   return cells;
 }
 
+function formatMarkdownTableCell(cell) {
+  return escapeHtml(cell)
+    .replace(/&lt;br\s*\/?&gt;/gi, "<br>")
+    .replace(/&lt;(strong|b)&gt;/gi, "<strong>")
+    .replace(/&lt;\/(strong|b)&gt;/gi, "</strong>")
+    .replace(/&lt;(em|i)&gt;/gi, "<em>")
+    .replace(/&lt;\/(em|i)&gt;/gi, "</em>");
+}
+
 function renderMarkdownTables(text) {
   const lines = String(text).split(/\r?\n/);
   const output = [];
@@ -235,14 +247,14 @@ function renderMarkdownTables(text) {
     }
 
     const headHtml = headerCells.map((cell, index) =>
-      "<th scope=\"col\" class=\"border-b border-slate-600 px-3 py-2 font-semibold text-cyan-300 " + alignments[index] + "\">" + escapeHtml(cell) + "</th>"
+      "<th scope=\"col\" class=\"sticky top-0 z-10 border border-slate-600 bg-slate-800 px-3 py-2 font-semibold text-cyan-300 " + alignments[index] + "\">" + formatMarkdownTableCell(cell) + "</th>"
     ).join("");
     const bodyHtml = bodyRows.map(row =>
-      "<tr class=\"transition-colors hover:bg-slate-800/70\">" + row.map((cell, index) =>
-        "<td class=\"px-3 py-2 align-top text-slate-200 " + alignments[index] + "\">" + escapeHtml(cell) + "</td>"
+      "<tr class=\"transition-colors even:bg-slate-800/45 hover:bg-cyan-950/50\">" + row.map((cell, index) =>
+        "<td class=\"border border-slate-700 px-3 py-2 align-top text-slate-200 tabular-nums " + alignments[index] + "\">" + formatMarkdownTableCell(cell) + "</td>"
       ).join("") + "</tr>"
     ).join("");
-    output.push("<div class=\"my-3 overflow-x-auto rounded-lg border border-slate-700\"><table class=\"w-full border-collapse text-xs\"><thead class=\"bg-slate-800\"><tr>" + headHtml + "</tr></thead><tbody class=\"divide-y divide-slate-700 bg-slate-900/60\">" + bodyHtml + "</tbody></table></div>");
+    output.push("<div class=\"my-3 overflow-auto rounded-lg border border-slate-600 bg-slate-950 shadow-inner\"><table class=\"min-w-full border-collapse text-xs text-slate-200\"><thead><tr>" + headHtml + "</tr></thead><tbody class=\"bg-slate-900/60\">" + bodyHtml + "</tbody></table></div>");
   }
 
   return output.join("\n");
@@ -333,7 +345,7 @@ function switchPeriodicTab(tab) {
   }
 }
 const safetyData = [{
-  name: "Axit Sunfuric (H₂SO₄)",
+  name: "Sulfuric Acid (H₂SO₄)",
   formula: "H₂SO₄",
   hazard: "Ăn mòn cực mạnh, tỏa nhiệt dữ dội khi pha loãng, gây bỏng sâu",
   ir: "1220, 1050, 912, 580",
@@ -341,7 +353,7 @@ const safetyData = [{
   icon: "fa-triangle-exclamation",
   color: "text-amber-400"
 }, {
-  name: "Axit Nitric (HNO₃)",
+  name: "Nitric Acid (HNO₃)",
   formula: "HNO₃",
   hazard: "Axit oxi hóa mạnh, làm ố vàng da, hơi axit độc hại cho đường hô hấp",
   ir: "1326, 1303, 879",
@@ -349,7 +361,7 @@ const safetyData = [{
   icon: "fa-biohazard",
   color: "text-amber-500"
 }, {
-  name: "Axit Clohiđric (HCl)",
+  name: "Hydrochloric Acid (HCl)",
   formula: "HCl",
   hazard: "Dung dịch ăn mòn, khí HCl bốc hơi gây kích ứng mắt và niêm mạc",
   ir: "2886",
@@ -357,7 +369,7 @@ const safetyData = [{
   icon: "fa-flask-vial",
   color: "text-yellow-400"
 }, {
-  name: "Natri Hiđroxit (NaOH)",
+  name: "Sodium Hydroxide (NaOH)",
   formula: "NaOH",
   hazard: "Bazo mạnh (xút ăn da), gây bỏng nghiêm trọng và hỏng giác mạc",
   ir: "3630, 1640",
@@ -365,7 +377,7 @@ const safetyData = [{
   icon: "fa-hand-dots",
   color: "text-red-400"
 }, {
-  name: "Khí Clo (Cl₂)",
+  name: "Chlorine Gas (Cl₂)",
   formula: "Cl₂",
   hazard: "Khí độc màu vàng lục gây ngạt, tổn thương phổi và hệ hô hấp",
   ir: "Không hấp thụ IR (phân tử đồng hạt nhân)",
@@ -373,7 +385,7 @@ const safetyData = [{
   icon: "fa-skull-crossbones",
   color: "text-purple-400"
 }, {
-  name: "Khí Amoniac (NH₃)",
+  name: "Ammonia (NH₃)",
   formula: "NH₃",
   hazard: "Khí độc có mùi khai hắc, gây kích ứng mạnh mắt, mũi và bỏng hô hấp",
   ir: "3444, 3337, 1627, 950",
@@ -381,7 +393,7 @@ const safetyData = [{
   icon: "fa-wind",
   color: "text-blue-400"
 }, {
-  name: "Khí Lưu huỳnh Điôxit (SO₂)",
+  name: "Sulfur Dioxide (SO₂)",
   formula: "SO₂",
   hazard: "Khí độc hắc, gây mưa axit, kích ứng niêm mạc và đường hô hấp",
   ir: "1361, 1151, 519",
@@ -389,7 +401,7 @@ const safetyData = [{
   icon: "fa-cloud-showers-heavy",
   color: "text-orange-400"
 }, {
-  name: "Khí Cacbon Monoxit (CO)",
+  name: "Carbon Monoxide (CO)",
   formula: "CO",
   hazard: "Khí độc không màu không mùi, liên kết mạnh với Hemoglobin gây ngạt tử vong",
   ir: "2143",
@@ -397,7 +409,7 @@ const safetyData = [{
   icon: "fa-skull",
   color: "text-red-600"
 }, {
-  name: "Kali Pemanganat (KMnO₄)",
+  name: "Potassium Permanganate (KMnO₄)",
   formula: "KMnO₄",
   hazard: "Chất oxi hóa mạnh, để lại vết bẩn dai dẳng, nguy cơ cháy khi trộn chất hữu cơ",
   ir: "910, 840, 750",
@@ -405,7 +417,7 @@ const safetyData = [{
   icon: "fa-atom",
   color: "text-purple-500"
 }, {
-  name: "Natri (Na)",
+  name: "Sodium (Na)",
   formula: "Na",
   hazard: "Kim loại kiềm phản ứng mãnh liệt với nước, tự bùng cháy nổ",
   ir: "Không áp dụng (nguyên tử không có dao động phân tử)",
@@ -413,15 +425,15 @@ const safetyData = [{
   icon: "fa-fire",
   color: "text-red-500"
 }, {
-  name: "Brom nguyên chất (Br₂)",
+  name: "Bromine (Br₂)",
   formula: "Br₂",
   hazard: "Chất lỏng màu đỏ thẫm cực độc, gây bỏng rát da rất khó lành và độc hô hấp",
   ir: "Không hấp thụ IR (phân tử đồng hạt nhân)",
   ms: "158, 160, 162",
-  icon: "fa-flask-skull",
+  icon: "fa-skull-crossbones",
   color: "text-red-400"
 }, {
-  name: "Bạc Nitrat (AgNO₃)",
+  name: "Silver Nitrate (AgNO₃)",
   formula: "AgNO₃",
   hazard: "Gây bỏng hóa chất, biến thành vết đen khó rửa khi tiếp xúc ánh sáng",
   ir: "1384, 830, 720",
@@ -437,7 +449,7 @@ const safetyData = [{
   icon: "fa-triangle-exclamation",
   color: "text-rose-400"
 }, {
-  name: "Đồng(II) Sunfat (CuSO₄)",
+  name: "Copper(II) Sulfate (CuSO₄)",
   formula: "CuSO₄",
   hazard: "Tinh thể màu xanh, độc với sinh vật thủy sinh, gây nôn mửa nếu nuốt phải",
   ir: "3400, 1100, 620",
@@ -445,7 +457,7 @@ const safetyData = [{
   icon: "fa-gem",
   color: "text-cyan-400"
 }, {
-  name: "Ancol Etylic (C₂H₅OH)",
+  name: "Ethanol (C₂H₅OH)",
   formula: "C₂H₅OH",
   hazard: "Dễ cháy nổ khi đun nóng, ngọn lửa xanh khó phát hiện",
   ir: "3600-3200, 2970, 2930, 1050",
@@ -808,6 +820,307 @@ function updateReactionChart(_0x25e19d, _0x204c7f) {
     }
   });
 }
+
+const ENGLISH_CHEMICAL_NAMES = {
+  H2SO4: "Sulfuric Acid",
+  HNO3: "Nitric Acid",
+  HCL: "Hydrochloric Acid",
+  NAOH: "Sodium Hydroxide",
+  KOH: "Potassium Hydroxide",
+  CL2: "Chlorine Gas",
+  NH3: "Ammonia",
+  SO2: "Sulfur Dioxide",
+  CO: "Carbon Monoxide",
+  KMNO4: "Potassium Permanganate",
+  NA: "Sodium",
+  BR2: "Bromine",
+  AGNO3: "Silver Nitrate",
+  C6H5OH: "Phenol",
+  CUSO4: "Copper(II) Sulfate",
+  C2H5OH: "Ethanol",
+  CH3COOH: "Acetic Acid",
+  H2O: "Water",
+  CO2: "Carbon Dioxide",
+  NO2: "Nitrogen Dioxide",
+  O2: "Oxygen Gas",
+  H2: "Hydrogen Gas",
+  FE: "Iron",
+  CU: "Copper",
+  ZN: "Zinc",
+  AL: "Aluminum",
+  AG: "Silver",
+  BR: "Bromine",
+  CL: "Chlorine"
+};
+
+function normalizeChemicalFormulaForName(formula) {
+  return String(formula || "")
+    .replace(/[₀-₉]/g, digit => String("₀₁₂₃₄₅₆₇₈₉".indexOf(digit)))
+    .replace(/\s+/g, "")
+    .replace(/\((?:aq|s|l|g)\)$/i, "")
+    .toUpperCase();
+}
+
+function translateIRSpectrumTerm(value) {
+  const translations = {
+    solid: "rắn",
+    liquid: "lỏng",
+    gas: "khí",
+    solution: "dung dịch",
+    strong: "mạnh",
+    medium: "trung bình",
+    weak: "yếu",
+    broad: "rộng",
+    sharp: "sắc",
+    "ATR-FTIR": "ATR-FTIR",
+    transmission: "truyền qua",
+    "gas cell": "buồng khí"
+  };
+  return translations[String(value)] || String(value);
+}
+
+function normalizeIRSpectrumData(data, fallbackCompound) {
+  data = data && typeof data === "object" ? data : {};
+  const rawRange = Array.isArray(data.rangeCm1) ? data.rangeCm1.map(Number).filter(Number.isFinite) : [];
+  const high = Math.max(rawRange[0] || 4000, rawRange[1] || 400);
+  const low = Math.min(rawRange[0] || 4000, rawRange[1] || 400);
+  const peaks = (Array.isArray(data.peaks) ? data.peaks : []).map(peak => {
+    const wavenumber = Number(peak.wavenumber ?? peak.waveNumber ?? peak.position);
+    const intensity = Number(peak.intensity ?? peak.strength ?? 0.5);
+    const widthCm1 = Number(peak.widthCm1 ?? peak.width ?? 18);
+    return {
+      wavenumber,
+      intensity: Number.isFinite(intensity) ? Math.min(1, Math.max(0.05, intensity)) : 0.5,
+      widthCm1: Number.isFinite(widthCm1) ? Math.min(220, Math.max(8, widthCm1)) : 18,
+      band: translateIRSpectrumTerm(peak.band || "medium"),
+      assignment: String(peak.assignment || peak.functionalGroup || "Đỉnh hấp thụ đặc trưng")
+    };
+  }).filter(peak => Number.isFinite(peak.wavenumber) && peak.wavenumber >= low && peak.wavenumber <= high)
+    .sort((left, right) => right.wavenumber - left.wavenumber);
+
+  return {
+    compound: ENGLISH_CHEMICAL_NAMES[normalizeChemicalFormulaForName(data.formula)] || String(data.compound || fallbackCompound || "Unknown compound"),
+    formula: String(data.formula || ""),
+    sampleState: translateIRSpectrumTerm(data.sampleState || "Not specified"),
+    technique: translateIRSpectrumTerm(data.technique || "ATR-FTIR"),
+    rangeCm1: [high, low],
+    resolutionCm1: Number(data.resolutionCm1) || 4,
+    scans: Number(data.scans) || 32,
+    peaks,
+    functionalGroups: Array.isArray(data.functionalGroups) ? data.functionalGroups.map(String).slice(0, 12) : [],
+    interpretation: String(data.interpretation || "Diễn giải đỉnh hấp thụ tham chiếu do AI tạo."),
+    referenceNote: String(data.referenceNote || "Phổ tham chiếu do AI ước tính; cần đối chiếu với phổ đo thực nghiệm.")
+  };
+}
+
+function renderIRSlides(spectra) {
+  irSpectrumSlides = Array.isArray(spectra) ? spectra : [];
+  const controls = document.getElementById("ir-slide-controls");
+  const selector = document.getElementById("ir-slide-select");
+  if (!irSpectrumSlides.length) {
+    if (controls) controls.classList.add("hidden");
+    return;
+  }
+  if (controls) controls.classList.remove("hidden");
+  if (selector) {
+    selector.innerHTML = irSpectrumSlides.map((spectrum, index) =>
+      "<option value=\"" + index + "\">" + escapeHtml(spectrum.compound + (spectrum.formula ? " (" + spectrum.formula + ")" : "")) + "</option>"
+    ).join("");
+  }
+  selectIRSlide(0);
+}
+
+function selectIRSlide(index) {
+  if (!irSpectrumSlides.length) return;
+  irSpectrumSlideIndex = Math.max(0, Math.min(irSpectrumSlides.length - 1, Number(index) || 0));
+  const selector = document.getElementById("ir-slide-select");
+  if (selector) selector.value = String(irSpectrumSlideIndex);
+  renderIRSpectrum(irSpectrumSlides[irSpectrumSlideIndex]);
+}
+
+function renderIRSpectrum(data, fallbackCompound) {
+  const chartCanvas = document.getElementById("irSpectrumChart");
+  const meta = document.getElementById("ir-spectrum-meta");
+  const peakTable = document.getElementById("ir-spectrum-peaks");
+  const groups = document.getElementById("ir-spectrum-groups");
+  const interpretation = document.getElementById("ir-spectrum-interpretation");
+  const note = document.getElementById("ir-spectrum-note");
+  const slideTitle = document.getElementById("ir-slide-title");
+  if (!chartCanvas || typeof Chart === "undefined") return;
+
+  const spectrum = normalizeIRSpectrumData(data, fallbackCompound);
+  if (slideTitle) slideTitle.innerText = "Đồ thị IR của NT " + spectrum.compound;
+  const [high, low] = spectrum.rangeCm1;
+  const peakTransmittance = peak => {
+    const dip = peak.intensity * (18 + peak.intensity * 68);
+    return Math.max(3, 98 - dip);
+  };
+  const steps = Math.min(520, Math.max(240, Math.round((high - low) / 8)));
+  const step = (high - low) / steps;
+  const transmittanceAt = wavenumber => {
+    let value = 98;
+    spectrum.peaks.forEach(peak => {
+      const sigma = peak.widthCm1 / 2.355;
+      const distance = (wavenumber - peak.wavenumber) / sigma;
+      const dip = peak.intensity * (18 + peak.intensity * 68);
+      value -= dip * Math.exp(-0.5 * distance * distance);
+    });
+    return Math.max(0, Math.min(100, value));
+  };
+  const curve = [];
+  for (let index = 0; index <= steps; index++) {
+    const wavenumber = high - index * step;
+    curve.push({ x: Number(wavenumber.toFixed(2)), y: Number(transmittanceAt(wavenumber).toFixed(2)) });
+  }
+  const peakPoints = spectrum.peaks.map(peak => ({ x: peak.wavenumber, y: peakTransmittance(peak) }));
+
+  if (irSpectrumChartInstance) irSpectrumChartInstance.destroy();
+  irSpectrumChartInstance = new Chart(chartCanvas.getContext("2d"), {
+    type: "line",
+    data: {
+      datasets: [{
+        label: "Độ truyền qua IR",
+        data: curve,
+        borderColor: "#22d3ee",
+        backgroundColor: "rgba(34, 211, 238, 0.14)",
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.12,
+        parsing: false
+      }, {
+        type: "scatter",
+        label: "Đỉnh đặc trưng",
+        data: peakPoints,
+        backgroundColor: "#fbbf24",
+        borderColor: "#fef3c7",
+        borderWidth: 1,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        parsing: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: "nearest", intersect: false },
+      scales: {
+        x: {
+          type: "linear",
+          min: low,
+          max: high,
+          reverse: true,
+          title: { display: true, text: "Số sóng (cm⁻¹)", color: "#cbd5e1", font: { size: 11, weight: "600" } },
+          grid: { color: "rgba(148, 163, 184, 0.16)" },
+          ticks: { color: "#94a3b8", maxTicksLimit: 9, callback: value => Number(value).toLocaleString("en-US") }
+        },
+        y: {
+          min: 0,
+          max: 100,
+          title: { display: true, text: "Độ truyền qua (%)", color: "#cbd5e1", font: { size: 11, weight: "600" } },
+          grid: { color: "rgba(148, 163, 184, 0.16)" },
+          ticks: { color: "#94a3b8", callback: value => value + "%" }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: "#e2e8f0", usePointStyle: true, boxWidth: 8, font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            label: context => context.datasetIndex === 1 ?
+              ("Đỉnh: " + context.parsed.x.toFixed(0) + " cm⁻¹") :
+              ("Độ truyền qua: " + context.parsed.y.toFixed(1) + "%")
+          }
+        }
+      }
+    }
+  });
+
+  if (meta) {
+    const [rangeHigh, rangeLow] = spectrum.rangeCm1;
+    meta.innerHTML = [
+      ["Hợp chất", spectrum.compound + (spectrum.formula ? " (" + spectrum.formula + ")" : "")],
+      ["Phương pháp", spectrum.technique],
+      ["Trạng thái mẫu", spectrum.sampleState],
+      ["Khoảng đo", rangeHigh + "–" + rangeLow + " cm⁻¹"],
+      ["Độ phân giải", spectrum.resolutionCm1 + " cm⁻¹"],
+      ["Số lần quét", String(spectrum.scans)]
+    ].map(([label, value]) => "<div class=\"rounded-lg border border-slate-700 bg-slate-900/70 px-2.5 py-2\"><span class=\"block text-[10px] font-semibold uppercase text-slate-400\">" + escapeHtml(label) + "</span><span class=\"mt-0.5 block text-xs font-semibold text-cyan-200\">" + formatChemText(value) + "</span></div>").join("");
+  }
+  if (peakTable) {
+    peakTable.innerHTML = spectrum.peaks.length ? spectrum.peaks.map(peak =>
+      "<tr class=\"border-t border-slate-700 hover:bg-slate-800/70\"><td class=\"px-2.5 py-2 font-mono text-amber-300\">" + peak.wavenumber.toFixed(0) + "</td><td class=\"px-2.5 py-2 text-slate-300\">" + escapeHtml(peak.band) + "</td><td class=\"px-2.5 py-2 font-mono text-cyan-200\">" + (peak.intensity * 100).toFixed(0) + "%</td><td class=\"px-2.5 py-2 text-slate-200\">" + formatChemText(peak.assignment) + "</td></tr>"
+    ).join("") : "<tr><td colspan=\"4\" class=\"px-2.5 py-3 text-center text-slate-400\">Chưa có đỉnh đặc trưng.</td></tr>";
+  }
+  if (groups) groups.innerHTML = spectrum.functionalGroups.length ? spectrum.functionalGroups.map(group => "<span class=\"rounded-full border border-cyan-700/60 bg-cyan-950/60 px-2 py-1 text-[11px] text-cyan-200\">" + formatChemText(group) + "</span>").join("") : "<span class=\"text-xs text-slate-400\">Chưa có tóm tắt nhóm chức.</span>";
+  if (interpretation) interpretation.innerHTML = formatChemText(spectrum.interpretation);
+  if (note) note.innerHTML = "<i class=\"fa-solid fa-circle-info mr-1\"></i>" + formatChemText(spectrum.referenceNote);
+}
+
+async function analyzeIRSpectrum() {
+  const input = document.getElementById("ir-compound-input");
+  const button = document.getElementById("ir-spectrum-submit");
+  const status = document.getElementById("ir-spectrum-status");
+  const query = input ? input.value.trim() : "";
+  if (!query) {
+    if (status) status.innerText = "Hãy nhập tên chất tiếng Anh hoặc công thức.";
+    return;
+  }
+  if (status) status.innerText = "Gemini đang chuẩn bị phổ IR tham chiếu...";
+  if (button) button.disabled = true;
+  const prompt = "You are a senior analytical chemist. Analyze the compound requested below and return ONLY valid JSON, without markdown. Use an English chemical name, but write peak assignments and interpretation in Vietnamese. The plotted spectrum is a reference estimate, never claim it is measured data. Use wavenumbers in cm^-1, a range from 4000 to 400 cm^-1, peak intensity from 0 to 1, and include all diagnostically useful peaks.\n\nCompound request: " + query + "\n\nJSON schema:\n{\n  \"compound\": \"English compound name\",\n  \"formula\": \"ASCII chemical formula\",\n  \"sampleState\": \"solid, liquid, gas, or solution\",\n  \"technique\": \"ATR-FTIR, transmission, or gas cell\",\n  \"rangeCm1\": [4000, 400],\n  \"resolutionCm1\": 4,\n  \"scans\": 32,\n  \"peaks\": [{\"wavenumber\": 1700, \"intensity\": 0.8, \"widthCm1\": 25, \"band\": \"strong\", \"assignment\": \"Gán đỉnh bằng tiếng Việt\"}],\n  \"functionalGroups\": [\"Tên nhóm chức\"],\n  \"interpretation\": \"Diễn giải ngắn bằng tiếng Việt\",\n  \"referenceNote\": \"Ghi chú tham chiếu bằng tiếng Việt\"\n}";
+  try {
+    const response = await callGeminiAPI(prompt);
+    const match = response.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No valid IR JSON found");
+    const data = JSON.parse(match[0]);
+    const normalized = normalizeIRSpectrumData(data, query);
+    if (!normalized.peaks.length) throw new Error("No characteristic peaks returned");
+    renderIRSlides([normalized]);
+    if (status) status.innerText = "Đã tạo phổ IR tham chiếu. Hãy đối chiếu với kết quả đo trước khi báo cáo.";
+  } catch (error) {
+    console.error("IR spectrum analysis error:", error);
+    if (status) status.innerText = "Chưa thể tạo phổ IR. Vui lòng thử lại.";
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function isIRQuestion(question) {
+  return /\b(?:IR|FTIR|infrared)\b/i.test(question) || /phổ\s+(?:hồng ngoại|IR)/i.test(question);
+}
+
+async function analyzeIRSpectraFromQuestion(question) {
+  const status = document.getElementById("ir-spectrum-status");
+  if (status) status.innerText = "Gemini đang nhận diện các chất trong câu hỏi để tạo slide phổ IR...";
+  const prompt = [
+    "You are an analytical chemistry assistant.",
+    "Read the Vietnamese question below and identify every distinct chemical compound or elemental substance explicitly requested for an IR spectrum.",
+    "Return ONLY valid JSON, without markdown, with at most 6 spectra. Do not invent unrelated substances.",
+    "Use English chemical names, Vietnamese peak assignments and interpretation, wavenumbers in cm^-1, range [4000, 400], intensity from 0 to 1, technique, sample state, resolution and scans.",
+    "If no chemical target is present, return an empty spectra array.",
+    "Question:",
+    question,
+    "Schema:",
+    "{\"spectra\":[{\"compound\":\"English compound name\",\"formula\":\"ASCII formula\",\"sampleState\":\"solid, liquid, gas, or solution\",\"technique\":\"ATR-FTIR, transmission, or gas cell\",\"rangeCm1\":[4000,400],\"resolutionCm1\":4,\"scans\":32,\"peaks\":[{\"wavenumber\":1700,\"intensity\":0.8,\"widthCm1\":25,\"band\":\"strong\",\"assignment\":\"Gán đỉnh bằng tiếng Việt\"}],\"functionalGroups\":[\"Tên nhóm chức\"],\"interpretation\":\"Diễn giải bằng tiếng Việt\",\"referenceNote\":\"Ghi chú tham chiếu bằng tiếng Việt\"}]}"
+  ].join("\n");
+  try {
+    const response = await callGeminiAPI(prompt);
+    const arrayMatch = response.match(/\[[\s\S]*\]/);
+    const objectMatch = response.match(/\{[\s\S]*\}/);
+    if (!arrayMatch && !objectMatch) throw new Error("No valid IR spectra JSON found");
+    const parsed = JSON.parse(arrayMatch ? arrayMatch[0] : objectMatch[0]);
+    const rawSpectra = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.spectra) ? parsed.spectra : [parsed]);
+    const spectra = rawSpectra.slice(0, 6).map(item => normalizeIRSpectrumData(item, question)).filter(item => item.peaks.length);
+    if (!spectra.length) throw new Error("No chemical IR targets found");
+    renderIRSlides(spectra);
+    if (status) status.innerText = "Đã tạo " + spectra.length + " đồ thị IR. Dùng danh sách slide để chuyển chất.";
+  } catch (error) {
+    console.error("Multi-IR analysis error:", error);
+    if (status) status.innerText = "Không nhận diện được chất cần vẽ phổ IR trong câu hỏi.";
+  }
+}
+
 function loadReaction(_0x3f9290, _0x837f90, _0x55c689, _0x1dee3b, _0x564e07, _0x1a9750, _0x21f6ed, _0x1764f3) {
   document.getElementById("inputA").value = _0x3f9290;
   document.getElementById("volA").value = _0x837f90;
@@ -1050,10 +1363,13 @@ async function sendMessage() {
   _0x31793b.innerHTML += "\n                <div id=\"" + _0x34e138 + "\" class=\"flex items-start space-x-2\">\n                    <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                    <div class=\"bg-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-sm animate-pulse\">\n                        <i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy đang suy nghĩ...\n                    </div>\n                </div>\n            ";
   _0x31793b.scrollTop = _0x31793b.scrollHeight;
   try {
-    const _0x4a2592 = "Bạn là Gia sư Hóa học ChemAIBuddy chuyên trách Khối THPT (Lớp 10, 11, 12). Trả lời ngắn gọn, chính xác, dễ hiểu; tối đa 6 đoạn hoặc gạch đầu dòng trừ khi người học yêu cầu giải chi tiết. Viết công thức ở dạng H2SO4, ion ở dạng Fe^3+ hoặc SO4^2-, và mũi tên phản ứng bằng -> để giao diện định dạng đúng. Không dùng LaTeX. Câu hỏi:\n" + _0x1d7bd1;
+    const _0x4a2592 = "Bạn là Gia sư Hóa học ChemAIBuddy chuyên trách Khối THPT (Lớp 10, 11, 12). Trả lời ngắn gọn, chính xác, dễ hiểu; tối đa 6 đoạn hoặc gạch đầu dòng trừ khi người học yêu cầu giải chi tiết. Dùng tên hóa chất bằng tiếng Anh chuẩn (ví dụ: sulfuric acid, sodium hydroxide), viết công thức ở dạng H2SO4, ion ở dạng Fe^3+ hoặc SO4^2-, và mũi tên phản ứng bằng -> để giao diện định dạng đúng. Không dùng LaTeX. Khi người học hỏi về phổ IR, nêu số sóng cm^-1, nhóm chức, cường độ, phương pháp đo, trạng thái mẫu, khoảng đo, độ phân giải và số lần quét; nhắc rõ dữ liệu tham chiếu cần đối chiếu phổ thực nghiệm. Câu hỏi:\n" + _0x1d7bd1;
     const _0x1996b4 = await callGeminiAPI(_0x4a2592);
     document.getElementById(_0x34e138).remove();
     _0x31793b.insertAdjacentHTML("beforeend", "\n                    <div class=\"flex items-start space-x-2\">\n                        <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                        <div class=\"bg-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed\">" + formatChemText(_0x1996b4) + "</div>\n                    </div>\n                ");
+    if (isIRQuestion(_0x1d7bd1)) {
+      analyzeIRSpectraFromQuestion(_0x1d7bd1);
+    }
     if (supabaseClient) {
       supabaseClient.from("chat_logs").insert({
         session_id: getChatSessionId(),
@@ -1649,7 +1965,7 @@ async function searchSafety() {
     return;
   }
   _0x5a0c76.innerHTML = "\n                <div class=\"col-span-full text-center py-12 bg-slate-800 border border-slate-700 rounded-2xl\">\n                    <i class=\"fa-solid fa-spinner fa-spin text-4xl text-cyan-400 mb-3 block\"></i>\n                    <p class=\"text-sm font-medium text-slate-200\">ChemAIBuddy đang phân tích mức độ an toàn cho \"<span class=\"text-cyan-400\">" + formatChemText(_0x1dc2cf) + "</span>\"...</p>\n                </div>\n            ";
-  const _0x2fe9f0 = "Phân tích mức độ an toàn và dữ liệu phổ của hóa chất: \"" + _0x1dc2cf + "\". Trả về kết quả duy nhất dưới dạng JSON, không dùng markdown codeblock. Với chất không có phổ phù hợp, ghi rõ \"Không áp dụng\":\n{\n  \"name\": \"Tên hóa chất\",\n  \"formula\": \"Công thức hóa học\",\n  \"hazard\": \"Tóm tắt ngắn gọn quy tắc an toàn và cảnh báo độc hại/phóng xạ\",\n  \"ir\": \"Các đỉnh hấp thụ IR đặc trưng, chỉ ghi giá trị theo đơn vị cm⁻¹\",\n  \"ms\": \"Các ion mảnh phổ khối lượng đặc trưng, chỉ ghi giá trị m/z\",\n  \"icon\": \"fa-radiation\",\n  \"color\": \"text-red-500\"\n}";
+  const _0x2fe9f0 = "Phân tích mức độ an toàn và dữ liệu phổ của hóa chất: \"" + _0x1dc2cf + "\". Dùng tên hóa chất chuẩn bằng tiếng Anh. Trả về kết quả duy nhất dưới dạng JSON, không dùng markdown codeblock. Với chất không có phổ phù hợp, ghi rõ \"Không áp dụng\":\n{\n  \"name\": \"Standard English chemical name (with formula)\",\n  \"formula\": \"Chemical formula\",\n  \"hazard\": \"Tóm tắt ngắn gọn quy tắc an toàn và cảnh báo độc hại/phóng xạ\",\n  \"ir\": \"Các đỉnh hấp thụ IR đặc trưng, chỉ ghi giá trị theo đơn vị cm⁻¹\",\n  \"ms\": \"Các ion mảnh phổ khối lượng đặc trưng, chỉ ghi giá trị m/z\",\n  \"icon\": \"fa-radiation\",\n  \"color\": \"text-red-500\"\n}";
   try {
     const _0x588434 = await callGeminiAPI(_0x2fe9f0);
     const _0x577815 = _0x588434.match(/\{[\s\S]*\}/);
