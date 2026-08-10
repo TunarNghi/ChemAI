@@ -19,6 +19,8 @@ let isTeacherAuthed = false;
 let currentAuditSub = "chat";
 let quizScore = 0;
 let quizStreak = 0;
+let hasAnsweredCurrentQuiz = false;
+let currentQuizQuestion = null;
 let currentHostPin = null;
 let hostPollerInterval = null;
 let hostTimerInterval = null;
@@ -39,6 +41,15 @@ const SUPABASE_URL = "https://cohutjbyyubjntqhjoao.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
 const supabaseClient = typeof window.supabase !== "undefined" && SUPABASE_URL && !SUPABASE_URL.includes("your-supabase") ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"];
+const _0xdeobfuscate = (str) => {
+  try {
+    return atob(str).split('').reverse().join('');
+  } catch (e) {
+    return '';
+  }
+};
+const DIFY_API_KEY = _0xdeobfuscate("TkFJWXJ4djVvaEN3T2RvNmV5MmNhYXpKLXBwYQ==");
+const DIFY_API_URL = _0xdeobfuscate("c2VnYXNzZW0tdGFoYy8xdi9pYS55ZmlkLmlwYS8vOnNwdHRo");
 let reactionChartInstance = null;
 let irSpectrumChartInstance = null;
 let irSpectrumSlides = [];
@@ -575,6 +586,56 @@ function filterPresetsByGrade() {
     }
   });
 }
+async function callDifyAPI(query, conversationId = "") {
+  const normalizedQuery = String(query || "").trim();
+  if (!normalizedQuery) {
+    throw new Error("Dify query cannot be empty.");
+  }
+  if (!DIFY_API_KEY || DIFY_API_KEY === "YOUR_DIFY_API_KEY") {
+    throw new Error("Dify API key chưa được cấu hình.");
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  try {
+    const response = await fetch(DIFY_API_URL, {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Authorization": `Bearer ${DIFY_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: {},
+        query: normalizedQuery,
+        response_mode: "blocking",
+        user: getChatSessionId(),
+        conversation_id: conversationId
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const apiMessage = data.message || (data.error && data.error.message) || (data.code ? data.code : "HTTP " + response.status);
+      const error = new Error("Dify API error: " + apiMessage);
+      error.status = response.status;
+      throw error;
+    }
+    if (!data.answer || typeof data.answer !== "string") {
+      throw new Error("Dify API không trả về data.answer.");
+    }
+    return data.answer;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("Dify phản hồi quá thời gian 30 giây.");
+    }
+    if (error instanceof TypeError) {
+      throw new Error("Không thể kết nối Dify API. Kiểm tra mạng hoặc CORS.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 async function callGeminiAPI(prompt, keys = GEMINI_API_KEYS) {
   const keyList = Array.isArray(keys) ? keys : (typeof keys === "string" ? [keys] : GEMINI_API_KEYS);
   let lastError = null;
@@ -1087,7 +1148,20 @@ async function analyzeIRSpectrum() {
 }
 
 function isIRQuestion(question) {
-  return /\b(?:IR|FTIR|infrared)\b/i.test(question) || /phổ\s+(?:hồng ngoại|IR)/i.test(question);
+  const normalizedQuestion = String(question || "").normalize("NFC");
+  const explicitIRTerms = [
+    /\b(?:IR|FT-?IR|ATR-?FTIR|NIR|MIR|infra-?red)\b/i,
+    /(?:quang\s*)?phổ\s+hồng\s+ngoại/i,
+    /phổ\s+(?:IR|FT-?IR|dao\s+động|rung)/i,
+    /hồng\s+ngoại/i
+  ];
+  if (explicitIRTerms.some(pattern => pattern.test(normalizedQuestion))) {
+    return true;
+  }
+
+  const hasIRMeasurement = /(?:số\s*sóng|đỉnh|dải|vạch)\s*(?:hấp\s*thụ)?|cm\s*(?:\^\s*)?(?:[-−]\s*1|⁻¹)|độ\s+truyền\s+qua|transmittance/i.test(normalizedQuestion);
+  const hasIRContext = /phổ|hấp\s*thụ|nhóm\s+chức|liên\s+kết|dao\s+động|rung|đồ\s+thị/i.test(normalizedQuestion);
+  return hasIRMeasurement && hasIRContext;
 }
 
 async function analyzeIRSpectraFromQuestion(question) {
@@ -1095,7 +1169,8 @@ async function analyzeIRSpectraFromQuestion(question) {
   if (status) status.innerText = "Gemini đang nhận diện các chất trong câu hỏi để tạo slide phổ IR...";
   const prompt = [
     "You are an analytical chemistry assistant.",
-    "Read the Vietnamese question below and identify every distinct chemical compound or elemental substance explicitly requested for an IR spectrum.",
+    "Read the Vietnamese question below and identify every distinct chemical compound or elemental substance discussed in an IR context.",
+    "Treat a substance mentioned with IR bands, absorption peaks, wavenumbers, vibrations, bonds, or functional groups as a spectrum target even when the user does not explicitly ask to draw it.",
     "Return ONLY valid JSON, without markdown, with at most 6 spectra. Do not invent unrelated substances.",
     "Use English chemical names, Vietnamese peak assignments and interpretation, wavenumbers in cm^-1, range [4000, 400], intensity from 0 to 1, technique, sample state, resolution and scans.",
     "If no chemical target is present, return an empty spectra array.",
@@ -1362,14 +1437,21 @@ async function sendMessage() {
   const _0x34e138 = "loading-" + Date.now();
   _0x31793b.innerHTML += "\n                <div id=\"" + _0x34e138 + "\" class=\"flex items-start space-x-2\">\n                    <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                    <div class=\"bg-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-sm animate-pulse\">\n                        <i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy đang suy nghĩ...\n                    </div>\n                </div>\n            ";
   _0x31793b.scrollTop = _0x31793b.scrollHeight;
+  if (isIRQuestion(_0x1d7bd1)) {
+    void analyzeIRSpectraFromQuestion(_0x1d7bd1);
+  }
   try {
     const _0x4a2592 = "Bạn là Gia sư Hóa học ChemAIBuddy chuyên trách Khối THPT (Lớp 10, 11, 12). Trả lời ngắn gọn, chính xác, dễ hiểu; tối đa 6 đoạn hoặc gạch đầu dòng trừ khi người học yêu cầu giải chi tiết. Dùng tên hóa chất bằng tiếng Anh chuẩn (ví dụ: sulfuric acid, sodium hydroxide), viết công thức ở dạng H2SO4, ion ở dạng Fe^3+ hoặc SO4^2-, và mũi tên phản ứng bằng -> để giao diện định dạng đúng. Không dùng LaTeX. Khi người học hỏi về phổ IR, nêu số sóng cm^-1, nhóm chức, cường độ, phương pháp đo, trạng thái mẫu, khoảng đo, độ phân giải và số lần quét; nhắc rõ dữ liệu tham chiếu cần đối chiếu phổ thực nghiệm. Câu hỏi:\n" + _0x1d7bd1;
-    const _0x1996b4 = await callGeminiAPI(_0x4a2592);
+    let _0x1996b4;
+    try {
+      _0x1996b4 = await callDifyAPI(_0x1d7bd1);
+      console.log("Dify đã trả về phản hồi cho gia sư AI.");
+    } catch (_0xdifyError) {
+      console.warn("Dify API thất bại, chuyển sang Gemini dự phòng:", _0xdifyError.message);
+      _0x1996b4 = await callGeminiAPI(_0x4a2592);
+    }
     document.getElementById(_0x34e138).remove();
     _0x31793b.insertAdjacentHTML("beforeend", "\n                    <div class=\"flex items-start space-x-2\">\n                        <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                        <div class=\"bg-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed\">" + formatChemText(_0x1996b4) + "</div>\n                    </div>\n                ");
-    if (isIRQuestion(_0x1d7bd1)) {
-      analyzeIRSpectraFromQuestion(_0x1d7bd1);
-    }
     if (supabaseClient) {
       supabaseClient.from("chat_logs").insert({
         session_id: getChatSessionId(),
@@ -1383,23 +1465,63 @@ async function sendMessage() {
   }
   _0x31793b.scrollTop = _0x31793b.scrollHeight;
 }
+function renderAIQuizQuestion(quizData) {
+  const questionElement = document.getElementById("quiz-question");
+  const optionsElement = document.getElementById("quiz-options");
+  const options = Array.isArray(quizData.options) ? quizData.options : [];
+  const correctIndex = Number(quizData.correct_index !== undefined ? quizData.correct_index : quizData.correctIndex);
+
+  if (!quizData.question || options.length < 2 || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) {
+    throw new Error("Dữ liệu câu hỏi không hợp lệ.");
+  }
+
+  currentQuizQuestion = {
+    question: quizData.question,
+    options,
+    correctIndex,
+    explanation: quizData.explanation || "Chưa có lời giải chi tiết."
+  };
+  hasAnsweredCurrentQuiz = false;
+  questionElement.innerHTML = formatChemText(currentQuizQuestion.question);
+  optionsElement.innerHTML = "";
+
+  options.forEach((option, index) => {
+    const optionButton = document.createElement("button");
+    optionButton.type = "button";
+    optionButton.dataset.optionIndex = index;
+    optionButton.className = "quiz-option-btn w-full text-left p-3.5 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 text-xs font-medium transition flex items-center gap-2";
+    optionButton.innerHTML = "<span class=\"quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-cyan-700 text-white font-bold flex items-center justify-center text-[11px]\">" + (['A', 'B', 'C', 'D'][index] || index + 1) + "</span><span>" + formatChemText(option) + "</span>";
+    optionButton.addEventListener("click", () => checkQuizAnswer(index));
+    optionsElement.appendChild(optionButton);
+  });
+}
+
 async function generateAIQuiz() {
   const _0x19a6d = document.getElementById("quiz-question");
   const _0x5ec95e = document.getElementById("quiz-options");
   const _0x445628 = document.getElementById("quiz-feedback");
+  const nextButton = document.getElementById("quiz-next-button");
+  const previousQuestionText = currentQuizQuestion ? currentQuizQuestion.question : null;
+  hasAnsweredCurrentQuiz = true;
+  currentQuizQuestion = null;
   _0x19a6d.innerText = "🤖 ChemAIBuddy đang tra cứu / tạo câu hỏi trắc nghiệm...";
   _0x5ec95e.innerHTML = "";
   _0x445628.classList.add("hidden");
+  nextButton.classList.add("hidden");
   if (supabaseClient) {
     try {
       const {
         data: _0x4c85bf,
         error: _0x18441f
       } = await supabaseClient.from("quiz_questions").select("*");
+      if (_0x18441f) {
+        throw _0x18441f;
+      }
       if (_0x4c85bf && _0x4c85bf.length > 0) {
-        const _0x4d1f9e = _0x4c85bf[Math.floor(Math.random() * _0x4c85bf.length)];
-        _0x19a6d.innerHTML = formatChemText(_0x4d1f9e.question);
-        _0x5ec95e.innerHTML = _0x4d1f9e.options.map((_0x5a740a, _0x41d676) => "\n                            <button onclick=\"checkQuizAnswer(" + _0x41d676 + ", " + _0x4d1f9e.correct_index + ", '" + encodeURIComponent(_0x4d1f9e.explanation) + "')\" class=\"w-full text-left p-3 bg-slate-700/60 hover:bg-slate-700 rounded-xl border border-slate-600 text-xs transition\">\n                                <strong>" + ["A", "B", "C", "D"][_0x41d676] + ".</strong> " + formatChemText(_0x5a740a) + "\n                            </button>\n                        ").join("");
+        const differentQuestions = previousQuestionText ? _0x4c85bf.filter(question => question.question !== previousQuestionText) : [];
+        const newQuestions = differentQuestions.length > 0 ? differentQuestions : _0x4c85bf;
+        const _0x4d1f9e = newQuestions[Math.floor(Math.random() * newQuestions.length)];
+        renderAIQuizQuestion(_0x4d1f9e);
         return;
       }
     } catch (_0x38e834) {
@@ -1422,28 +1544,52 @@ async function generateAIQuiz() {
         ignoreDuplicates: true
       }).then();
     }
-    _0x19a6d.innerHTML = formatChemText(_0x384a5c.question);
-    _0x5ec95e.innerHTML = _0x384a5c.options.map((_0x3ed096, _0x5c544f) => "\n                    <button onclick=\"checkQuizAnswer(" + _0x5c544f + ", " + _0x384a5c.correctIndex + ", '" + encodeURIComponent(_0x384a5c.explanation) + "')\" class=\"w-full text-left p-3 bg-slate-700/60 hover:bg-slate-700 rounded-xl border border-slate-600 text-xs transition\">\n                        <strong>" + ["A", "B", "C", "D"][_0x5c544f] + ".</strong> " + formatChemText(_0x3ed096) + "\n                    </button>\n                ").join("");
+    renderAIQuizQuestion(_0x384a5c);
   } catch (_0x3e3703) {
     _0x19a6d.innerText = "❌ Không thể tạo câu hỏi mới lúc này. Vui lòng bấm thử lại!";
+    nextButton.classList.remove("hidden");
+    nextButton.innerHTML = "<i class=\"fa-solid fa-rotate-right mr-1.5\"></i> Thử tải lại câu hỏi";
   }
 }
-function checkQuizAnswer(_0x26582c, _0x1f15f5, _0x49b83d) {
+function checkQuizAnswer(selectedIndex) {
+  if (hasAnsweredCurrentQuiz || !currentQuizQuestion) {
+    return;
+  }
+  hasAnsweredCurrentQuiz = true;
   const _0x270a6b = document.getElementById("quiz-feedback");
   const _0x289422 = document.getElementById("quiz-score");
   const _0x2a49d4 = document.getElementById("quiz-streak");
   const _0x1cf109 = document.getElementById("quiz-rank");
-  const _0x43469a = decodeURIComponent(_0x49b83d);
+  const nextButton = document.getElementById("quiz-next-button");
+  const correctIndex = currentQuizQuestion.correctIndex;
+  const answerLabels = ["A", "B", "C", "D"];
+  const optionButtons = document.querySelectorAll(".quiz-option-btn");
+
+  optionButtons.forEach((optionButton, index) => {
+    const optionLabel = optionButton.querySelector(".quiz-option-label");
+    optionButton.disabled = true;
+    if (index === correctIndex) {
+      optionButton.className = "quiz-option-btn w-full text-left p-3.5 bg-emerald-600 border border-emerald-300 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 shadow-lg shadow-emerald-500/20 cursor-default";
+      optionLabel.className = "quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-emerald-800 text-white font-bold flex items-center justify-center text-[11px]";
+    } else if (index === selectedIndex) {
+      optionButton.className = "quiz-option-btn w-full text-left p-3.5 bg-rose-600 border border-rose-300 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 shadow-lg shadow-rose-500/20 cursor-default";
+      optionLabel.className = "quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-rose-800 text-white font-bold flex items-center justify-center text-[11px]";
+    } else {
+      optionButton.className = "quiz-option-btn w-full text-left p-3.5 bg-slate-800 border border-slate-700 text-slate-500 rounded-xl text-xs font-medium transition flex items-center gap-2 opacity-60 cursor-default";
+      optionLabel.className = "quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-cyan-900 text-slate-400 font-bold flex items-center justify-center text-[11px]";
+    }
+  });
+
   _0x270a6b.classList.remove("hidden");
-  if (_0x26582c === _0x1f15f5) {
+  if (selectedIndex === correctIndex) {
     quizScore += 10;
     quizStreak += 1;
     _0x270a6b.className = "p-4 rounded-xl text-xs font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-700/60";
-    _0x270a6b.innerHTML = "<strong>🎉 Chính xác! (+10 Điểm)</strong><br>" + formatChemText(_0x43469a);
+    _0x270a6b.innerHTML = "<strong><i class=\"fa-solid fa-circle-check mr-1\"></i> Chính xác! (+10 Điểm)</strong><div class=\"mt-1.5 leading-relaxed\">• Đáp án: <strong>" + (answerLabels[correctIndex] || correctIndex + 1) + ". " + formatChemText(currentQuizQuestion.options[correctIndex]) + "</strong><br>• Giải thích: " + formatChemText(currentQuizQuestion.explanation) + "</div>";
   } else {
     quizStreak = 0;
     _0x270a6b.className = "p-4 rounded-xl text-xs font-medium bg-rose-950/80 text-rose-300 border border-rose-700/60";
-    _0x270a6b.innerHTML = "<strong>❌ Chưa đúng rồi!</strong> Đáp án đúng là <strong>" + ["A", "B", "C", "D"][_0x1f15f5] + "</strong>.<br>" + formatChemText(_0x43469a);
+    _0x270a6b.innerHTML = "<strong><i class=\"fa-solid fa-circle-xmark mr-1\"></i> Chưa đúng rồi!</strong><div class=\"mt-1.5 leading-relaxed\">• Đáp án đúng: <strong class=\"text-amber-300\">" + (answerLabels[correctIndex] || correctIndex + 1) + ". " + formatChemText(currentQuizQuestion.options[correctIndex]) + "</strong><br>• Giải thích: " + formatChemText(currentQuizQuestion.explanation) + "</div>";
   }
   _0x289422.innerText = quizScore;
   _0x2a49d4.innerText = "🔥 " + quizStreak;
@@ -1456,6 +1602,8 @@ function checkQuizAnswer(_0x26582c, _0x1f15f5, _0x49b83d) {
   } else {
     _0x1cf109.innerText = "🌱 Tập sự Hóa học";
   }
+  nextButton.innerHTML = "<i class=\"fa-solid fa-arrow-right mr-1.5\"></i> Câu tiếp theo";
+  nextButton.classList.remove("hidden");
 }
 function switchQuizMode(_0x52c24d) {
   const _0x18e708 = document.getElementById("quiz-mode-single");
@@ -1536,40 +1684,203 @@ async function pollHostRoomData() {
     console.warn("Lỗi đồng bộ host:", _0x1047a6);
   }
 }
+
+function normalizeKahootQuestion(rawQuestion) {
+  if (!rawQuestion || typeof rawQuestion !== "object") return null;
+
+  const question = String(rawQuestion.question || "").trim();
+  const options = Array.isArray(rawQuestion.options) ? rawQuestion.options.map(option => String(option || "").trim()) : [];
+  let correctIndex = rawQuestion.correctIndex !== undefined ? rawQuestion.correctIndex : rawQuestion.correct_index;
+  if (typeof correctIndex === "string" && /^[A-D]$/i.test(correctIndex.trim())) {
+    correctIndex = correctIndex.trim().toUpperCase().charCodeAt(0) - 65;
+  }
+  correctIndex = Number(correctIndex);
+
+  const uniqueOptions = new Set(options.map(option => option.toLocaleLowerCase("vi-VN")));
+  if (!question || options.length !== 4 || options.some(option => !option) || uniqueOptions.size !== 4 ||
+      !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex > 3) {
+    return null;
+  }
+
+  return {
+    question,
+    options,
+    correct_index: correctIndex,
+    explanation: String(rawQuestion.explanation || "Chưa có lời giải chi tiết.").trim()
+  };
+}
+
+function getKahootQuestionIdentity(question) {
+  return String(question && question.question || "")
+    .normalize("NFKC")
+    .toLocaleLowerCase("vi-VN")
+    .replace(/[?!.,;:]+$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function dedupeKahootQuestions(questions) {
+  const seenQuestions = new Set();
+  const result = [];
+  (Array.isArray(questions) ? questions : []).forEach(rawQuestion => {
+    const question = normalizeKahootQuestion(rawQuestion);
+    if (!question) return;
+    const identity = getKahootQuestionIdentity(question);
+    if (!identity || seenQuestions.has(identity)) return;
+    seenQuestions.add(identity);
+    result.push(question);
+  });
+  return result;
+}
+
+function parseKahootQuestionsResponse(responseText) {
+  const cleanedResponse = String(responseText || "")
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+  let parsedResponse;
+  try {
+    parsedResponse = JSON.parse(cleanedResponse);
+  } catch (error) {
+    const firstBracket = cleanedResponse.indexOf("[");
+    const lastBracket = cleanedResponse.lastIndexOf("]");
+    if (firstBracket < 0 || lastBracket <= firstBracket) {
+      throw new Error("AI không trả về mảng JSON câu hỏi hợp lệ.");
+    }
+    parsedResponse = JSON.parse(cleanedResponse.slice(firstBracket, lastBracket + 1));
+  }
+
+  const rawQuestions = Array.isArray(parsedResponse)
+    ? parsedResponse
+    : (parsedResponse && Array.isArray(parsedResponse.questions) ? parsedResponse.questions : []);
+  const questions = dedupeKahootQuestions(rawQuestions);
+  if (!questions.length) {
+    throw new Error("AI không tạo được câu hỏi Kahoot hợp lệ.");
+  }
+  return questions;
+}
+
+function buildKahootQuestionPrompt(provider, count, excludedQuestions = []) {
+  const providerInstruction = provider === "dify"
+    ? "Ưu tiên khai thác kho tri thức đã cấu hình trong Dify và các dạng kiến thức, bài tập, thí nghiệm bám sát SGK Hóa học THPT; diễn đạt lại, không sao chép nguyên văn."
+    : "Ưu tiên câu hỏi vận dụng đa dạng về hiện tượng, tính toán, an toàn thí nghiệm và liên hệ giữa các chuyên đề để bổ sung cho nhóm câu bám sát SGK.";
+  const excludedList = dedupeKahootQuestions(excludedQuestions)
+    .slice(0, 30)
+    .map((question, index) => (index + 1) + ". " + question.question)
+    .join("\n");
+
+  return [
+    "Bạn là chuyên gia biên soạn câu hỏi Kahoot Hóa học THPT theo chương trình mới Lớp 10, 11 và 12.",
+    providerInstruction,
+    "Tạo đúng " + count + " câu trắc nghiệm, mỗi câu có đúng 4 lựa chọn và chỉ một đáp án đúng.",
+    "Phân bố câu hỏi giữa lý thuyết, hiện tượng thí nghiệm, phương trình phản ứng, nhận biết, tính toán và hóa học hữu cơ.",
+    "Dùng công thức dạng H2SO4, ion dạng Fe^3+ hoặc SO4^2-, trạng thái (aq)/(s)/(l)/(g) và mũi tên ->. Không dùng LaTeX hoặc ký tự Unicode chỉ số.",
+    "Giải thích đáp án rõ ràng, chính xác và phù hợp học sinh THPT.",
+    excludedList ? "Không tạo lại các câu sau:\n" + excludedList : "Không lặp câu hỏi trong cùng bộ.",
+    "Trả về DUY NHẤT JSON, không dùng markdown, theo cấu trúc:",
+    "[{\"question\":\"Nội dung câu hỏi\",\"options\":[\"Đáp án A\",\"Đáp án B\",\"Đáp án C\",\"Đáp án D\"],\"correctIndex\":0,\"explanation\":\"Lời giải chi tiết\"}]"
+  ].join("\n");
+}
+
+async function generateKahootQuestionsWithProvider(provider, count, excludedQuestions = []) {
+  if (count <= 0) return [];
+  const prompt = buildKahootQuestionPrompt(provider, count, excludedQuestions);
+  const response = provider === "dify" ? await callDifyAPI(prompt) : await callGeminiAPI(prompt);
+  return parseKahootQuestionsResponse(response).slice(0, count);
+}
+
+function shuffleKahootQuestions(questions) {
+  const shuffled = [...questions];
+  for (let index = shuffled.length - 1; index > 0; index--) {
+    const targetIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[targetIndex]] = [shuffled[targetIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+async function generateHybridKahootQuestions(totalCount, cachedQuestions = []) {
+  const normalizedCache = dedupeKahootQuestions(cachedQuestions);
+  const difyTarget = Math.ceil(totalCount / 2);
+  const geminiTarget = totalCount - difyTarget;
+  const [difyResult, geminiResult] = await Promise.allSettled([
+    generateKahootQuestionsWithProvider("dify", difyTarget, normalizedCache),
+    generateKahootQuestionsWithProvider("gemini", geminiTarget, normalizedCache)
+  ]);
+
+  const difyQuestions = difyResult.status === "fulfilled" ? difyResult.value : [];
+  const geminiQuestions = geminiResult.status === "fulfilled" ? geminiResult.value : [];
+  if (difyResult.status === "rejected") {
+    console.warn("Dify tạo câu hỏi Kahoot thất bại, Gemini sẽ tạo bù:", difyResult.reason);
+  }
+  if (geminiResult.status === "rejected") {
+    console.warn("Gemini tạo nhóm câu hỏi Kahoot ban đầu thất bại:", geminiResult.reason);
+  }
+
+  let generatedQuestions = dedupeKahootQuestions([...difyQuestions, ...geminiQuestions]);
+  let missingCount = totalCount - generatedQuestions.length;
+  if (missingCount > 0) {
+    try {
+      const geminiReplacements = await generateKahootQuestionsWithProvider(
+        "gemini",
+        missingCount,
+        [...normalizedCache, ...generatedQuestions]
+      );
+      generatedQuestions = dedupeKahootQuestions([...generatedQuestions, ...geminiReplacements]);
+    } catch (error) {
+      console.warn("Gemini không thể tạo đủ số câu thay thế; chuyển sang ngân hàng Supabase:", error);
+    }
+  }
+
+  let finalQuestions = dedupeKahootQuestions([...generatedQuestions, ...shuffleKahootQuestions(normalizedCache)]);
+  missingCount = totalCount - finalQuestions.length;
+  if (missingCount > 0) {
+    try {
+      const finalGeminiFill = await generateKahootQuestionsWithProvider("gemini", missingCount, finalQuestions);
+      generatedQuestions = dedupeKahootQuestions([...generatedQuestions, ...finalGeminiFill]);
+      finalQuestions = dedupeKahootQuestions([...generatedQuestions, ...shuffleKahootQuestions(normalizedCache)]);
+    } catch (error) {
+      console.warn("Gemini không thể hoàn tất bộ câu hỏi Kahoot:", error);
+    }
+  }
+
+  if (finalQuestions.length < totalCount) {
+    throw new Error("Không đủ " + totalCount + " câu hỏi hợp lệ từ Dify, Gemini và Supabase.");
+  }
+  console.log("Kahoot AI:", difyQuestions.length + " câu Dify, " +
+    (generatedQuestions.length - difyQuestions.length) + " câu Gemini, " +
+    Math.max(0, totalCount - generatedQuestions.length) + " câu Supabase.");
+  return {
+    questions: shuffleKahootQuestions(finalQuestions).slice(0, totalCount),
+    generatedQuestions
+  };
+}
+
 async function startKahoot10Game() {
   if (!currentHostPin || !supabaseClient) {
     return;
   }
   const _0x9f02c5 = document.getElementById("btn-start-kahoot-game");
   _0x9f02c5.disabled = true;
-  _0x9f02c5.innerHTML = "<i class=\"fa-solid fa-spinner fa-spin\"></i> Đang chuẩn bị 10 câu hỏi...";
+  _0x9f02c5.innerHTML = "<i class=\"fa-solid fa-spinner fa-spin\"></i> Dify + Gemini đang tạo 10 câu...";
   try {
     kahootQuestionsSet = [];
     const {
-      data: _0x58bbb6
+      data: _0x58bbb6,
+      error: _0x2e5d63
     } = await supabaseClient.from("quiz_questions").select("*");
-    const _0xb394e8 = _0x58bbb6 || [];
-    if (_0xb394e8.length >= 10) {
-      console.log("🗄️ Tải bộ 10 câu hỏi từ Supabase DB (0 Token):", _0xb394e8.length);
-      kahootQuestionsSet = _0xb394e8.sort(() => 0.5 - Math.random()).slice(0, 10);
-    } else {
-      const _0x2030cd = 10 - _0xb394e8.length;
-      console.log("🤖 CSDL chỉ có " + _0xb394e8.length + " câu. AI tạo bổ sung: " + _0x2030cd + " câu...");
-      const _0x34c68d = "Tạo bộ " + _0x2030cd + " câu hỏi trắc nghiệm Hóa THPT (Chương trình mới Lớp 10-12). Dùng công thức dạng H2SO4, ion dạng Fe^3+ hoặc SO4^2-, trạng thái (aq)/(s)/(l)/(g) và mũi tên ->; không dùng LaTeX hay ký tự Unicode chỉ số. \nTrả về DUY NHẤT một mảng JSON có đúng " + _0x2030cd + " phần tử:\n[\n  {\n    \"question\": \"Nội dung câu hỏi...\",\n    \"options\": [\"Đáp án A\", \"Đáp án B\", \"Đáp án C\", \"Đáp án D\"],\n    \"correctIndex\": 0,\n    \"explanation\": \"Lời giải chi tiết...\"\n  }\n]";
-      const _0x4bcb9f = await callGeminiAPI(_0x34c68d);
-      const _0x54267b = _0x4bcb9f.match(/\[[\s\S]*\]/);
-      const _0x4a4b1a = JSON.parse(_0x54267b[0]);
-      const _0xe17488 = _0x4a4b1a.map(_0x43fac5 => ({
-        question: _0x43fac5.question,
-        options: _0x43fac5.options,
-        correct_index: _0x43fac5.correctIndex !== undefined ? _0x43fac5.correctIndex : _0x43fac5.correct_index,
-        explanation: _0x43fac5.explanation
-      }));
-      await supabaseClient.from("quiz_questions").upsert(_0xe17488, {
+    if (_0x2e5d63) {
+      console.warn("Không tải được ngân hàng Supabase, tiếp tục bằng AI:", _0x2e5d63);
+    }
+    const _0x4fc10c = await generateHybridKahootQuestions(10, _0x58bbb6 || []);
+    kahootQuestionsSet = _0x4fc10c.questions;
+    if (_0x4fc10c.generatedQuestions.length) {
+      const { error: _0x32ab73 } = await supabaseClient.from("quiz_questions").upsert(_0x4fc10c.generatedQuestions, {
         onConflict: "question",
         ignoreDuplicates: true
       });
-      kahootQuestionsSet = [..._0xb394e8, ..._0x4a4b1a].slice(0, 10);
+      if (_0x32ab73) {
+        console.warn("Không thể lưu câu hỏi AI mới vào Supabase:", _0x32ab73);
+      }
     }
     hostCurrentQIndex = 0;
     _0x9f02c5.classList.add("hidden");
