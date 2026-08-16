@@ -343,31 +343,28 @@
                 </div>
             </div>
 
-            <nav class="flex items-center overflow-x-auto max-w-full space-x-1.5 py-1 custom-scrollbar shrink-0">
-                <button onclick="switchTab('lab')" id="tab-lab"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-cyan-600 text-white whitespace-nowrap shadow"><i
-                        class="fa-solid fa-vial mr-1.5"></i>Thí nghiệm Ảo</button>
-                <button onclick="switchTab('tutor')" id="tab-tutor"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-300 hover:bg-slate-700/80 whitespace-nowrap"><i
-                        class="fa-solid fa-robot mr-1.5"></i>Gia sư AI</button>
-                <button onclick="switchTab('quiz')" id="tab-quiz"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-300 hover:bg-slate-700/80 whitespace-nowrap"><i
-                        class="fa-solid fa-trophy mr-1.5"></i>Thử thách AI / Kahoot</button>
-                <button onclick="switchTab('safety')" id="tab-safety"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-300 hover:bg-slate-700/80 whitespace-nowrap"><i
-                        class="fa-solid fa-shield-halved mr-1.5"></i>An toàn Hóa chất</button>
-                <button onclick="switchTab('leaderboard')" id="tab-leaderboard"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-slate-300 hover:bg-slate-700/80 whitespace-nowrap"><i
-                        class="fa-solid fa-ranking-star mr-1.5"></i>Bảng Xếp Hạng</button>
-                <button onclick="switchTab('teacher')" id="tab-teacher"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-emerald-400 hover:bg-slate-700/80 border border-emerald-500/30 whitespace-nowrap"><i
-                        class="fa-solid fa-chalkboard-user mr-1.5"></i>Góc Giáo Viên</button>
-                <button onclick="switchTab('audit')" id="tab-audit"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition text-amber-400 hover:bg-slate-700/80 border border-amber-500/30 whitespace-nowrap"><i
-                        class="fa-solid fa-user-shield mr-1.5"></i>Audit & Host</button>
-                <button onclick="openStudentAuthModal('login')"
-                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition text-cyan-300 hover:bg-slate-700/80 border border-cyan-500/30 whitespace-nowrap"><i
-                        class="fa-solid fa-user mr-1.5"></i>Học sinh</button>
+            <nav id="header-nav-container" class="flex items-center space-x-2 py-1 shrink-0">
+                <!-- NÚT 1: TRANG CHỦ -->
+                <button onclick="switchTab('home')" id="tab-home"
+                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-cyan-600 text-white whitespace-nowrap shadow shadow-cyan-600/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Trang Chủ</span>
+                </button>
+
+                <!-- NÚT 2: DANH SÁCH CHỨC NĂNG -->
+                <button onclick="openFeaturesModal()" id="header-features-btn"
+                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 whitespace-nowrap flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-layer-group text-cyan-400"></i>
+                    <span>Danh Sách Chức Năng</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-0.5"></i>
+                </button>
+
+                <!-- NÚT 3: PROFILE -->
+                <button onclick="handleHeaderStudentClick()" id="header-student-btn"
+                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-cyan-300 hover:bg-slate-700/80 border border-cyan-500/30 whitespace-nowrap flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -385,6 +382,9 @@
         </div>
         <div id="drawer-profile" class="mb-4"></div>
         <div class="space-y-1.5" id="drawer-links">
+            <button onclick="drawerSwitchTab('home')"
+                class="w-full rounded-xl bg-slate-800/90 hover:bg-slate-700 px-3.5 py-2.5 text-left text-xs font-semibold text-slate-200 flex items-center gap-2.5 transition"><i
+                    class="fa-solid fa-house text-cyan-400 w-4"></i>Trang Chủ ChemAIBuddy</button>
             <button onclick="drawerSwitchTab('lab')"
                 class="w-full rounded-xl bg-slate-800/90 hover:bg-slate-700 px-3.5 py-2.5 text-left text-xs font-semibold text-slate-200 flex items-center gap-2.5 transition"><i
                     class="fa-solid fa-vial text-cyan-400 w-4"></i>Thí nghiệm Ảo THPT</button>
@@ -400,7 +400,7 @@
             <button onclick="drawerSwitchTab('leaderboard')"
                 class="w-full rounded-xl bg-slate-800/90 hover:bg-slate-700 px-3.5 py-2.5 text-left text-xs font-semibold text-slate-200 flex items-center gap-2.5 transition"><i
                     class="fa-solid fa-ranking-star text-amber-300 w-4"></i>Bảng Xếp Hạng Kahoot</button>
-            <div class="pt-2 border-t border-slate-700/80 my-1">
+            <div id="drawer-teacher-section" class="pt-2 border-t border-slate-700/80 my-1">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block px-2 mb-1.5"><i
                         class="fa-solid fa-user-tie mr-1"></i>Dành cho Giáo Viên</span>
                 <button onclick="drawerSwitchTab('teacher')"
@@ -415,8 +415,273 @@
 
     <!-- Main Container with Centered Max-Width -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- TAB 0: TRANG CHỦ HOME PAGE -->
+        <section id="content-home" class="space-y-8 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800/95 via-slate-900 to-slate-950 border border-cyan-500/30 p-6 sm:p-10 shadow-2xl shadow-cyan-950/40">
+                <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-4xl space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-semibold backdrop-blur-md">
+                        <span class="flex h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        <i class="fa-solid fa-atom"></i> Nền Tảng Hóa Học Số THPT Chuẩn GDPT 2018
+                    </div>
+
+                    <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                        Chào mừng đến với <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">ChemAIBuddy</span>
+                    </h1>
+
+                    <p class="text-sm sm:text-base text-slate-300 font-normal leading-relaxed max-w-3xl">
+                        Hệ sinh thái học tập và giảng dạy Hóa học thông minh tích hợp <strong class="text-cyan-300 font-semibold">Trí tuệ nhân tạo (Gemini AI & Dify)</strong>, 
+                        mô phỏng thí nghiệm ảo trực quan thời gian thực, trợ lý giải bài tập 24/7 và đấu trường trắc nghiệm tương tác multiplayer Kahoot.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+                            <i class="fa-solid fa-bolt text-amber-400"></i> Gemini 2.5 & 3.5 AI
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+                            <i class="fa-solid fa-database text-emerald-400"></i> Supabase Cloud DB
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+                            <i class="fa-solid fa-gamepad text-indigo-400"></i> Đấu trường Kahoot Live
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHỌN LOẠI TÀI KHOẢN: HỌC SINH & GIÁO VIÊN HOẶC TRẠNG THÁI ĐANG THAM GIA -->
+            <div class="space-y-4" id="home-role-section">
+                <!-- 1. HỘP HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP (ẨN CỔNG CHỌN VAI TRÒ) -->
+                <div id="home-active-role-box" class="hidden relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800/95 via-slate-900 to-slate-950 border border-cyan-500/40 p-6 sm:p-7 shadow-2xl shadow-cyan-950/40 backdrop-blur-md transition-all">
+                    <!-- Dynamic content injected by JS: vai trò hiện tại + nút Đổi vai trò / Đăng xuất -->
+                </div>
+
+                <!-- 2. CỔNG CHỌN VAI TRÒ KHI CHƯA ĐĂNG NHẬP -->
+                <div id="home-unauthed-role-container" class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-users-viewfinder text-cyan-400"></i> Chọn Cổng Truy Cập & Vai Trò
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Vui lòng tham gia dưới vai trò Học sinh hoặc Giáo viên để mở khóa toàn bộ tính năng</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="home-role-cards">
+                        <!-- CARD 1: CỔNG HỌC SINH -->
+                        <div class="relative overflow-hidden rounded-2xl bg-slate-800/90 border border-cyan-500/30 p-5 sm:p-6 transition hover:border-cyan-400 hover:shadow-xl hover:shadow-cyan-500/10 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-cyan-500/30">
+                                        <i class="fa-solid fa-user-graduate"></i>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[11px] font-bold text-cyan-300 uppercase tracking-wide">
+                                        Dành cho Học sinh
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                        Cổng Tài Khoản Học Sinh
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed mt-1">
+                                        Lưu tiến trình học tập, chuỗi ngày đăng nhập, tích lũy điểm kinh nghiệm (EXP), mở khóa danh hiệu và thi đấu Kahoot thời gian thực.
+                                    </p>
+                                </div>
+
+                                <div class="rounded-xl bg-slate-900/60 p-3 border border-slate-700/60 text-xs text-slate-300">
+                                    <span class="text-slate-400 text-xs"><i class="fa-solid fa-circle-info text-cyan-400 mr-1.5"></i>Chọn Đăng nhập nếu đã có tài khoản hoặc Tạo tài khoản mới:</span>
+                                </div>
+                            </div>
+
+                            <!-- 2 Lựa chọn khi chọn Học sinh: Đăng nhập hoặc Tạo tài khoản -->
+                            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                                <button onclick="openStudentAuthModal('login')"
+                                    class="w-full rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-3 text-xs flex items-center justify-center gap-1.5 transition shadow shadow-cyan-600/30">
+                                    <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập
+                                </button>
+                                <button onclick="openStudentAuthModal('signup')"
+                                    class="w-full rounded-xl bg-slate-700 hover:bg-slate-600 border border-slate-600 text-cyan-300 font-bold py-2.5 px-3 text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: CỔNG GIÁO VIÊN -->
+                        <div class="relative overflow-hidden rounded-2xl bg-slate-800/90 border border-emerald-500/30 p-5 sm:p-6 transition hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
+                                        <i class="fa-solid fa-chalkboard-user"></i>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-bold text-emerald-300 uppercase tracking-wide">
+                                        Dành cho Giáo viên
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                        Cổng Xác Thực Giáo Viên
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed mt-1">
+                                        Dành riêng cho Thầy/Cô. Xác thực bảo mật để quản lý lớp học, soạn kế hoạch bài dạy và host phòng thi đấu Kahoot.
+                                    </p>
+                                </div>
+
+                                <div class="rounded-xl bg-slate-900/60 p-3 border border-slate-700/60 text-xs text-slate-300 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-check text-emerald-400 text-base"></i>
+                                        <span>Xác thực an toàn bằng mã bảo mật nội bộ giáo viên</span>
+                                    </div>
+                                    <span class="text-[11px] font-semibold text-emerald-400/90 bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700/40 flex items-center gap-1.5"><i class="fa-solid fa-lock text-[10px]"></i>Bảo mật</span>
+                                </div>
+                            </div>
+
+                            <!-- Lựa chọn duy nhất của giáo viên: Nhập mật khẩu -->
+                            <div class="pt-1">
+                                <button onclick="openTeacherPassModal()"
+                                    class="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 text-xs flex items-center justify-center gap-2 transition shadow shadow-emerald-600/30">
+                                    <i class="fa-solid fa-key"></i> Nhập Mật Khẩu Giáo Viên
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TỔNG QUAN BIỂU TƯỢNG CÁC CHỨC NĂNG CHÍNH (FEATURE ICONS SHOWCASE) -->
+            <div class="space-y-4 pt-2">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-cyan-400"></i> Các Tính Năng Cốt Lõi Hệ Thống
+                        </h2>
+                        <p id="home-features-subtitle" class="text-xs text-slate-400 mt-0.5">Biểu tượng & tính năng hệ thống (Đăng nhập vai trò để kích hoạt)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="home-feature-cards-grid">
+                    <!-- Feature 1: Thí nghiệm ảo -->
+                    <div onclick="handleHomeFeatureClick('lab')" id="home-feat-lab"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-cyan-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-cyan-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 group-hover:bg-cyan-500/20 transition shrink-0">
+                                <i class="fa-solid fa-vial"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-cyan-300 transition">Thí Nghiệm Ảo THPT</h4>
+                                    <span class="feat-badge text-[10px] text-cyan-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Mô phỏng ống nghiệm sinh động, đo thang màu pH, đun ngọn lửa, phản ứng kết tủa và khí bay lên chân thực.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2: Gia sư AI -->
+                    <div onclick="handleHomeFeatureClick('tutor')" id="home-feat-tutor"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-blue-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-blue-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-2xl group-hover:scale-110 group-hover:bg-blue-500/20 transition shrink-0">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-blue-300 transition">Gia Sư AI Đa Năng</h4>
+                                    <span class="feat-badge text-[10px] text-blue-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Hỏi đáp mọi thắc mắc Hóa học 24/7, cân bằng phương trình ion thu gọn, phân tích cơ chế và giải thích chi tiết.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3: Đấu trường Kahoot -->
+                    <div onclick="handleHomeFeatureClick('quiz')" id="home-feat-quiz"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-amber-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-amber-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl group-hover:scale-110 group-hover:bg-amber-500/20 transition shrink-0">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-amber-300 transition">Đấu Trường Kahoot Live</h4>
+                                    <span class="feat-badge text-[10px] text-amber-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Hệ thống phòng thi trắc nghiệm multiplayer kịch tính, tự động tạo câu hỏi AI, bấm giờ và xếp hạng điểm số.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4: An toàn & Phổ IR -->
+                    <div onclick="handleHomeFeatureClick('safety')" id="home-feat-safety"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-emerald-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-emerald-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl group-hover:scale-110 group-hover:bg-emerald-500/20 transition shrink-0">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-emerald-300 transition">Tra Cứu An Toàn & Phổ IR</h4>
+                                    <span class="feat-badge text-[10px] text-emerald-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Thư viện bảng an toàn hóa chất (SDS), phân tích đỉnh hấp thụ phổ hồng ngoại (IR) và phổ khối lượng (MS).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 5: Bảng tuần hoàn -->
+                    <div onclick="handleHomeFeatureClick('periodic')" id="home-feat-periodic"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-purple-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-purple-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-2xl group-hover:scale-110 group-hover:bg-purple-500/20 transition shrink-0">
+                                <i class="fa-solid fa-table-cells"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-purple-300 transition">Bảng Tuần Hoàn & Khối Lượng M</h4>
+                                    <span class="feat-badge text-[10px] text-purple-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Tra cứu nhanh thông số 118 nguyên tố hóa học, khối lượng mol chính xác, tính toán số mol chỉ bằng một cú nhấp chuột.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 6: Bảng xếp hạng học tập -->
+                    <div onclick="handleHomeFeatureClick('leaderboard')" id="home-feat-leaderboard"
+                        class="home-feature-card group cursor-pointer relative overflow-hidden rounded-2xl bg-slate-800/80 border border-slate-700/80 p-5 transition hover:border-amber-400 hover:bg-slate-800 hover:shadow-xl hover:shadow-amber-950/50">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 text-2xl group-hover:scale-110 group-hover:bg-amber-500/20 transition shrink-0">
+                                <i class="fa-solid fa-ranking-star"></i>
+                            </div>
+                            <div class="space-y-1 w-full">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-white text-sm group-hover:text-amber-300 transition">Bảng Xếp Hạng Học Tập</h4>
+                                    <span class="feat-badge text-[10px] text-amber-400 font-semibold group-hover:translate-x-0.5 transition"><i class="fa-solid fa-arrow-right"></i></span>
+                                </div>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Vinh danh cao thủ Kahoot, chuỗi ngày đăng nhập và tích lũy điểm kinh nghiệm EXP qua các vòng thi.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- TAB 1: THÍ NGHIỆM ẢO THPT -->
-        <section id="content-lab" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <section id="content-lab" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div class="lg:col-span-5 bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-lg font-bold text-cyan-400 flex items-center">
@@ -1693,6 +1958,38 @@
         </div>
     </div>
 
+    <!-- MODAL PROFILE HỌC SINH (ẤN VÀO NÚT HỌC SINH -> HIỆN PROFILE, DƯỚI CÙNG CÓ NÚT ĐĂNG XUẤT) -->
+    <div id="student-profile-modal"
+        class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md max-h-[90vh] overflow-y-auto custom-scrollbar rounded-3xl border border-cyan-500/40 bg-slate-800 p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+                <h3 class="font-extrabold text-base text-cyan-300 flex items-center gap-2">
+                    <i class="fa-solid fa-id-card-clip text-cyan-400"></i> Hồ Sơ Cá Nhân Học Sinh
+                </h3>
+                <button onclick="closeStudentProfileModal()"
+                    class="w-8 h-8 rounded-lg bg-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center" aria-label="Đóng"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Profile Info Dynamic Container -->
+            <div id="student-profile-modal-content" class="space-y-4">
+                <!-- Rendered dynamically by script.js -->
+            </div>
+
+            <!-- Bottom Action / Logout Button (DƯỚI CÙNG LÀ NÚT ĐĂNG XUẤT) -->
+            <div class="pt-2 border-t border-slate-700/80 space-y-2">
+                <button onclick="studentLogout()"
+                    class="w-full rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 py-3 text-xs font-extrabold text-white transition shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất Tài Khoản
+                </button>
+                <button onclick="closeStudentProfileModal()"
+                    class="w-full rounded-xl bg-slate-700/70 hover:bg-slate-700 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition">
+                    Đóng cửa sổ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL ĐĂNG KÝ / ĐĂNG NHẬP HỌC SINH -->
     <div id="student-auth-modal"
         class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
@@ -1779,7 +2076,7 @@
                     <input id="teacher-password-input" type="password"
                         onkeyup="if(event.key==='Enter') verifyTeacherPassword()"
                         class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-400"
-                        placeholder="Mặc định: chemai2026">
+                        placeholder="Nhập mã bảo mật giáo viên...">
                 </div>
 
                 <p id="teacher-pass-error"
@@ -1795,6 +2092,154 @@
                     <button onclick="verifyTeacherPassword()"
                         class="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-2.5 text-xs font-bold text-white transition shadow shadow-emerald-500/20">
                         <i class="fa-solid fa-key mr-1"></i> Xác Nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DANH SÁCH CHỨC NĂNG HỆ THỐNG -->
+    <div id="features-modal" onclick="if(event.target === this) closeFeaturesModal()"
+        class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl rounded-3xl border border-cyan-500/40 bg-slate-900/95 p-6 sm:p-7 shadow-2xl shadow-cyan-950/50 space-y-5 animate-fadeIn" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg shadow-inner">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base sm:text-lg text-white">Danh Sách Tính Năng Hệ Thống</h3>
+                        <p class="text-xs text-slate-400">Chọn module bạn muốn truy cập và trải nghiệm ngay</p>
+                    </div>
+                </div>
+                <button onclick="closeFeaturesModal()"
+                    class="w-9 h-9 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition flex items-center justify-center" aria-label="Đóng"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Grid các tính năng -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[65vh] overflow-y-auto custom-scrollbar pr-1">
+                <!-- 1. Thí nghiệm ảo -->
+                <button onclick="selectFeatureFromModal('lab')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-cyan-400 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-cyan-500/20 transition">
+                        <i class="fa-solid fa-vial"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-cyan-300 transition">Thí Nghiệm Ảo THPT</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-cyan-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Mô phỏng ống nghiệm 3D, đo thang màu pH, đun ngọn lửa & kết tủa.</p>
+                    </div>
+                </button>
+
+                <!-- 2. Gia sư AI -->
+                <button onclick="selectFeatureFromModal('tutor')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-400 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-blue-500/20 transition">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-blue-300 transition">Gia Sư AI Đa Năng</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-blue-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Hỏi đáp mọi thắc mắc Hóa học 24/7, cân bằng ion thu gọn & cơ chế.</p>
+                    </div>
+                </button>
+
+                <!-- 3. Kahoot Quiz -->
+                <button onclick="selectFeatureFromModal('quiz')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-400 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-amber-500/20 transition">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-amber-300 transition">Thử Thách & Đấu Kahoot</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-amber-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Đấu trường trắc nghiệm AI realtime multiplayer, tính giờ và xếp hạng.</p>
+                    </div>
+                </button>
+
+                <!-- 4. An toàn & Phổ IR -->
+                <button onclick="selectFeatureFromModal('safety')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-400 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-emerald-500/20 transition">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-emerald-300 transition">An Toàn & Phổ IR/MS</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-emerald-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Tra cứu bảng an toàn SDS, đỉnh hấp thụ hồng ngoại IR và khối phổ MS.</p>
+                    </div>
+                </button>
+
+                <!-- 5. Bảng xếp hạng -->
+                <button onclick="selectFeatureFromModal('leaderboard')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-300 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-amber-500/20 transition">
+                        <i class="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-amber-300 transition">Bảng Xếp Hạng Học Tập</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-amber-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Vinh danh cao thủ Kahoot, chuỗi ngày đăng nhập và EXP tích lũy.</p>
+                    </div>
+                </button>
+
+                <!-- 6. Bảng tuần hoàn -->
+                <button onclick="selectFeatureFromModal('periodic')"
+                    class="w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-400 text-left transition group flex items-start gap-3.5 shadow">
+                    <div class="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-purple-500/20 transition">
+                        <i class="fa-solid fa-table-cells"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm group-hover:text-purple-300 transition">Bảng Tuần Hoàn & Khối Lượng M</h4>
+                            <i class="fa-solid fa-arrow-right text-[11px] text-purple-400 opacity-0 group-hover:opacity-100 transition"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2">Tra cứu 118 nguyên tố, cấu hình electron & tính số mol tức thì.</p>
+                    </div>
+                </button>
+
+                <!-- 7. Góc Giáo Viên -->
+                <div id="modal-teacher-item">
+                    <button onclick="selectFeatureFromModal('teacher')"
+                        class="w-full p-4 rounded-2xl bg-emerald-950/40 hover:bg-emerald-950/70 border border-emerald-700/50 hover:border-emerald-400 text-left transition group flex items-start gap-3.5 shadow">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-emerald-500/20 transition">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-emerald-300 text-sm group-hover:text-emerald-200 transition">Góc Giáo Viên</h4>
+                                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-semibold border border-emerald-500/30">Giáo viên</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1 line-clamp-2">Soạn kế hoạch bài dạy, quản lý lớp học và in báo cáo thực hành PDF.</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- 8. Audit & Kahoot Host -->
+                <div id="modal-audit-item">
+                    <button onclick="selectFeatureFromModal('audit')"
+                        class="w-full p-4 rounded-2xl bg-amber-950/40 hover:bg-amber-950/70 border border-amber-700/50 hover:border-amber-400 text-left transition group flex items-start gap-3.5 shadow">
+                        <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 group-hover:bg-amber-500/20 transition">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-amber-300 text-sm group-hover:text-amber-200 transition">Audit & Host Kahoot</h4>
+                                <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-semibold border border-amber-500/30">Giáo viên</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1 line-clamp-2">Kiểm duyệt Chat Log, Ngân hàng câu hỏi & phòng thi thời gian thực.</p>
+                        </div>
                     </button>
                 </div>
             </div>
