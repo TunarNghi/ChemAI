@@ -2,7 +2,9 @@ const GEMINI_API_KEYS_ENCODED = [
   "QVEuQWI4Uk42SWdTLUd4VUNVTlZWaGRTUUJzRE1RWHQwN2FWUDFsN0VvOWt0bUtHZGRiNWc=",
   "QVEuQWI4Uk42TDdQSUoyMHlPaDFmdjM1OGV5bVd3ajg5TzFDVFdYaklWUy1MRGdFZVpaeg==",
   "QVEuQWI4Uk42Sjh4N1RCTFV1N0s3TTlyRkZ4NXJ2VTBmNHJ0UkszeUhuSDQ4M25LQ0ZyalE=",
-  "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync="
+  "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync=",
+  "QVEuQWI4Uk42S25FMk10a0NyZkFLbk9nUjVfTWlsQlpuOVNuSWpaQmgxX3EwQlF5T25NbVE=",
+  "QVEuQWI4Uk42TFA3QUtYdS1mbUpmOW5yR0x3VW43ampNdXo2UzV2NHltSkNVakk2b3VwSGc="
 ];
 
 function decodeApiKey(key) {
@@ -16,6 +18,7 @@ function decodeApiKey(key) {
 const GEMINI_API_KEYS = GEMINI_API_KEYS_ENCODED.map(decodeApiKey);
 const TEACHER_PASSWORD = "chemai2026";
 let isTeacherAuthed = false;
+let pendingTeacherTab = "audit";
 let currentAuditSub = "chat";
 let quizScore = 0;
 let quizStreak = 0;
@@ -572,6 +575,8 @@ function speakPhenomenon() {
     alert("Trình duyệt của bạn chưa hỗ trợ tính năng đọc giọng nói.");
   }
 }
+
+
 function filterPresetsByGrade() {
   const _0x3452c6 = document.getElementById("gradeFilter").value;
   const _0x56e440 = document.querySelectorAll("#preset-list button");
@@ -636,8 +641,23 @@ async function callDifyAPI(query, conversationId = "") {
     clearTimeout(timeoutId);
   }
 }
+let geminiKeyIndex = 0;
+
 async function callGeminiAPI(prompt, keys = GEMINI_API_KEYS) {
-  const keyList = Array.isArray(keys) ? keys : (typeof keys === "string" ? [keys] : GEMINI_API_KEYS);
+  const rawKeys = Array.isArray(keys) ? keys : (typeof keys === "string" ? [keys] : GEMINI_API_KEYS);
+  if (!rawKeys || !rawKeys.length) {
+    throw new Error("Không có Gemini API Key.");
+  }
+
+  // Rải đều key (Round-Robin load balancing)
+  const startIndex = geminiKeyIndex % rawKeys.length;
+  geminiKeyIndex = (geminiKeyIndex + 1) % rawKeys.length;
+
+  const keyList = [
+    ...rawKeys.slice(startIndex),
+    ...rawKeys.slice(0, startIndex)
+  ];
+
   let lastError = null;
 
   for (const apiKey of keyList) {
@@ -681,13 +701,13 @@ async function callGeminiAPI(prompt, keys = GEMINI_API_KEYS) {
           }
         }
         if (resultText) {
-          console.log("Gemini đã phản hồi bằng model: " + model);
+          console.log("Gemini đã phản hồi bằng model: " + model + " (Key #" + (startIndex + 1) + ")");
           return resultText;
         }
       } catch (err) {
         lastError = err.name === "AbortError" ? new Error("Gemini phản hồi quá thời gian 30 giây.") : err;
-        console.warn("Model " + model + " thất bại:", lastError.message);
-        const keyUnavailable = err.status === 403 || err.status === 429 || /api key|quota|permission/i.test(err.message);
+        console.warn("Model " + model + " hoặc Key bận/lỗi:", lastError.message);
+        const keyUnavailable = err.status === 403 || err.status === 429 || /api key|quota|permission|busy/i.test(err.message);
         if (keyUnavailable) break;
       } finally {
         clearTimeout(timeoutId);
@@ -703,35 +723,46 @@ function renderSafety(_0x38bfaf) {
   }
   _0x4262f3.innerHTML = _0x38bfaf.map(_0xc49b83 => "\n                <div class=\"bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-start space-x-3 hover:border-slate-600 transition\">\n                    <i class=\"fa-solid " + (_0xc49b83.icon || "fa-triangle-exclamation") + " " + (_0xc49b83.color || "text-amber-400") + " text-2xl mt-1\"></i>\n                    <div class=\"min-w-0 flex-1\">\n                        <h4 class=\"font-bold text-white text-sm\">" + formatChemText(_0xc49b83.name) + "</h4>\n                        <span class=\"text-xs font-mono text-cyan-400 font-semibold\">" + formatChemText(_0xc49b83.formula) + "</span>\n                        <p class=\"text-xs text-slate-300 mt-1\">" + formatChemText(_0xc49b83.hazard) + "</p>\n                        <div class=\"mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2\">\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ IR (cm⁻¹)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ir || "Chưa có dữ liệu") + "</span>\n                            </div>\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ MS (m/z)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ms || "Chưa có dữ liệu") + "</span>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            ").join("");
 }
-function switchTab(_0x2ca658) {
-  if (_0x2ca658 === "audit" && !isTeacherAuthed) {
+function switchTab(tabId) {
+  if ((tabId === "audit" || tabId === "teacher") && !isTeacherAuthed) {
+    pendingTeacherTab = tabId;
     openTeacherPassModal();
     return;
   }
-  ["lab", "tutor", "quiz", "safety", "audit"].forEach(_0x2246cc => {
-    const _0x46b1d2 = document.getElementById("content-" + _0x2246cc);
-    const _0xfef9ba = document.getElementById("tab-" + _0x2246cc);
-    if (_0x46b1d2) {
-      _0x46b1d2.classList.add("hidden");
-    }
-    if (_0xfef9ba) {
-      _0xfef9ba.className = _0x2246cc === "audit" ? "px-3.5 py-2 rounded-lg text-sm font-medium transition text-amber-400 hover:bg-slate-700 border border-amber-500/30" : "px-3.5 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700";
+
+  const allTabs = ["lab", "tutor", "quiz", "safety", "leaderboard", "teacher", "audit"];
+  allTabs.forEach(t => {
+    const content = document.getElementById("content-" + t);
+    const tabBtn = document.getElementById("tab-" + t);
+    if (content) content.classList.add("hidden");
+    if (tabBtn) {
+      if (t === "teacher") {
+        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-emerald-400 hover:bg-slate-700 border border-emerald-500/30 whitespace-nowrap";
+      } else if (t === "audit") {
+        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-amber-400 hover:bg-slate-700 border border-amber-500/30 whitespace-nowrap";
+      } else {
+        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700 whitespace-nowrap";
+      }
     }
   });
-  const _0x22ba4a = document.getElementById("content-" + _0x2ca658);
-  const _0x5b08d4 = document.getElementById("tab-" + _0x2ca658);
-  if (_0x22ba4a) {
-    _0x22ba4a.classList.remove("hidden");
+
+  const activeContent = document.getElementById("content-" + tabId);
+  const activeTabBtn = document.getElementById("tab-" + tabId);
+  if (activeContent) activeContent.classList.remove("hidden");
+  if (activeTabBtn) {
+    if (tabId === "teacher") {
+      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-emerald-600 text-white whitespace-nowrap shadow";
+    } else if (tabId === "audit") {
+      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-amber-500 text-slate-950 font-bold whitespace-nowrap shadow";
+    } else {
+      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-cyan-600 text-white whitespace-nowrap shadow";
+    }
   }
-  if (_0x5b08d4) {
-    _0x5b08d4.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-cyan-600 text-white";
-  }
-  if (_0x2ca658 === "quiz") {
-    generateAIQuiz();
-  }
-  if (_0x2ca658 === "audit") {
-    fetchCurrentAuditData();
-  }
+
+  if (tabId === "quiz") generateAIQuiz();
+  if (tabId === "audit") fetchCurrentAuditData();
+  if (tabId === "leaderboard") loadKahootLeaderboards();
+  if (tabId === "teacher") loadTeacherClassroom();
 }
 function switchAuditSub(_0xcf103e) {
   currentAuditSub = _0xcf103e;
@@ -797,7 +828,7 @@ function verifyTeacherPassword() {
   if (_0x525bd7 === TEACHER_PASSWORD) {
     isTeacherAuthed = true;
     closeTeacherPassModal();
-    switchTab("audit");
+    switchTab(pendingTeacherTab || "audit");
   } else {
     _0x54a2cf.classList.remove("hidden");
   }
@@ -1442,13 +1473,18 @@ async function sendMessage() {
   }
   try {
     const _0x4a2592 = "Bạn là Gia sư Hóa học ChemAIBuddy chuyên trách Khối THPT (Lớp 10, 11, 12). Trả lời ngắn gọn, chính xác, dễ hiểu; tối đa 6 đoạn hoặc gạch đầu dòng trừ khi người học yêu cầu giải chi tiết. Dùng tên hóa chất bằng tiếng Anh chuẩn (ví dụ: sulfuric acid, sodium hydroxide), viết công thức ở dạng H2SO4, ion ở dạng Fe^3+ hoặc SO4^2-, và mũi tên phản ứng bằng -> để giao diện định dạng đúng. Không dùng LaTeX. Khi người học hỏi về phổ IR, nêu số sóng cm^-1, nhóm chức, cường độ, phương pháp đo, trạng thái mẫu, khoảng đo, độ phân giải và số lần quét; nhắc rõ dữ liệu tham chiếu cần đối chiếu phổ thực nghiệm. Câu hỏi:\n" + _0x1d7bd1;
-    let _0x1996b4;
-    try {
-      _0x1996b4 = await callDifyAPI(_0x1d7bd1);
-      console.log("Dify đã trả về phản hồi cho gia sư AI.");
-    } catch (_0xdifyError) {
-      console.warn("Dify API thất bại, chuyển sang Gemini dự phòng:", _0xdifyError.message);
-      _0x1996b4 = await callGeminiAPI(_0x4a2592);
+    let _0x1996b4 = await findTutorCache(_0x1d7bd1);
+    if (_0x1996b4) {
+      console.log("Tutor cache hit");
+    } else {
+      try {
+        _0x1996b4 = await callDifyAPI(_0x1d7bd1);
+        console.log("Dify response received");
+      } catch (_0xdifyError) {
+        console.warn("Dify failed, using Gemini fallback:", _0xdifyError.message);
+        _0x1996b4 = await callGeminiAPI(_0x4a2592);
+      }
+      await saveTutorCache(_0x1d7bd1, _0x1996b4);
     }
     document.getElementById(_0x34e138).remove();
     _0x31793b.insertAdjacentHTML("beforeend", "\n                    <div class=\"flex items-start space-x-2\">\n                        <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                        <div class=\"bg-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed\">" + formatChemText(_0x1996b4) + "</div>\n                    </div>\n                ");
@@ -1591,6 +1627,7 @@ function checkQuizAnswer(selectedIndex) {
     _0x270a6b.className = "p-4 rounded-xl text-xs font-medium bg-rose-950/80 text-rose-300 border border-rose-700/60";
     _0x270a6b.innerHTML = "<strong><i class=\"fa-solid fa-circle-xmark mr-1\"></i> Chưa đúng rồi!</strong><div class=\"mt-1.5 leading-relaxed\">• Đáp án đúng: <strong class=\"text-amber-300\">" + (answerLabels[correctIndex] || correctIndex + 1) + ". " + formatChemText(currentQuizQuestion.options[correctIndex]) + "</strong><br>• Giải thích: " + formatChemText(currentQuizQuestion.explanation) + "</div>";
   }
+  saveStudentProgress(selectedIndex === correctIndex ? 10 : 0, selectedIndex === correctIndex);
   _0x289422.innerText = quizScore;
   _0x2a49d4.innerText = "🔥 " + quizStreak;
   if (quizScore >= 100) {
@@ -2142,9 +2179,11 @@ async function submitKahootAnswer(_0x14a3ed, _0x3c49c0, _0x53b316) {
   _0x4e434a.classList.remove("hidden");
   if (_0x14a3ed === _0x3c49c0) {
     studentKahootScore += 10;
+    saveStudentProgress(10, true);
     _0x4e434a.className = "p-4 rounded-xl text-xs font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-700/60";
     _0x4e434a.innerHTML = "<strong>🎉 Chính xác! (+10 Điểm)</strong><br><span class=\"text-slate-400 font-normal\">Đáp án chuẩn & lời giải chi tiết sẽ được hiển thị khi hết thời gian đếm ngược.</span>";
   } else {
+    saveStudentProgress(0, false);
     _0x4e434a.className = "p-4 rounded-xl text-xs font-medium bg-rose-950/80 text-rose-300 border border-rose-700/60";
     _0x4e434a.innerHTML = "<strong>❌ Chưa chính xác!</strong><br><span class=\"text-slate-400 font-normal\">Đáp án đúng & lời giải chi tiết sẽ được hiển thị khi hết thời gian đếm ngược.</span>";
   }
@@ -2161,12 +2200,16 @@ async function renderStudentSummaryScreen() {
   document.getElementById("kahoot-student-question").classList.add("hidden");
   document.getElementById("kahoot-student-summary").classList.remove("hidden");
   document.getElementById("student-final-score").innerText = studentKahootScore;
-  const {
-    data: _0x48adce
-  } = await supabaseClient.from("room_participants").select("*").eq("room_pin", joinedStudentPin).order("score", {
-    ascending: false
-  });
-  const _0x36dc86 = _0x48adce || [];
+  let _0x36dc86 = [];
+  if (supabaseClient && joinedStudentPin) {
+    try {
+      const { data: _0x48adce } = await supabaseClient.from("room_participants").select("*").eq("room_pin", joinedStudentPin).order("score", { ascending: false });
+      _0x36dc86 = _0x48adce || [];
+    } catch (_error) {
+      console.warn("Không tải được bảng tổng kết Kahoot:", _error);
+    }
+  }
+  if (!_0x36dc86.length && joinedStudentNick) _0x36dc86 = [{ id: joinedParticipantId, nickname: joinedStudentNick, score: studentKahootScore }];
   const _0x411990 = _0x36dc86.findIndex(_0x2bb7db => _0x2bb7db.id === joinedParticipantId);
   const _0x236038 = _0x411990 !== -1 ? "#" + (_0x411990 + 1) + " / " + _0x36dc86.length : "#--";
   document.getElementById("student-final-rank").innerText = _0x236038;
@@ -2199,6 +2242,661 @@ function resetStudentKahoot() {
   joinedParticipantId = null;
   studentKahootScore = 0;
   studentAnswersHistory = [];
+}
+
+async function loadKahootLeaderboards(mode = currentLeaderboardMode) {
+  currentLeaderboardMode = mode === "exp" ? "exp" : "streak";
+  const body = document.getElementById("leaderboard-body");
+  if (!body) return;
+  const column = currentLeaderboardMode === "exp" ? "kahoot_exp" : "kahoot_streak";
+  
+  const tabStreak = document.getElementById("leaderboard-tab-streak");
+  const tabExp = document.getElementById("leaderboard-tab-exp");
+  if (tabStreak) tabStreak.className = currentLeaderboardMode === "streak" ? "rounded-lg bg-cyan-600 px-4 py-2 text-xs font-bold text-white transition flex items-center gap-1.5 shadow" : "rounded-lg bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1.5";
+  if (tabExp) tabExp.className = currentLeaderboardMode === "exp" ? "rounded-lg bg-cyan-600 px-4 py-2 text-xs font-bold text-white transition flex items-center gap-1.5 shadow" : "rounded-lg bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1.5";
+
+  let rows = getLocalAccounts();
+  if (supabaseClient) {
+    try {
+      const result = await Promise.race([
+        supabaseClient.from("student_profiles").select("id,username,class_name,school_name,kahoot_streak,kahoot_exp").order(column, { ascending: false }).limit(50),
+        new Promise(resolve => setTimeout(() => resolve({ data: null }), 2500))
+      ]);
+      if (result?.data?.length) rows = result.data;
+    } catch (_error) {
+      console.warn("Chuyển sang dữ liệu bảng xếp hạng local:", _error);
+    }
+  }
+
+  rows = (rows || []).sort((a, b) => Number(b[column] || 0) - Number(a[column] || 0)).slice(0, 50);
+
+  if (!rows.length) {
+    body.innerHTML = "<tr><td colspan=\"3\" class=\"p-5 text-center text-slate-400 italic\">Chưa có dữ liệu xếp hạng học sinh.</td></tr>";
+    return;
+  }
+
+  body.innerHTML = rows.map((item, index) => {
+    const rankDisplay = index === 0 ? "🥇 #1" : index === 1 ? "🥈 #2" : index === 2 ? "🥉 #3" : "#" + (index + 1);
+    const rankColor = index === 0 ? "text-amber-300 font-black" : index === 1 ? "text-slate-300 font-bold" : index === 2 ? "text-amber-500 font-bold" : "text-slate-400 font-semibold";
+    const valueSuffix = currentLeaderboardMode === "exp" ? " EXP" : " câu đúng";
+    const infoText = [item.class_name, item.school_name].filter(Boolean).join(" - ");
+
+    return `
+      <tr class="border-b border-slate-700/60 transition hover:bg-slate-800/60">
+        <td class="p-3.5 font-mono ${rankColor}">${rankDisplay}</td>
+        <td class="p-3.5 text-white font-medium">
+          <span>${escapeHtml(item.username || "Học sinh")}</span>
+          ${infoText ? `<span class="ml-2 text-[11px] text-slate-400 font-normal">(${escapeHtml(infoText)})</span>` : ""}
+        </td>
+        <td class="p-3.5 text-right font-mono text-cyan-300 font-bold">
+          ${Number(item[column] || 0)}${valueSuffix}
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+async function loadTeacherClassroom() {
+  if (!isTeacherAuthed) { pendingTeacherTab = "teacher"; openTeacherPassModal(); return; }
+  const list = document.getElementById("teacher-student-list");
+  if (!list) return;
+  let rows = getLocalAccounts();
+  if (supabaseClient) {
+    try {
+      const result = await Promise.race([
+        supabaseClient.from("student_profiles").select("*").order("username"),
+        new Promise(resolve => setTimeout(() => resolve({ data: null }), 2500))
+      ]);
+      if (result?.data?.length) rows = result.data;
+    } catch (_error) {}
+  }
+  window.__teacherStudents = rows || [];
+  if (!rows.length) {
+    list.innerHTML = "<tr><td colspan=\"6\" class=\"p-5 text-center text-slate-400 italic\">Chưa có tài khoản học sinh trong hệ thống.</td></tr>";
+    return;
+  }
+
+  list.innerHTML = rows.map((student, index) => `
+    <tr class="border-b border-slate-700/60 hover:bg-slate-800/50 transition">
+      <td class="p-3 font-mono text-slate-400">${index + 1}</td>
+      <td class="p-3 font-bold text-white">${escapeHtml(student.username)}</td>
+      <td class="p-3 text-slate-300">${escapeHtml(student.class_name || "-")}</td>
+      <td class="p-3 text-slate-400 text-xs">${escapeHtml(student.school_name || "-")}</td>
+      <td class="p-3 font-medium text-amber-300">${escapeHtml(student.teacher_badge || "Chưa đặt")}</td>
+      <td class="p-3 text-right">
+        <button onclick="showStudentDetail('${encodeURIComponent(student.id)}')" class="rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/60 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition shadow">
+          <i class="fa-solid fa-eye mr-1"></i> Xem chi tiết
+        </button>
+      </td>
+    </tr>`).join("");
+}
+
+async function showStudentDetail(encodedId) {
+  const targetId = decodeURIComponent(encodedId);
+  const student = (window.__teacherStudents || []).find(item => String(item.id) === targetId);
+  const detail = document.getElementById("teacher-student-detail");
+  if (!student || !detail) return;
+
+  detail.classList.remove("hidden");
+  detail.innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 pb-3">
+      <div class="flex items-center gap-3">
+        <button onclick="hideStudentDetail()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition flex items-center justify-center" title="Quay lại danh sách học sinh">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h4 class="font-bold text-white text-base flex items-center gap-2">
+            ${escapeHtml(student.username)}
+            <span class="text-xs font-normal text-cyan-300 bg-cyan-950 px-2.5 py-0.5 rounded-full border border-cyan-800/60 font-mono">${escapeHtml(student.class_name || "Chưa chọn lớp")}</span>
+          </h4>
+          <p class="text-xs text-slate-400 mt-0.5"><i class="fa-solid fa-school mr-1 text-slate-500"></i>${escapeHtml(student.school_name || "Trường THPT")}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button onclick="assignStudentBadge('${encodeURIComponent(student.id)}')" class="rounded-xl bg-amber-500 hover:bg-amber-600 px-3.5 py-2 text-xs font-bold text-slate-950 transition shadow shadow-amber-500/20 flex items-center gap-1.5">
+          <i class="fa-solid fa-award"></i> Đặt / Sửa Danh Hiệu Custom
+        </button>
+        <button onclick="exportStudentReportPDF('${encodeURIComponent(student.id)}')" class="rounded-xl bg-slate-700 hover:bg-slate-600 px-3.5 py-2 text-xs font-bold text-cyan-300 border border-slate-600 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-pdf"></i> Xuất Báo Cáo PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard Thống Kê Học Sinh -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1 text-xs">
+      <div class="rounded-xl bg-slate-800/90 border border-slate-700 p-3">
+        <span class="text-slate-400 block text-[11px]">Điểm danh học</span>
+        <b class="text-emerald-400 text-sm mt-0.5 block"><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i>Đã tham gia</b>
+      </div>
+      <div class="rounded-xl bg-slate-800/90 border border-slate-700 p-3">
+        <span class="text-slate-400 block text-[11px]">Chuỗi ngày học</span>
+        <b class="text-amber-300 text-sm font-mono mt-0.5 block">${Number(student.login_streak || 1)} ngày</b>
+      </div>
+      <div class="rounded-xl bg-slate-800/90 border border-slate-700 p-3">
+        <span class="text-slate-400 block text-[11px]">Chuỗi đúng Kahoot</span>
+        <b class="text-cyan-300 text-sm font-mono mt-0.5 block">${Number(student.kahoot_streak || 0)}</b>
+      </div>
+      <div class="rounded-xl bg-slate-800/90 border border-slate-700 p-3">
+        <span class="text-slate-400 block text-[11px]">Kinh nghiệm EXP</span>
+        <b class="text-emerald-300 text-sm font-mono mt-0.5 block">${Number(student.kahoot_exp || 0)} EXP</b>
+      </div>
+      <div class="rounded-xl bg-slate-800/90 border border-slate-700 p-3">
+        <span class="text-slate-400 block text-[11px]">Danh hiệu GV gắn</span>
+        <b class="text-amber-200 text-sm mt-0.5 block truncate">${escapeHtml(student.teacher_badge || "Chưa đặt")}</b>
+      </div>
+    </div>`;
+
+  detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function hideStudentDetail() {
+  const detail = document.getElementById("teacher-student-detail");
+  if (detail) detail.classList.add("hidden");
+}
+
+async function assignStudentBadge(encodedId) {
+  const targetId = decodeURIComponent(encodedId);
+  const student = (window.__teacherStudents || []).find(item => String(item.id) === targetId);
+  if (!student) return;
+
+  const newBadge = window.prompt("Nhập Danh hiệu Custom do Giáo viên đặt cho học sinh (" + student.username + "):", student.teacher_badge || "");
+  if (newBadge === null) return;
+
+  student.teacher_badge = newBadge.trim();
+
+  // UPSERT to Local Accounts
+  const accounts = getLocalAccounts();
+  const index = accounts.findIndex(item => String(item.id) === String(student.id));
+  if (index >= 0) {
+    accounts[index].teacher_badge = student.teacher_badge;
+    setLocalAccounts(accounts);
+  }
+
+  // UPSERT to Supabase if connected
+  if (supabaseClient && !String(student.id).startsWith("local_")) {
+    try {
+      await supabaseClient.from("student_profiles").upsert({
+        id: student.id,
+        teacher_badge: student.teacher_badge,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "id" });
+    } catch (_err) {
+      console.warn("UPSERT teacher badge database warning:", _err);
+    }
+  }
+
+  loadTeacherClassroom();
+  showStudentDetail(encodedId);
+}
+
+function exportStudentReportPDF(encodedId) {
+  const targetId = decodeURIComponent(encodedId);
+  const student = (window.__teacherStudents || []).find(item => String(item.id) === targetId);
+  if (!student) return;
+
+  const contentHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 10px;">
+      <h2 style="color: #0284c7; margin-bottom: 5px;">BÁO CÁO KẾT QUẢ HỌC TẬP & GAMIFICATION</h2>
+      <p><b>Họ và tên Học sinh:</b> ${escapeHtml(student.username)}</p>
+      <p><b>Lớp:</b> ${escapeHtml(student.class_name || "Chưa xếp lớp")} | <b>Trường:</b> ${escapeHtml(student.school_name || "THPT")}</p>
+      <hr style="border: 0.5px solid #cbd5e1; margin: 15px 0;" />
+      
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+        <tr style="background-color: #f1f5f9;">
+          <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Chỉ số Đánh giá</th>
+          <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: right;">Giá trị Thực tế</th>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Chuỗi ngày học (Login Streak)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold;">${Number(student.login_streak || 1)} ngày</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Tổng điểm số Kahoot</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold; color: #16a34a;">${Number(student.kahoot_score || 0)} điểm</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Chuỗi câu trả lời đúng (Streak)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold; color: #0284c7;">${Number(student.kahoot_streak || 0)} câu</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Điểm kinh nghiệm (EXP)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold; color: #d97706;">${Number(student.kahoot_exp || 0)} EXP</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Danh hiệu Kahoot hệ thống</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold;">${escapeHtml(student.kahoot_badge || "Tân binh")}</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">Danh hiệu do Giáo viên gắn (Custom Badge)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold; color: #b45309;">${escapeHtml(student.teacher_badge || "Chưa đặt")}</td>
+        </tr>
+      </table>
+      
+      <div style="margin-top: 25px; padding: 12px; background-color: #f8fafc; border-left: 4px solid #0284c7; font-size: 12px;">
+        <b>Đánh giá chung của Giáo viên:</b> Học sinh có thái độ học tập tích cực, duy trì chuỗi tham gia thí nghiệm ảo và thử thách Kahoot đều đặn.
+      </div>
+    </div>`;
+
+  printTeacherDocumentContent(contentHtml, "Báo Cáo Học Sinh - " + student.username);
+}
+
+async function generateTeacherLesson() {
+  if (!isTeacherAuthed) { pendingTeacherTab = "teacher"; openTeacherPassModal(); return; }
+  const topic = document.getElementById("teacher-lesson-topic")?.value.trim();
+  const constraints = document.getElementById("teacher-lesson-constraints")?.value.trim();
+  const output = document.getElementById("teacher-lesson-output");
+  if (!topic || !output) {
+    alert("Vui lòng nhập chủ đề kiến thức bài học!");
+    return;
+  }
+
+  output.classList.remove("hidden");
+  output.innerHTML = "<p class=\"text-cyan-400 font-semibold animate-pulse\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy Agent đang lập kế hoạch bài giảng...</p>";
+
+  const prompt = [
+    "Bạn là Trợ lý AI chuyên trách lập Kế hoạch bài giảng & Soạn giáo án Hóa học THPT (Lớp 10, 11, 12).",
+    "Hãy soạn một giáo án thực tế hoàn chỉnh, bám sát SGK mới với cấu trúc chuẩn sau:",
+    "1. MỤC TIÊU BÀI HỌC (Năng lực Hóa học, Phẩm chất, Kỹ năng)",
+    "2. CHUẨN BỊ THÍ NGHIỆM & THIẾT BỊ DẠY HỌC (Gợi ý dùng Thí nghiệm ảo ChemAIBuddy)",
+    "3. NHIỆM VỤ HỌC TẬP & HOẠT ĐỘNG TRÊN LỚP (Khởi động, Khám phá, Củng cố, Vận dụng)",
+    "4. ĐÁNH GIÁ VÀ CẢNH BÁO AN TOÀN HÓA CHẤT",
+    "Trình bày mạch lạc bằng Markdown rich text, công thức dạng H2SO4, ion dạng Fe^3+.",
+    "Chủ đề bài học: " + topic,
+    constraints ? "Yêu cầu bổ sung: " + constraints : ""
+  ].join("\n");
+
+  try {
+    const result = await callGeminiAPI(prompt);
+    output.innerHTML = formatChemText(result);
+  } catch (error) {
+    output.innerHTML = "<p class=\"text-rose-400 font-semibold\">Không thể tạo giáo án: " + escapeHtml(error.message || "Vui lòng thử lại.") + "</p>";
+  }
+}
+
+async function readTeacherFile(file) {
+  if (!file) return "";
+  const type = file.type || "";
+  if (type.includes("text") || /\.txt$/i.test(file.name)) return file.text();
+  if (type === "application/pdf" && window.pdfjsLib) {
+    try {
+      const buffer = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({ data: buffer }).promise;
+      let text = "";
+      for (let pageNumber = 1; pageNumber <= Math.min(pdf.numPages, 20); pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str).join(" ") + "\n";
+      }
+      return text;
+    } catch (_e) {
+      console.warn("Lỗi đọc PDF:", _e);
+    }
+  }
+  if (window.mammoth && /\.docx$/i.test(file.name)) {
+    try {
+      const result = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+      return result.value;
+    } catch (_e) {
+      console.warn("Lỗi đọc Docx:", _e);
+    }
+  }
+  return "Tài liệu " + file.name + " (Xử lý trực tiếp).";
+}
+
+async function analyzeTeacherResource() {
+  if (!isTeacherAuthed) { pendingTeacherTab = "teacher"; openTeacherPassModal(); return; }
+  const output = document.getElementById("teacher-resource-output");
+  const file = document.getElementById("teacher-resource-file")?.files?.[0];
+  const question = document.getElementById("teacher-resource-question")?.value.trim();
+
+  if (!output || (!file && !question)) {
+    alert("Vui lòng upload tài liệu hoặc nhập câu hỏi tư vấn!");
+    return;
+  }
+
+  output.classList.remove("hidden");
+  output.innerHTML = "<p class=\"text-emerald-400 font-semibold animate-pulse\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy AI đang phân tích tài liệu và tư vấn sư phạm...</p>";
+
+  try {
+    const fileContent = file ? await readTeacherFile(file) : "";
+    const prompt = [
+      "Bạn là Cố vấn Phát triển Chuyên môn Sư phạm Hóa học THPT.",
+      "Nhiệm vụ: Tóm tắt nội dung chính, đề xuất phương pháp giảng dạy đổi mới (PBL, STEM, Thí nghiệm ảo), gợi ý câu hỏi phát triển tư duy và việc cần cải thiện.",
+      fileContent ? "Nội dung tài liệu upload:\n" + fileContent.slice(0, 25000) : "",
+      question ? "Câu hỏi/Chủ đề tư vấn trực tiếp:\n" + question : "",
+      "Trình bày rõ ràng bằng Markdown rich text."
+    ].filter(Boolean).join("\n\n");
+
+    const result = await callGeminiAPI(prompt);
+    output.innerHTML = formatChemText(result);
+  } catch (error) {
+    output.innerHTML = "<p class=\"text-rose-400 font-semibold\">Không thể phân tích: " + escapeHtml(error.message || "Lỗi xử lý.") + "</p>";
+  }
+}
+
+function printTeacherDocumentContent(contentHtml, title) {
+  const printElem = document.getElementById("print-report");
+  if (!printElem) return;
+  const previous = printElem.innerHTML;
+  printElem.classList.remove("hidden");
+  printElem.innerHTML = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a; line-height: 1.6;">
+      <div style="text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 20px;">
+        <h1 style="font-size: 18px; font-weight: bold; margin: 0; color: #0284c7; text-transform: uppercase;">${escapeHtml(title)}</h1>
+        <p style="font-size: 12px; color: #475569; margin: 4px 0 0 0;">Hệ thống Quản lý & Trợ lý Giáo dục Hóa học THPT ChemAIBuddy</p>
+        <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0;">Thời gian xuất: ${new Date().toLocaleString("vi-VN")}</p>
+      </div>
+      <div style="font-size: 13px;">${contentHtml}</div>
+      <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; font-size: 12px; color: #475569;">
+        <div><b>Xác nhận Giáo viên bộ môn</b></div>
+        <div><b>Ban Giám Hiệu / Tổ Trưởng</b></div>
+      </div>
+    </div>`;
+  window.print();
+  printElem.innerHTML = previous;
+  printElem.classList.add("hidden");
+}
+
+function printTeacherDocument(elementId, title) {
+  const source = document.getElementById(elementId);
+  if (!source || !source.innerHTML.trim()) {
+    alert("Chưa có nội dung để xuất file PDF!");
+    return;
+  }
+  printTeacherDocumentContent(source.innerHTML, title);
+}
+
+const CHEM_LOCAL_KEYS = Object.freeze({ accounts: "chem_student_accounts_v2", session: "chem_student_session_v2", cache: "chem_tutor_cache_v2" });
+let currentStudentProfile = null;
+let studentAuthMode = "login";
+let currentLeaderboardMode = "streak";
+
+function safeStorageRead(key, fallback) {
+  try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch (_error) { return fallback; }
+}
+function safeStorageWrite(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (_error) { return false; }
+}
+function getLocalAccounts() { return safeStorageRead(CHEM_LOCAL_KEYS.accounts, []); }
+function setLocalAccounts(accounts) { safeStorageWrite(CHEM_LOCAL_KEYS.accounts, accounts.slice(-500)); }
+function normalizeStudentName(name) { return String(name || "").trim().toLowerCase().replace(/\s+/g, " "); }
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+function updateStudentLoginStreak(profile) {
+  const today = todayKey();
+  if (profile.last_login_on === today) return profile;
+  const previous = profile.last_login_on ? new Date(profile.last_login_on + "T00:00:00Z") : null;
+  const diff = previous ? Math.round((Date.now() - previous.getTime()) / 86400000) : 99;
+  profile.login_streak = diff === 1 ? Number(profile.login_streak || 0) + 1 : 1;
+  profile.last_login_on = today;
+  return profile;
+}
+function persistStudentProfile(profile) {
+  const accounts = getLocalAccounts();
+  const index = accounts.findIndex(item => item.id === profile.id);
+  if (index >= 0) accounts[index] = profile; else accounts.push(profile);
+  setLocalAccounts(accounts);
+  safeStorageWrite(CHEM_LOCAL_KEYS.session, profile);
+  currentStudentProfile = profile;
+  renderDrawerProfile();
+  void syncStudentProfileToDatabase(profile);
+}
+let studentDatabaseSyncInFlight = false;
+function studentEmailForUsername(username) { return String(username || "").trim().toLowerCase().replace(/[^a-z0-9._-]/g, "_") + "@student.chemaibuddy.local"; }
+async function syncStudentProfileToDatabase(profile) {
+  if (studentDatabaseSyncInFlight || !supabaseClient || !profile?.username) return;
+  studentDatabaseSyncInFlight = true;
+  try {
+    const email = studentEmailForUsername(profile.username);
+    let authResult = await supabaseClient.auth.signInWithPassword({ email, password: profile.password || "" });
+    if (authResult.error && profile.password) authResult = await supabaseClient.auth.signUp({ email, password: profile.password, options: { data: { role: "student", username: profile.username } } });
+    const userId = authResult?.data?.user?.id || profile.db_id;
+    if (userId) {
+      const payload = { id: userId, username: profile.username, class_name: profile.class_name, school_name: profile.school_name, login_streak: profile.login_streak, last_login_on: profile.last_login_on, kahoot_score: profile.kahoot_score, kahoot_streak: profile.kahoot_streak, kahoot_exp: profile.kahoot_exp, kahoot_badge: profile.kahoot_badge, teacher_badge: profile.teacher_badge, updated_at: new Date().toISOString() };
+      await supabaseClient.from("student_profiles").upsert(payload, { onConflict: "id" });
+      if (profile.db_id !== userId) { profile.db_id = userId; safeStorageWrite(CHEM_LOCAL_KEYS.session, profile); }
+    }
+  } catch (_error) {
+    console.warn("Student database sync skipped:", _error.message || _error);
+  } finally {
+    studentDatabaseSyncInFlight = false;
+  }
+}
+function renderDrawerProfile() {
+  const container = document.getElementById("drawer-profile");
+  if (!container) return;
+  if (!currentStudentProfile) {
+    container.innerHTML = `
+      <div class="rounded-xl border border-slate-700 bg-slate-800 p-4 text-xs text-slate-300">
+        <p class="font-bold text-cyan-300 text-sm">Chưa đăng nhập Học sinh</p>
+        <p class="text-slate-400 text-[11px] mt-1">Đăng nhập để lưu chuỗi ngày học và điểm số Kahoot.</p>
+        <button onclick="openStudentAuthModal('login')" class="mt-3 w-full rounded-lg bg-cyan-600 py-2.5 font-bold text-white shadow hover:bg-cyan-500 transition">
+          <i class="fa-solid fa-right-to-bracket mr-1.5"></i>Đăng nhập / Đăng ký
+        </button>
+      </div>`;
+    return;
+  }
+  const p = currentStudentProfile;
+  const teacherBadgeText = p.teacher_badge && p.teacher_badge.trim() ? p.teacher_badge.trim() : "Chưa có";
+  container.innerHTML = `
+    <div class="rounded-xl border border-slate-700 bg-slate-800 p-4 text-xs space-y-3">
+      <!-- 1. Tên người dùng -->
+      <div class="flex items-center gap-3 border-b border-slate-700/80 pb-2.5">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 text-base font-black text-white shadow">
+          ${escapeHtml(p.username.slice(0, 1).toUpperCase())}
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="font-bold text-white text-sm truncate">${escapeHtml(p.username)}</h3>
+          <!-- 2. Trường – Lớp -->
+          <p class="text-[11px] text-slate-400 truncate"><i class="fa-solid fa-school text-cyan-400 mr-1"></i>${escapeHtml(p.school_name || "THPT")} – ${escapeHtml(p.class_name || "Lớp mới")}</p>
+        </div>
+      </div>
+      
+      <div class="space-y-2 text-slate-200">
+        <!-- 3. Chuỗi ngày đăng nhập -->
+        <div class="flex justify-between items-center bg-slate-900/60 p-2 rounded-lg border border-slate-700/60">
+          <span class="text-slate-400"><i class="fa-solid fa-fire text-amber-400 mr-1.5"></i>Chuỗi ngày đăng nhập:</span>
+          <b class="text-amber-300 font-mono">${Number(p.login_streak || 1)} ngày</b>
+        </div>
+        
+        <!-- 4. Danh hiệu Kahoot + Chuỗi đúng hiện có -->
+        <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-700/60 space-y-1">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400"><i class="fa-solid fa-trophy text-cyan-400 mr-1.5"></i>Danh hiệu Kahoot:</span>
+            <b class="text-cyan-300">${escapeHtml(p.kahoot_badge || "Tân binh")}</b>
+          </div>
+          <div class="flex justify-between items-center text-[11px]">
+            <span class="text-slate-400">🔥 Chuỗi đúng hiện tại:</span>
+            <b class="text-emerald-400 font-mono">${Number(p.kahoot_streak || 0)}</b>
+          </div>
+          <div class="flex justify-between items-center text-[11px]">
+            <span class="text-slate-400">⭐ Kinh nghiệm tích lũy:</span>
+            <b class="text-amber-300 font-mono">${Number(p.kahoot_exp || 0)} EXP</b>
+          </div>
+        </div>
+
+        <!-- 5. Danh hiệu do Giáo viên gắn (Custom Badge) -->
+        <div class="flex justify-between items-center bg-slate-900/60 p-2 rounded-lg border border-slate-700/60">
+          <span class="text-slate-400"><i class="fa-solid fa-award text-amber-300 mr-1.5"></i>Danh hiệu Giáo viên gắn:</span>
+          <b class="text-amber-200">${escapeHtml(teacherBadgeText)}</b>
+        </div>
+      </div>
+
+      <!-- 6. Nút Đăng xuất -->
+      <button onclick="studentLogout()" class="mt-2 w-full rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 py-2 font-bold text-rose-300 text-xs transition">
+        <i class="fa-solid fa-right-from-bracket mr-1.5"></i>Đăng xuất
+      </button>
+    </div>`;
+}
+
+function toggleNavigationDrawer(open) {
+  document.getElementById("navigation-drawer")?.classList.toggle("open", Boolean(open));
+  document.getElementById("drawer-backdrop")?.classList.toggle("open", Boolean(open));
+  if (open) renderDrawerProfile();
+}
+
+function drawerSwitchTab(tab) { toggleNavigationDrawer(false); switchTab(tab); }
+
+function openStudentAuthModal(mode = "login") {
+  switchStudentAuthMode(mode);
+  document.getElementById("student-auth-modal")?.classList.remove("hidden");
+  setTimeout(() => document.getElementById("student-auth-username")?.focus(), 100);
+}
+
+function closeStudentAuthModal() {
+  document.getElementById("student-auth-modal")?.classList.add("hidden");
+}
+
+function switchStudentAuthMode(mode) {
+  studentAuthMode = mode === "signup" ? "signup" : "login";
+  
+  const loginTab = document.getElementById("student-auth-login-tab");
+  const signupTab = document.getElementById("student-auth-signup-tab");
+  if (loginTab) loginTab.className = studentAuthMode === "login" ? "flex-1 rounded-lg bg-cyan-600 py-2 text-xs font-bold text-white transition" : "flex-1 rounded-lg bg-slate-800 py-2 text-xs font-bold text-slate-300 hover:text-white transition";
+  if (signupTab) signupTab.className = studentAuthMode === "signup" ? "flex-1 rounded-lg bg-cyan-600 py-2 text-xs font-bold text-white transition" : "flex-1 rounded-lg bg-slate-800 py-2 text-xs font-bold text-slate-300 hover:text-white transition";
+
+  // Per PRD: Student login requires Tên + Lớp + Mật khẩu. School & Confirm are only for signup.
+  const schoolInput = document.getElementById("student-auth-school");
+  const confirmInput = document.getElementById("student-auth-confirm");
+  if (schoolInput) schoolInput.classList.toggle("hidden", studentAuthMode !== "signup");
+  if (confirmInput) confirmInput.classList.toggle("hidden", studentAuthMode !== "signup");
+  
+  const errorElem = document.getElementById("student-auth-error");
+  if (errorElem) errorElem.classList.add("hidden");
+}
+
+async function submitStudentAuth() {
+  const username = document.getElementById("student-auth-username")?.value.trim();
+  const className = document.getElementById("student-auth-class")?.value.trim();
+  const schoolName = document.getElementById("student-auth-school")?.value.trim();
+  const password = document.getElementById("student-auth-password")?.value || "";
+  const confirm = document.getElementById("student-auth-confirm")?.value || "";
+  const errorElement = document.getElementById("student-auth-error");
+  const fail = message => { if (errorElement) { errorElement.textContent = message; errorElement.classList.remove("hidden"); } };
+
+  if (!username || !className || password.length < 4) {
+    return fail("Vui lòng nhập Tên, Lớp và Mật khẩu (tối thiểu 4 ký tự).");
+  }
+
+  const accounts = getLocalAccounts();
+  const existing = accounts.find(item => normalizeStudentName(item.username) === normalizeStudentName(username));
+
+  if (studentAuthMode === "signup") {
+    if (!schoolName) return fail("Vui lòng nhập tên Trường học.");
+    if (existing) return fail("Tên người dùng đã tồn tại. Vui lòng chọn tên khác hoặc chuyển sang Đăng nhập.");
+    if (password !== confirm) return fail("Mật khẩu xác nhận không khớp.");
+
+    const profileId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function" ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const profile = updateStudentLoginStreak({
+      id: "local_" + profileId,
+      username,
+      class_name: className,
+      school_name: schoolName,
+      password,
+      login_streak: 1,
+      kahoot_score: 0,
+      kahoot_streak: 0,
+      kahoot_exp: 0,
+      kahoot_badge: "Tân binh",
+      teacher_badge: "",
+      last_login_on: todayKey(),
+      updated_at: new Date().toISOString()
+    });
+    persistStudentProfile(profile);
+    closeStudentAuthModal();
+    return;
+  }
+
+  // Student Login Flow: Check Tên + Lớp + Mật khẩu
+  if (!existing) {
+    return fail("Tài khoản chưa tồn tại. Bấm 'Tạo tài khoản' để đăng ký mới.");
+  }
+  if (existing.password !== password) {
+    return fail("Mật khẩu không chính xác.");
+  }
+  if (normalizeStudentName(existing.class_name) !== normalizeStudentName(className)) {
+    return fail("Thông tin Lớp học không khớp với tài khoản đã đăng ký.");
+  }
+
+  persistStudentProfile(updateStudentLoginStreak({ ...existing }));
+  closeStudentAuthModal();
+}
+
+function studentLogout() {
+  currentStudentProfile = null;
+  try { localStorage.removeItem(CHEM_LOCAL_KEYS.session); } catch (_error) {}
+  renderDrawerProfile();
+  toggleNavigationDrawer(true);
+}
+
+function loadStudentSession() {
+  const session = safeStorageRead(CHEM_LOCAL_KEYS.session, null);
+  if (session) {
+    currentStudentProfile = updateStudentLoginStreak(session);
+    persistStudentProfile(currentStudentProfile);
+  } else {
+    renderDrawerProfile();
+  }
+}
+
+function saveStudentProgress(deltaScore, correct) {
+  if (!currentStudentProfile) return;
+  const next = {
+    ...currentStudentProfile,
+    kahoot_score: Number(currentStudentProfile.kahoot_score || 0) + Number(deltaScore || 0),
+    kahoot_exp: Number(currentStudentProfile.kahoot_exp || 0) + (correct ? 5 : 0),
+    kahoot_streak: correct ? Number(currentStudentProfile.kahoot_streak || 0) + 1 : 0
+  };
+  next.kahoot_badge = next.kahoot_exp >= 100 ? "Chuyên gia" : next.kahoot_exp >= 40 ? "Nhà thám hiểm" : "Tân binh";
+  persistStudentProfile(next);
+}
+
+function normalizeTutorQueryText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function calculateQuestionSimilarity(q1, q2) {
+  const norm1 = normalizeTutorQueryText(q1);
+  const norm2 = normalizeTutorQueryText(q2);
+  if (!norm1 || !norm2) return 0;
+  if (norm1 === norm2) return 1.0;
+  const words1 = new Set(norm1.split(" ").filter(Boolean));
+  const words2 = new Set(norm2.split(" ").filter(Boolean));
+  if (!words1.size || !words2.size) return 0;
+  let intersectionCount = 0;
+  words1.forEach(w => { if (words2.has(w)) intersectionCount++; });
+  const unionSize = new Set([...words1, ...words2]).size;
+  return intersectionCount / unionSize;
+}
+
+async function findTutorCache(query) {
+  const norm = normalizeTutorQueryText(query);
+  if (!norm) return "";
+  const local = safeStorageRead(CHEM_LOCAL_KEYS.cache, []);
+  const localMatch = local.find(item => calculateQuestionSimilarity(query, item.query || item.normalized) >= 0.85);
+  if (localMatch?.answer) return localMatch.answer;
+
+  if (supabaseClient) {
+    try {
+      const { data } = await supabaseClient.from("chat_logs").select("user_message,ai_response").order("created_at", { ascending: false }).limit(100);
+      const dbMatch = (data || []).find(item => calculateQuestionSimilarity(query, item.user_message || "") >= 0.85);
+      if (dbMatch?.ai_response) return dbMatch.ai_response;
+    } catch (_error) {
+      console.warn("Database cache search fallback:", _error);
+    }
+  }
+  return "";
+}
+
+async function saveTutorCache(query, answer) {
+  const norm = normalizeTutorQueryText(query);
+  if (!norm) return;
+  const cache = safeStorageRead(CHEM_LOCAL_KEYS.cache, []).filter(item => calculateQuestionSimilarity(query, item.query || item.normalized) < 0.95);
+  cache.push({ normalized: norm, query, answer, updated_at: new Date().toISOString() });
+  safeStorageWrite(CHEM_LOCAL_KEYS.cache, cache.slice(-100));
 }
 async function fetchAuditLogs() {
   const _0x334699 = document.getElementById("audit-chat-table-body");
@@ -2295,6 +2993,7 @@ renderSafety(safetyData);
 // Auto-initialize Headroom.js on header scroll
 document.addEventListener("DOMContentLoaded", function () {
   startGlobalChemistryFormatting();
+  loadStudentSession();
   const headerElem = document.querySelector("header");
   if (headerElem && typeof Headroom !== "undefined") {
     const headroom = new Headroom(headerElem);
