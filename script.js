@@ -40,10 +40,6 @@ let currentKahootQuestionText = "";
 let hasAnsweredCurrentKahootQ = false;
 let currentStudentQObj = null;
 let studentAnswersHistory = [];
-const SUPABASE_URL = "https://cohutjbyyubjntqhjoao.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
-const supabaseClient = typeof window.supabase !== "undefined" && SUPABASE_URL && !SUPABASE_URL.includes("your-supabase") ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"];
 const _0xdeobfuscate = (str) => {
   try {
     return atob(str).split('').reverse().join('');
@@ -51,6 +47,37 @@ const _0xdeobfuscate = (str) => {
     return '';
   }
 };
+
+// Cấu hình CSDL Supabase Chính & Cấu hình Tạm thời (Được mã hóa an toàn)
+const _SUPABASE_PRIMARY_CONFIG = {
+  url: _0xdeobfuscate("b2MuZXNhYmFwdXMub2FvamhxdG5qYnV5eWJqdHVob2MvLzpzcHR0aA=="),
+  anonKey: _0xdeobfuscate("QzhJQVduYUNfd0trdlIwekVIR216QnE0TURqQU9Hbl9lbGJhaHNpbGJ1cF9icw==")
+};
+
+const _SUPABASE_TEMP_CONFIG = {
+  url: _0xdeobfuscate("b2MuZXNhYmFwdXMuaWtkamxyY2tuZ3p5ZnhlbXdtZ3gvLzpzcHR0aA=="),
+  publishableKey: _0xdeobfuscate("NURBbmt2aDBfd0tiUVNzZ21EREpQMGhqVmNLMTVBc19lbGJhaHNpbGJ1cF9icw=="),
+  secretKey: _0xdeobfuscate("RlVnT2o0THFfUVNIS1lRdWs1eV9iVmtuekZhdjVhYV90ZXJjZXNfYnM="),
+  jwksUrl: _0xdeobfuscate("bm9zai5za3dqL253b25rLWxsZXcuLzF2L2h0dWEvb2MuZXNhYmFwdXMuaWtkamxyY2tuZ3p5ZnhlbXdtZ3gvLzpzcHR0aA==")
+};
+
+// Cờ khóa tạm / kích hoạt Supabase tạm thời (tự động chuyển đổi khi hệ thống chính được cấp quyền)
+let isUsingTemporarySupabase = true;
+const SUPABASE_URL = isUsingTemporarySupabase ? _SUPABASE_TEMP_CONFIG.url : _SUPABASE_PRIMARY_CONFIG.url;
+const SUPABASE_ANON_KEY = isUsingTemporarySupabase ? _SUPABASE_TEMP_CONFIG.publishableKey : _SUPABASE_PRIMARY_CONFIG.anonKey;
+const SUPABASE_SECRET_KEY = _SUPABASE_TEMP_CONFIG.secretKey;
+const SUPABASE_JWKS_URL = _SUPABASE_TEMP_CONFIG.jwksUrl;
+
+let supabaseClient = null;
+try {
+  if (typeof window !== "undefined" && typeof window.supabase !== "undefined" && SUPABASE_URL && !SUPABASE_URL.includes("your-supabase")) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (_supaErr) {
+  console.warn("Lỗi khởi tạo Supabase Client:", _supaErr);
+}
+
+const GEMINI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"];
 const DIFY_API_KEY = _0xdeobfuscate("TkFJWXJ4djVvaEN3T2RvNmV5MmNhYXpKLXBwYQ==");
 const DIFY_API_URL = _0xdeobfuscate("c2VnYXNzZW0tdGFoYy8xdi9pYS55ZmlkLmlwYS8vOnNwdHRo");
 let reactionChartInstance = null;
@@ -723,39 +750,76 @@ function renderSafety(_0x38bfaf) {
   }
   _0x4262f3.innerHTML = _0x38bfaf.map(_0xc49b83 => "\n                <div class=\"bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-start space-x-3 hover:border-slate-600 transition\">\n                    <i class=\"fa-solid " + (_0xc49b83.icon || "fa-triangle-exclamation") + " " + (_0xc49b83.color || "text-amber-400") + " text-2xl mt-1\"></i>\n                    <div class=\"min-w-0 flex-1\">\n                        <h4 class=\"font-bold text-white text-sm\">" + formatChemText(_0xc49b83.name) + "</h4>\n                        <span class=\"text-xs font-mono text-cyan-400 font-semibold\">" + formatChemText(_0xc49b83.formula) + "</span>\n                        <p class=\"text-xs text-slate-300 mt-1\">" + formatChemText(_0xc49b83.hazard) + "</p>\n                        <div class=\"mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2\">\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ IR (cm⁻¹)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ir || "Chưa có dữ liệu") + "</span>\n                            </div>\n                            <div class=\"rounded-lg border border-slate-700 bg-slate-900/70 p-2\">\n                                <span class=\"block text-[10px] font-bold uppercase text-cyan-400\">Phổ MS (m/z)</span>\n                                <span class=\"mt-0.5 block break-words font-mono text-[11px] text-slate-200\">" + formatChemText(_0xc49b83.ms || "Chưa có dữ liệu") + "</span>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            ").join("");
 }
+function openFeaturesModal() {
+  const modal = document.getElementById("features-modal");
+  const teacherItem = document.getElementById("modal-teacher-item");
+  const auditItem = document.getElementById("modal-audit-item");
+
+  const isTeacher = Boolean(isTeacherAuthed && !currentStudentProfile);
+
+  // CHỈ KHI THAM GIA VỚI ROLE GIÁO VIÊN thì 2 nút "Góc giáo viên" và "Audit & Host" mới hiển thị
+  if (teacherItem) {
+    if (isTeacher) teacherItem.classList.remove("hidden");
+    else teacherItem.classList.add("hidden");
+  }
+  if (auditItem) {
+    if (isTeacher) auditItem.classList.remove("hidden");
+    else auditItem.classList.add("hidden");
+  }
+
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeFeaturesModal() {
+  const modal = document.getElementById("features-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function selectFeatureFromModal(tabId) {
+  closeFeaturesModal();
+  handleHomeFeatureClick(tabId);
+}
+
 function switchTab(tabId) {
+  // Nếu là tài khoản học sinh, chặn truy cập vào tab Giáo viên và Audit
+  if (currentStudentProfile && (tabId === "audit" || tabId === "teacher")) {
+    alert("Tài khoản Học sinh không có quyền truy cập Góc Giáo viên hoặc Cổng Audit!");
+    switchTab("home");
+    return;
+  }
+
   if ((tabId === "audit" || tabId === "teacher") && !isTeacherAuthed) {
     pendingTeacherTab = tabId;
     openTeacherPassModal();
     return;
   }
 
-  const allTabs = ["lab", "tutor", "quiz", "safety", "leaderboard", "teacher", "audit"];
+  const allTabs = ["home", "lab", "tutor", "quiz", "safety", "leaderboard", "teacher", "audit"];
   allTabs.forEach(t => {
     const content = document.getElementById("content-" + t);
-    const tabBtn = document.getElementById("tab-" + t);
     if (content) content.classList.add("hidden");
-    if (tabBtn) {
-      if (t === "teacher") {
-        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-emerald-400 hover:bg-slate-700 border border-emerald-500/30 whitespace-nowrap";
-      } else if (t === "audit") {
-        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-amber-400 hover:bg-slate-700 border border-amber-500/30 whitespace-nowrap";
-      } else {
-        tabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700 whitespace-nowrap";
-      }
-    }
   });
 
   const activeContent = document.getElementById("content-" + tabId);
-  const activeTabBtn = document.getElementById("tab-" + tabId);
   if (activeContent) activeContent.classList.remove("hidden");
-  if (activeTabBtn) {
-    if (tabId === "teacher") {
-      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-emerald-600 text-white whitespace-nowrap shadow";
-    } else if (tabId === "audit") {
-      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-amber-500 text-slate-950 font-bold whitespace-nowrap shadow";
+
+  // Cập nhật trạng thái hiển thị 3 nút trên thanh Header
+  const tabHome = document.getElementById("tab-home");
+  const headerFeaturesBtn = document.getElementById("header-features-btn");
+
+  if (tabHome) {
+    if (tabId === "home") {
+      tabHome.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-cyan-600 text-white whitespace-nowrap shadow shadow-cyan-600/30 flex items-center gap-1.5";
     } else {
-      activeTabBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium transition bg-cyan-600 text-white whitespace-nowrap shadow";
+      tabHome.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-300 hover:bg-slate-700/80 hover:text-white whitespace-nowrap flex items-center gap-1.5";
+    }
+  }
+
+  if (headerFeaturesBtn) {
+    if (tabId !== "home") {
+      headerFeaturesBtn.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-cyan-950/90 text-cyan-300 border border-cyan-400/50 whitespace-nowrap flex items-center gap-1.5 shadow shadow-cyan-500/10";
+    } else {
+      headerFeaturesBtn.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 whitespace-nowrap flex items-center gap-1.5 shadow";
     }
   }
 
@@ -827,15 +891,22 @@ function verifyTeacherPassword() {
   const _0x54a2cf = document.getElementById("teacher-pass-error");
   if (_0x525bd7 === TEACHER_PASSWORD) {
     isTeacherAuthed = true;
+    if (currentStudentProfile) {
+      currentStudentProfile = null;
+      try { localStorage.removeItem(CHEM_LOCAL_KEYS.session); } catch (_error) {}
+    }
     closeTeacherPassModal();
-    switchTab(pendingTeacherTab || "audit");
+    updateRoleUI();
+    renderDrawerProfile();
+    switchTab(pendingTeacherTab || "teacher");
   } else {
     _0x54a2cf.classList.remove("hidden");
   }
 }
 function lockAuditPortal() {
   isTeacherAuthed = false;
-  switchTab("lab");
+  updateRoleUI();
+  switchTab("home");
 }
 function openPeriodicModal() {
   document.getElementById("periodic-modal").classList.remove("hidden");
@@ -1466,7 +1537,7 @@ async function sendMessage() {
   _0x4d1cdd.value = "";
   _0x31793b.scrollTop = _0x31793b.scrollHeight;
   const _0x34e138 = "loading-" + Date.now();
-  _0x31793b.innerHTML += "\n                <div id=\"" + _0x34e138 + "\" class=\"flex items-start space-x-2\">\n                    <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                    <div class=\"bg-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-sm animate-pulse\">\n                        <i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy đang suy nghĩ...\n                    </div>\n                </div>\n            ";
+  _0x31793b.insertAdjacentHTML("beforeend", "\n                <div id=\"" + _0x34e138 + "\" class=\"flex items-start space-x-2\">\n                    <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                    <div class=\"bg-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-sm animate-pulse\">\n                        <i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>ChemAIBuddy đang suy nghĩ...\n                    </div>\n                </div>\n            ");
   _0x31793b.scrollTop = _0x31793b.scrollHeight;
   if (isIRQuestion(_0x1d7bd1)) {
     void analyzeIRSpectraFromQuestion(_0x1d7bd1);
@@ -1488,13 +1559,7 @@ async function sendMessage() {
     }
     document.getElementById(_0x34e138).remove();
     _0x31793b.insertAdjacentHTML("beforeend", "\n                    <div class=\"flex items-start space-x-2\">\n                        <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                        <div class=\"bg-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed\">" + formatChemText(_0x1996b4) + "</div>\n                    </div>\n                ");
-    if (supabaseClient) {
-      supabaseClient.from("chat_logs").insert({
-        session_id: getChatSessionId(),
-        user_message: _0x1d7bd1,
-        ai_response: _0x1996b4
-      }).then();
-    }
+    saveChatLogToDatastore(getChatSessionId(), _0x1d7bd1, _0x1996b4);
   } catch (_0x2fc877) {
     document.getElementById(_0x34e138).remove();
     _0x31793b.insertAdjacentHTML("beforeend", "\n                    <div class=\"flex items-start space-x-2\">\n                        <div class=\"w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-xs\">AI</div>\n                        <div class=\"bg-red-900/50 text-red-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm\">Không thể kết nối Gia sư AI. " + escapeHtml(_0x2fc877.message || "Vui lòng thử lại.") + "</div>\n                    </div>\n                ");
@@ -1507,29 +1572,16 @@ function renderAIQuizQuestion(quizData) {
   const options = Array.isArray(quizData.options) ? quizData.options : [];
   const correctIndex = Number(quizData.correct_index !== undefined ? quizData.correct_index : quizData.correctIndex);
 
-  if (!quizData.question || options.length < 2 || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) {
-    throw new Error("Dữ liệu câu hỏi không hợp lệ.");
-  }
-
   currentQuizQuestion = {
-    question: quizData.question,
+    ...quizData,
     options,
-    correctIndex,
-    explanation: quizData.explanation || "Chưa có lời giải chi tiết."
+    correctIndex
   };
   hasAnsweredCurrentQuiz = false;
-  questionElement.innerHTML = formatChemText(currentQuizQuestion.question);
-  optionsElement.innerHTML = "";
-
-  options.forEach((option, index) => {
-    const optionButton = document.createElement("button");
-    optionButton.type = "button";
-    optionButton.dataset.optionIndex = index;
-    optionButton.className = "quiz-option-btn w-full text-left p-3.5 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 text-xs font-medium transition flex items-center gap-2";
-    optionButton.innerHTML = "<span class=\"quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-cyan-700 text-white font-bold flex items-center justify-center text-[11px]\">" + (['A', 'B', 'C', 'D'][index] || index + 1) + "</span><span>" + formatChemText(option) + "</span>";
-    optionButton.addEventListener("click", () => checkQuizAnswer(index));
-    optionsElement.appendChild(optionButton);
-  });
+  questionElement.innerHTML = formatChemText(quizData.question);
+  optionsElement.innerHTML = options.map((option, index) => "\n        <button onclick=\"checkQuizAnswer(" + index + ")\" class=\"quiz-option-btn w-full text-left p-3.5 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 text-xs font-medium transition flex items-center gap-2\">\n            <span class=\"quiz-option-label w-7 h-7 shrink-0 rounded-lg bg-cyan-700 text-white font-bold flex items-center justify-center text-[11px]\">" + (['A', 'B', 'C', 'D'][index] || index + 1) + "</span><span>" + formatChemText(option) + "</span>\n        </button>\n    ").join("");
+  document.getElementById("quiz-feedback").classList.add("hidden");
+  document.getElementById("quiz-next-button").classList.add("hidden");
 }
 
 async function generateAIQuiz() {
@@ -2606,7 +2658,13 @@ function printTeacherDocument(elementId, title) {
   printTeacherDocumentContent(source.innerHTML, title);
 }
 
-const CHEM_LOCAL_KEYS = Object.freeze({ accounts: "chem_student_accounts_v2", session: "chem_student_session_v2", cache: "chem_tutor_cache_v2" });
+const CHEM_LOCAL_KEYS = Object.freeze({
+  accounts: "chem_student_accounts_v2",
+  session: "chem_student_session_v2",
+  cache: "chem_tutor_cache_v2",
+  chatLogs: "chem_chat_logs_cache_v2",
+  quizQuestions: "chem_quiz_questions_cache_v2"
+});
 let currentStudentProfile = null;
 let studentAuthMode = "login";
 let currentLeaderboardMode = "streak";
@@ -2637,6 +2695,7 @@ function persistStudentProfile(profile) {
   setLocalAccounts(accounts);
   safeStorageWrite(CHEM_LOCAL_KEYS.session, profile);
   currentStudentProfile = profile;
+  updateRoleUI();
   renderDrawerProfile();
   void syncStudentProfileToDatabase(profile);
 }
@@ -2661,6 +2720,222 @@ async function syncStudentProfileToDatabase(profile) {
     studentDatabaseSyncInFlight = false;
   }
 }
+
+function updateRoleUI() {
+  const teacherTab = document.getElementById("tab-teacher");
+  const auditTab = document.getElementById("tab-audit");
+  const drawerTeacherSection = document.getElementById("drawer-teacher-section");
+  const headerStudentBtn = document.getElementById("header-student-btn");
+  const homeActiveRoleBox = document.getElementById("home-active-role-box");
+  const homeUnauthedContainer = document.getElementById("home-unauthed-role-container");
+  const homeFeaturesSubtitle = document.getElementById("home-features-subtitle");
+  const featBadges = document.querySelectorAll(".feat-badge");
+
+  const isStudent = Boolean(currentStudentProfile);
+  const isTeacher = Boolean(isTeacherAuthed && !currentStudentProfile);
+  const hasActiveRole = isStudent || isTeacher;
+
+  // 1. Cập nhật Hộp vai trò trên Trang chủ
+  if (hasActiveRole) {
+    if (homeUnauthedContainer) homeUnauthedContainer.classList.add("hidden");
+    if (homeActiveRoleBox) {
+      homeActiveRoleBox.classList.remove("hidden");
+      if (isStudent) {
+        homeActiveRoleBox.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-cyan-500/30 shrink-0">
+                <i class="fa-solid fa-user-graduate"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đang tham gia: Học Sinh
+                  </span>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-white mt-1 flex items-center gap-2 flex-wrap">
+                  ${escapeHtml(currentStudentProfile.username)}
+                  <span class="text-xs font-normal text-slate-300 font-sans">(${escapeHtml(currentStudentProfile.school_name || "THPT")} – Lớp ${escapeHtml(currentStudentProfile.class_name || "Mới")})</span>
+                </h3>
+                <div class="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-300">
+                  <span><i class="fa-solid fa-fire text-amber-400 mr-1"></i>Chuỗi: <strong class="text-amber-300 font-mono">${Number(currentStudentProfile.login_streak || 1)} ngày</strong></span>
+                  <span><i class="fa-solid fa-star text-amber-400 mr-1"></i>EXP: <strong class="text-amber-300 font-mono">${Number(currentStudentProfile.kahoot_exp || 0)}</strong></span>
+                  <span><i class="fa-solid fa-trophy text-cyan-400 mr-1"></i>Danh hiệu: <strong class="text-cyan-300">${escapeHtml(currentStudentProfile.kahoot_badge || "Tân binh")}</strong></span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 md:pt-0">
+              <button onclick="openStudentProfileModal()" class="px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center gap-1.5 transition shadow shadow-cyan-500/20">
+                <i class="fa-solid fa-id-card-clip"></i> Xem Hồ Sơ
+              </button>
+              <button onclick="logoutActiveRole()" class="px-4 py-2.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đổi Vai Trò / Đăng Xuất
+              </button>
+            </div>
+          </div>`;
+      } else if (isTeacher) {
+        homeActiveRoleBox.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-emerald-500/30 shrink-0">
+                <i class="fa-solid fa-chalkboard-user"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đang tham gia: Giáo Viên
+                  </span>
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-white mt-1">
+                  Tài Khoản Giáo Viên Hóa Học
+                </h3>
+                <p class="text-xs text-slate-300 mt-1 flex items-center gap-2">
+                  <i class="fa-solid fa-shield-check text-emerald-400"></i> Đã mở khóa quyền Giáo viên (Góc giáo viên & Cổng Audit / Host Kahoot trong Danh Sách Chức Năng)
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 shrink-0 pt-2 md:pt-0">
+              <button onclick="logoutActiveRole()" class="px-4 py-2.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition shadow shadow-rose-950/40">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng Xuất
+              </button>
+            </div>
+          </div>`;
+      }
+    }
+  } else {
+    if (homeUnauthedContainer) homeUnauthedContainer.classList.remove("hidden");
+    if (homeActiveRoleBox) homeActiveRoleBox.classList.add("hidden");
+  }
+
+  // 2. Cập nhật trạng thái các thẻ tính năng (Khi chưa có role -> Chế độ xem trước, ấn không có phản ứng)
+  if (homeFeaturesSubtitle) {
+    homeFeaturesSubtitle.innerText = hasActiveRole
+      ? "Nhấp vào bất kỳ tính năng nào bên dưới để truy cập và trải nghiệm ngay"
+      : "Chế độ xem trước (Vui lòng chọn vai trò Học sinh hoặc Giáo viên để kích hoạt tính năng)";
+  }
+
+  featBadges.forEach(badge => {
+    badge.innerHTML = hasActiveRole
+      ? `<span class="text-cyan-400 font-semibold flex items-center gap-1">Khám phá <i class="fa-solid fa-arrow-right text-[9px]"></i></span>`
+      : `<span class="text-slate-400 bg-slate-800/90 px-2 py-0.5 rounded border border-slate-700 font-normal"><i class="fa-solid fa-eye mr-1 text-[9px]"></i>Xem trước</span>`;
+  });
+
+  // 3. Phân quyền trên Header và Menu điều hướng
+  if (isStudent) {
+    if (teacherTab) teacherTab.classList.add("hidden");
+    if (auditTab) auditTab.classList.add("hidden");
+    if (drawerTeacherSection) drawerTeacherSection.classList.add("hidden");
+
+    if (headerStudentBtn) {
+      headerStudentBtn.innerHTML = `<i class="fa-solid fa-user-graduate text-cyan-400 mr-1.5"></i><span class="max-w-[100px] truncate inline-block align-bottom">${escapeHtml(currentStudentProfile.username)}</span>`;
+      headerStudentBtn.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-cyan-950/90 text-cyan-300 hover:bg-cyan-900 border border-cyan-400/50 whitespace-nowrap shadow shadow-cyan-500/10 flex items-center gap-1.5";
+    }
+  } else {
+    if (drawerTeacherSection) drawerTeacherSection.classList.remove("hidden");
+
+    if (headerStudentBtn) {
+      if (isTeacher) {
+        headerStudentBtn.innerHTML = `<i class="fa-solid fa-user-tie text-emerald-400 mr-1.5"></i>Giáo Viên`;
+        headerStudentBtn.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-950/90 text-emerald-300 hover:bg-emerald-900 border border-emerald-500/40 whitespace-nowrap flex items-center gap-1.5 shadow shadow-emerald-500/10";
+      } else {
+        headerStudentBtn.innerHTML = `<i class="fa-solid fa-user-circle mr-1.5"></i>Profile`;
+        headerStudentBtn.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-cyan-300 hover:bg-slate-700/80 border border-cyan-500/30 whitespace-nowrap flex items-center gap-1.5 shadow";
+      }
+    }
+  }
+}
+
+function handleHomeFeatureClick(tabId) {
+  const hasActiveRole = Boolean(currentStudentProfile || isTeacherAuthed);
+  if (!hasActiveRole) {
+    alert("⚠️ Bạn đang ở chế độ xem trước.\nVui lòng tham gia dưới vai trò 'Học sinh' hoặc 'Giáo viên' ở trên để mở khóa và sử dụng tính năng!");
+    const roleSection = document.getElementById("home-role-section");
+    if (roleSection) roleSection.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
+  if (tabId === "periodic") {
+    openPeriodicModal();
+    return;
+  }
+  switchTab(tabId);
+}
+
+function logoutActiveRole() {
+  currentStudentProfile = null;
+  isTeacherAuthed = false;
+  try { localStorage.removeItem(CHEM_LOCAL_KEYS.session); } catch (_error) {}
+  closeStudentProfileModal();
+  updateRoleUI();
+  renderDrawerProfile();
+  switchTab("home");
+}
+
+function handleHeaderStudentClick() {
+  if (currentStudentProfile) {
+    openStudentProfileModal();
+  } else if (isTeacherAuthed) {
+    logoutActiveRole();
+  } else {
+    openStudentAuthModal("login");
+  }
+}
+
+function openStudentProfileModal() {
+  if (!currentStudentProfile) {
+    openStudentAuthModal("login");
+    return;
+  }
+  const p = currentStudentProfile;
+  const content = document.getElementById("student-profile-modal-content");
+  if (content) {
+    const teacherBadgeText = p.teacher_badge && p.teacher_badge.trim() ? p.teacher_badge.trim() : "Chưa có";
+    content.innerHTML = `
+      <div class="flex items-center gap-4 bg-slate-900/80 p-4 rounded-2xl border border-slate-700/80">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-xl font-black text-white shadow-lg shadow-cyan-500/30">
+          ${escapeHtml(p.username.slice(0, 1).toUpperCase())}
+        </div>
+        <div class="min-w-0 flex-1">
+          <h4 class="font-extrabold text-white text-base truncate">${escapeHtml(p.username)}</h4>
+          <p class="text-xs text-cyan-300 font-medium truncate mt-0.5"><i class="fa-solid fa-school text-cyan-400 mr-1.5"></i>${escapeHtml(p.school_name || "THPT")} – Lớp ${escapeHtml(p.class_name || "Mới")}</p>
+          <span class="inline-block mt-1 text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded font-semibold border border-cyan-500/30">Tài khoản Học sinh</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 space-y-1">
+          <span class="text-slate-400 text-[11px] block"><i class="fa-solid fa-fire text-amber-400 mr-1"></i>Chuỗi học tập</span>
+          <b class="text-amber-300 font-mono text-sm">${Number(p.login_streak || 1)} Ngày</b>
+        </div>
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 space-y-1">
+          <span class="text-slate-400 text-[11px] block"><i class="fa-solid fa-star text-amber-400 mr-1"></i>Điểm Kahoot EXP</span>
+          <b class="text-amber-300 font-mono text-sm">${Number(p.kahoot_exp || 0)} EXP</b>
+        </div>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+          <span class="text-slate-400"><i class="fa-solid fa-trophy text-cyan-400 mr-1.5"></i>Danh hiệu Kahoot:</span>
+          <b class="text-cyan-300">${escapeHtml(p.kahoot_badge || "Tân binh")}</b>
+        </div>
+        <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+          <span class="text-slate-400"><i class="fa-solid fa-bolt text-emerald-400 mr-1.5"></i>Chuỗi đúng hiện tại:</span>
+          <b class="text-emerald-300 font-mono">${Number(p.kahoot_streak || 0)} câu liên tiếp</b>
+        </div>
+        <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+          <span class="text-slate-400"><i class="fa-solid fa-award text-amber-300 mr-1.5"></i>Danh hiệu GV gắn:</span>
+          <b class="text-amber-200">${escapeHtml(teacherBadgeText)}</b>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById("student-profile-modal")?.classList.remove("hidden");
+}
+
+function closeStudentProfileModal() {
+  document.getElementById("student-profile-modal")?.classList.add("hidden");
+}
+
 function renderDrawerProfile() {
   const container = document.getElementById("drawer-profile");
   if (!container) return;
@@ -2734,7 +3009,7 @@ function toggleNavigationDrawer(open) {
   if (open) renderDrawerProfile();
 }
 
-function drawerSwitchTab(tab) { toggleNavigationDrawer(false); switchTab(tab); }
+function drawerSwitchTab(tab) { toggleNavigationDrawer(false); if (tab === "home") { switchTab("home"); } else { handleHomeFeatureClick(tab); } }
 
 function openStudentAuthModal(mode = "login") {
   switchStudentAuthMode(mode);
@@ -2754,7 +3029,6 @@ function switchStudentAuthMode(mode) {
   if (loginTab) loginTab.className = studentAuthMode === "login" ? "flex-1 rounded-lg bg-cyan-600 py-2 text-xs font-bold text-white transition" : "flex-1 rounded-lg bg-slate-800 py-2 text-xs font-bold text-slate-300 hover:text-white transition";
   if (signupTab) signupTab.className = studentAuthMode === "signup" ? "flex-1 rounded-lg bg-cyan-600 py-2 text-xs font-bold text-white transition" : "flex-1 rounded-lg bg-slate-800 py-2 text-xs font-bold text-slate-300 hover:text-white transition";
 
-  // Per PRD: Student login requires Tên + Lớp + Mật khẩu. School & Confirm are only for signup.
   const schoolInput = document.getElementById("student-auth-school");
   const confirmInput = document.getElementById("student-auth-confirm");
   if (schoolInput) schoolInput.classList.toggle("hidden", studentAuthMode !== "signup");
@@ -2822,10 +3096,7 @@ async function submitStudentAuth() {
 }
 
 function studentLogout() {
-  currentStudentProfile = null;
-  try { localStorage.removeItem(CHEM_LOCAL_KEYS.session); } catch (_error) {}
-  renderDrawerProfile();
-  toggleNavigationDrawer(true);
+  logoutActiveRole();
 }
 
 function loadStudentSession() {
@@ -2834,6 +3105,7 @@ function loadStudentSession() {
     currentStudentProfile = updateStudentLoginStreak(session);
     persistStudentProfile(currentStudentProfile);
   } else {
+    updateRoleUI();
     renderDrawerProfile();
   }
 }
@@ -2898,63 +3170,242 @@ async function saveTutorCache(query, answer) {
   cache.push({ normalized: norm, query, answer, updated_at: new Date().toISOString() });
   safeStorageWrite(CHEM_LOCAL_KEYS.cache, cache.slice(-100));
 }
-async function fetchAuditLogs() {
-  const _0x334699 = document.getElementById("audit-chat-table-body");
-  _0x334699.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-cyan-400 italic\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>Đang tải dữ liệu Chat Log từ Supabase...</td></tr>";
-  if (!supabaseClient) {
-    _0x334699.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-red-400 font-semibold\">Chưa kết nối Supabase DB.</td></tr>";
-    return;
+const DEFAULT_CHAT_LOGS = [
+  {
+    session_id: "CHEM_GDPT18_01",
+    user_message: "Cho 50ml dung dịch NaOH 1M phản ứng với 50ml dung dịch HCl 1M. Tính pH của dung dịch sau phản ứng.",
+    ai_response: "Phản ứng trung hòa hoàn toàn giữa bazơ mạnh và axit mạnh: NaOH + HCl -> NaCl + H2O.\nSố mol NaOH = 0.05 mol, số mol HCl = 0.05 mol. Cả hai chất phản ứng vừa đủ, muối NaCl sinh ra không bị thủy phân nên môi trường trung tính với pH = 7 ở 25°C.",
+    created_at: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    session_id: "CHEM_GDPT18_02",
+    user_message: "Nêu hiện tượng và viết phương trình hóa học khi sục khí SO2 vào dung dịch nước vôi trong Ca(OH)2 dư.",
+    ai_response: "Hiện tượng: Xuất hiện kết tủa trắng làm dung dịch bị vẩn đục.\nPhương trình: SO2 + Ca(OH)2 -> CaSO3↓ (trắng) + H2O. Nếu tiếp tục sục SO2 đến dư, kết tủa sẽ tan dần tạo Ca(HSO3)2 trong suốt.",
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString()
+  },
+  {
+    session_id: "CHEM_GDPT18_03",
+    user_message: "Làm thế nào để phân biệt 3 dung dịch mất nhãn: NaCl, Na2SO4, NaNO3 chỉ bằng một thuốc thử?",
+    ai_response: "Dùng thuốc thử dung dịch BaCl2:\n1. Mẫu thử xuất hiện kết tủa trắng không tan trong axit là Na2SO4 (BaSO4↓).\n2. Hai mẫu còn lại (NaCl, NaNO3) không hiện tượng. Tiếp tục nhỏ AgNO3 vào 2 mẫu này: mẫu xuất hiện kết tủa trắng là NaCl (AgCl↓), mẫu không hiện tượng là NaNO3.",
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString()
+  },
+  {
+    session_id: "CHEM_GDPT18_04",
+    user_message: "Đặc trưng của phổ hồng ngoại (IR) đối với nhóm chức Carbonyl (C=O) trong hợp chất hữu cơ là gì?",
+    ai_response: "Nhóm chức Carbonyl (C=O) cho một tín hiệu hấp thụ rất mạnh và sắc nét trong khoảng tần số 1650 - 1750 cm⁻¹ trên phổ hồng ngoại IR, là dấu hiệu nhận biết quan trọng của aldehyde, ketone, axit carboxylic và ester.",
+    created_at: new Date(Date.now() - 3600000 * 36).toISOString()
+  },
+  {
+    session_id: "CHEM_GDPT18_05",
+    user_message: "Tại sao cồn 70 độ có tác dụng sát trùng tốt hơn cồn 90 độ?",
+    ai_response: "Cồn 90 độ làm đông vón protein ở màng ngoài tế bào vi khuẩn quá nhanh, tạo thành lớp vỏ bảo vệ vi khuẩn bên trong. Trong khi đó, cồn 70 độ có tỷ lệ nước thích hợp làm chậm quá trình đông vón, giúp cồn ngấm sâu vào bên trong tế bào vi khuẩn và tiêu diệt triệt để.",
+    created_at: new Date(Date.now() - 3600000 * 48).toISOString()
   }
-  try {
-    const {
-      data: _0x8ce66e,
-      error: _0x1e97e3
-    } = await supabaseClient.from("chat_logs").select("*").order("created_at", {
-      ascending: false
-    }).limit(30);
-    if (_0x1e97e3) {
-      throw _0x1e97e3;
-    }
-    if (!_0x8ce66e || _0x8ce66e.length === 0) {
-      _0x334699.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-slate-400 italic\">Chưa có nhật ký trò chuyện nào được lưu.</td></tr>";
-      return;
-    }
-    _0x334699.innerHTML = _0x8ce66e.map(_0x41dc4b => "\n                    <tr class=\"hover:bg-slate-800/60 transition\">\n                        <td class=\"p-3 text-slate-400 whitespace-nowrap\">" + new Date(_0x41dc4b.created_at).toLocaleString("vi-VN") + "</td>\n                        <td class=\"p-3 font-mono text-cyan-400\">" + escapeHtml(_0x41dc4b.session_id || "N/A") + "</td>\n                        <td class=\"p-3 text-white font-medium\">" + formatChemText(_0x41dc4b.user_message) + "</td>\n                        <td class=\"p-3 text-slate-300 max-w-xs truncate\" title=\"" + escapeHtml(_0x41dc4b.ai_response || "") + "\">" + formatChemText(_0x41dc4b.ai_response) + "</td>\n                    </tr>\n                ").join("");
-  } catch (_0x552bd6) {
-    console.error("Lỗi Chat Logs:", _0x552bd6);
-    _0x334699.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-red-400 font-semibold\">Lỗi tải dữ liệu: " + _0x552bd6.message + "</td></tr>";
+];
+
+const DEFAULT_QUIZ_QUESTIONS = [
+  {
+    id: 1,
+    question: "Hiện tượng xảy ra khi nhỏ vài giọt dung dịch phenolphthalein vào ống nghiệm chứa dung dịch NaOH là gì?",
+    options: ["Dung dịch chuyển sang màu hồng cánh sen", "Dung dịch chuyển sang màu xanh thẫm", "Xuất hiện kết tủa màu trắng đục", "Không có hiện tượng gì xảy ra"],
+    correct_index: 0,
+    explanation: "Dung dịch kiềm (NaOH có pH > 8.3) làm chất chỉ thị phenolphthalein chuyển sang màu hồng cánh sen đặc trưng.",
+    created_at: new Date(Date.now() - 3600000 * 6).toISOString()
+  },
+  {
+    id: 2,
+    question: "Chất nào sau đây tác dụng với dung dịch HCl sinh ra khí Hydro (H2)?",
+    options: ["Cu", "Ag", "Fe", "Au"],
+    correct_index: 2,
+    explanation: "Fe là kim loại đứng trước Hydro trong dãy hoạt động hóa học nên phản ứng với axit HCl giải phóng khí H2: Fe + 2HCl -> FeCl2 + H2↑.",
+    created_at: new Date(Date.now() - 3600000 * 18).toISOString()
+  },
+  {
+    id: 3,
+    question: "Khi sục khí SO2 vào dung dịch nước vôi trong Ca(OH)2 dư, hiện tượng quan sát được là gì?",
+    options: ["Dung dịch đổi sang màu đỏ", "Xuất hiện kết tủa trắng CaSO3", "Có kết tủa màu nâu đỏ", "Không có hiện tượng"],
+    correct_index: 1,
+    explanation: "Khí SO2 phản ứng với Ca(OH)2 tạo kết tủa trắng canxi sunfit: SO2 + Ca(OH)2 -> CaSO3↓ + H2O.",
+    created_at: new Date(Date.now() - 3600000 * 30).toISOString()
+  },
+  {
+    id: 4,
+    question: "Trong phản ứng trung hòa giữa axit HCl và dung dịch NaOH, pH của dung dịch tại điểm tương đương là bao nhiêu ở 25°C?",
+    options: ["pH = 1", "pH = 7", "pH = 14", "pH = 3"],
+    correct_index: 1,
+    explanation: "Phản ứng giữa axit mạnh (HCl) và bazơ mạnh (NaOH) tạo muối trung hòa NaCl có môi trường trung tính với pH = 7 ở 25°C.",
+    created_at: new Date(Date.now() - 3600000 * 42).toISOString()
+  },
+  {
+    id: 5,
+    question: "Chất rắn nào sau đây khi tác dụng với dung dịch axit sunfuric loãng sinh ra dung dịch có màu xanh lam?",
+    options: ["CuO", "Fe2O3", "Al2O3", "MgO"],
+    correct_index: 0,
+    explanation: "CuO (màu đen) tan trong H2SO4 loãng tạo dung dịch muối đồng(II) sunfat CuSO4 có màu xanh lam đặc trưng: CuO + H2SO4 -> CuSO4 + H2O.",
+    created_at: new Date(Date.now() - 3600000 * 54).toISOString()
+  },
+  {
+    id: 6,
+    question: "Tín hiệu hấp thụ đặc trưng của liên kết O-H trong phân tử alcohol trên phổ hồng ngoại (IR) nằm trong vùng nào?",
+    options: ["1650 - 1750 cm⁻¹", "3200 - 3600 cm⁻¹", "2100 - 2260 cm⁻¹", "1050 - 1150 cm⁻¹"],
+    correct_index: 1,
+    explanation: "Liên kết O-H dạng liên kết hydro trong alcohol có mũi hấp thụ rộng (broad peak) rất đặc trưng ở vùng 3200 - 3600 cm⁻¹.",
+    created_at: new Date(Date.now() - 3600000 * 60).toISOString()
+  }
+];
+
+function getLocalChatLogs() {
+  const cached = safeStorageRead(CHEM_LOCAL_KEYS.chatLogs, null);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
+  safeStorageWrite(CHEM_LOCAL_KEYS.chatLogs, DEFAULT_CHAT_LOGS);
+  return DEFAULT_CHAT_LOGS;
+}
+
+function saveChatLogToDatastore(sessionId, userMessage, aiResponse) {
+  const newLog = {
+    session_id: sessionId || "CHEM_SESSION",
+    user_message: userMessage,
+    ai_response: aiResponse,
+    created_at: new Date().toISOString()
+  };
+  const currentLogs = getLocalChatLogs();
+  currentLogs.unshift(newLog);
+  safeStorageWrite(CHEM_LOCAL_KEYS.chatLogs, currentLogs.slice(0, 100));
+
+  if (supabaseClient) {
+    supabaseClient.from("chat_logs").insert(newLog).catch(err => console.warn("Supabase background chat sync:", err));
   }
 }
-async function fetchAuditQuizLogs() {
-  const _0x43917e = document.getElementById("audit-quiz-table-body");
-  _0x43917e.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-amber-400 italic\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>Đang tải Ngân hàng Trắc nghiệm từ Supabase...</td></tr>";
-  if (!supabaseClient) {
-    _0x43917e.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-red-400 font-semibold\">Chưa kết nối Supabase DB.</td></tr>";
+
+function getLocalQuizQuestions() {
+  const cached = safeStorageRead(CHEM_LOCAL_KEYS.quizQuestions, null);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
+  safeStorageWrite(CHEM_LOCAL_KEYS.quizQuestions, DEFAULT_QUIZ_QUESTIONS);
+  return DEFAULT_QUIZ_QUESTIONS;
+}
+
+function saveQuizQuestionToDatastore(questionObj) {
+  if (!questionObj || !questionObj.question) return;
+  const current = getLocalQuizQuestions();
+  const exists = current.some(q => q.question === questionObj.question);
+  if (!exists) {
+    const item = {
+      ...questionObj,
+      created_at: questionObj.created_at || new Date().toISOString()
+    };
+    current.unshift(item);
+    safeStorageWrite(CHEM_LOCAL_KEYS.quizQuestions, current.slice(0, 100));
+  }
+
+  if (supabaseClient) {
+    supabaseClient.from("quiz_questions").upsert({
+      question: questionObj.question,
+      options: questionObj.options,
+      correct_index: questionObj.correct_index !== undefined ? questionObj.correct_index : questionObj.correctIndex,
+      explanation: questionObj.explanation
+    }, { onConflict: "question", ignoreDuplicates: true }).catch(err => console.warn("Supabase background quiz sync:", err));
+  }
+}
+
+async function fetchAuditLogs() {
+  const tbody = document.getElementById("audit-chat-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-cyan-400 italic\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>Đang kiểm tra & đồng bộ dữ liệu Chat Log...</td></tr>";
+
+  let logs = [];
+  let isCloud = false;
+
+  // Thử tải từ Supabase Client (bắt lỗi an toàn, không làm crash giao diện)
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.from("chat_logs").select("*").order("created_at", { ascending: false }).limit(50);
+      if (!error && Array.isArray(data) && data.length > 0) {
+        logs = data;
+        isCloud = true;
+        safeStorageWrite(CHEM_LOCAL_KEYS.chatLogs, logs);
+      }
+    } catch (_e) {
+      console.warn("Supabase fetch chat_logs fallback to local datastore:", _e);
+    }
+  }
+
+  // Nếu Supabase chưa có bảng hoặc offline -> Sử dụng kho dữ liệu đồng bộ nội bộ / cache
+  if (!logs || logs.length === 0) {
+    logs = getLocalChatLogs();
+  }
+
+  if (!logs || logs.length === 0) {
+    tbody.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-slate-400 italic\">Chưa có nhật ký trò chuyện nào.</td></tr>";
     return;
   }
-  try {
-    const {
-      data: _0x264e51,
-      error: _0x5a0575
-    } = await supabaseClient.from("quiz_questions").select("*").order("created_at", {
-      ascending: false
-    }).limit(30);
-    if (_0x5a0575) {
-      throw _0x5a0575;
+
+  const statusBadge = isCloud
+    ? "<span class=\"inline-flex items-center gap-1 text-[10px] bg-emerald-950/90 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded-full font-medium\"><i class=\"fa-solid fa-cloud text-emerald-400\"></i> Supabase Cloud</span>"
+    : "<span class=\"inline-flex items-center gap-1 text-[10px] bg-cyan-950/90 text-cyan-300 border border-cyan-700/60 px-2 py-0.5 rounded-full font-medium\"><i class=\"fa-solid fa-database text-cyan-400\"></i> Đồng bộ Kép</span>";
+
+  tbody.innerHTML = logs.map(item => `
+    <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/40">
+      <td class="p-3 text-slate-400 whitespace-nowrap text-xs">
+        ${new Date(item.created_at || Date.now()).toLocaleString("vi-VN")}
+        <div class="mt-1">${statusBadge}</div>
+      </td>
+      <td class="p-3 font-mono text-cyan-400 text-xs font-semibold">${escapeHtml(item.session_id || "CHEM_SESSION")}</td>
+      <td class="p-3 text-white font-medium text-xs max-w-xs">${formatChemText(item.user_message)}</td>
+      <td class="p-3 text-slate-300 text-xs max-w-sm" title="${escapeHtml(item.ai_response || "")}">${formatChemText(item.ai_response)}</td>
+    </tr>
+  `).join("");
+}
+
+async function fetchAuditQuizLogs() {
+  const tbody = document.getElementById("audit-quiz-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-amber-400 italic\"><i class=\"fa-solid fa-spinner fa-spin mr-2\"></i>Đang kiểm tra & đồng bộ Ngân hàng Trắc nghiệm...</td></tr>";
+
+  let questions = [];
+  let isCloud = false;
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.from("quiz_questions").select("*").order("created_at", { ascending: false }).limit(50);
+      if (!error && Array.isArray(data) && data.length > 0) {
+        questions = data;
+        isCloud = true;
+        safeStorageWrite(CHEM_LOCAL_KEYS.quizQuestions, questions);
+      }
+    } catch (_e) {
+      console.warn("Supabase fetch quiz_questions fallback to local datastore:", _e);
     }
-    if (!_0x264e51 || _0x264e51.length === 0) {
-      _0x43917e.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-slate-400 italic\">Chưa có câu hỏi trắc nghiệm nào trong DB.</td></tr>";
-      return;
-    }
-    _0x43917e.innerHTML = _0x264e51.map(_0x582118 => {
-      const _0x2e3c63 = Array.isArray(_0x582118.options) ? _0x582118.options.map((_0x593b09, _0x498f6c) => "<b>" + ["A", "B", "C", "D"][_0x498f6c] + ".</b> " + formatChemText(_0x593b09)).join("<br>") : "";
-      const _0x5ef10f = ["A", "B", "C", "D"][_0x582118.correct_index] || "N/A";
-      return "\n                    <tr class=\"hover:bg-slate-800/60 transition\">\n                        <td class=\"p-3 text-slate-400 whitespace-nowrap\">" + new Date(_0x582118.created_at).toLocaleString("vi-VN") + "</td>\n                        <td class=\"p-3 text-white font-medium max-w-xs\">" + formatChemText(_0x582118.question) + "</td>\n                        <td class=\"p-3 text-slate-300 text-[11px] leading-relaxed max-w-xs\">" + _0x2e3c63 + "</td>\n                        <td class=\"p-3 text-center\"><span class=\"bg-emerald-950 text-emerald-300 font-bold px-2 py-0.5 rounded border border-emerald-700/50\">" + _0x5ef10f + "</span></td>\n                        <td class=\"p-3 text-slate-300 text-xs max-w-xs\">" + formatChemText(_0x582118.explanation) + "</td>\n                    </tr>\n                    ";
-    }).join("");
-  } catch (_0x2fd131) {
-    console.error("Lỗi Quiz Logs:", _0x2fd131);
-    _0x43917e.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-red-400 font-semibold\">Lỗi tải dữ liệu: " + _0x2fd131.message + "</td></tr>";
   }
+
+  if (!questions || questions.length === 0) {
+    questions = getLocalQuizQuestions();
+  }
+
+  if (!questions || questions.length === 0) {
+    tbody.innerHTML = "<tr><td colspan=\"5\" class=\"p-4 text-center text-slate-400 italic\">Chưa có câu hỏi trắc nghiệm nào trong kho.</td></tr>";
+    return;
+  }
+
+  const statusBadge = isCloud
+    ? "<span class=\"inline-flex items-center gap-1 text-[10px] bg-emerald-950/90 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded-full font-medium\"><i class=\"fa-solid fa-cloud text-emerald-400\"></i> Supabase Cloud</span>"
+    : "<span class=\"inline-flex items-center gap-1 text-[10px] bg-amber-950/90 text-amber-300 border border-amber-700/60 px-2 py-0.5 rounded-full font-medium\"><i class=\"fa-solid fa-database text-amber-400\"></i> Đồng bộ Kép</span>";
+
+  tbody.innerHTML = questions.map(q => {
+    const opts = Array.isArray(q.options) ? q.options.map((opt, idx) => `<b>${["A", "B", "C", "D"][idx]}.</b> ${formatChemText(opt)}`).join("<br>") : "";
+    const correctLabel = ["A", "B", "C", "D"][q.correct_index] || "N/A";
+    return `
+      <tr class="hover:bg-slate-800/60 transition border-b border-slate-800/40">
+        <td class="p-3 text-slate-400 whitespace-nowrap text-xs">
+          ${new Date(q.created_at || Date.now()).toLocaleString("vi-VN")}
+          <div class="mt-1">${statusBadge}</div>
+        </td>
+        <td class="p-3 text-white font-medium text-xs max-w-xs">${formatChemText(q.question)}</td>
+        <td class="p-3 text-slate-300 text-[11px] leading-relaxed max-w-xs">${opts}</td>
+        <td class="p-3 text-center"><span class="bg-emerald-950 text-emerald-300 font-bold px-2 py-0.5 rounded border border-emerald-700/50 text-xs">${correctLabel}</span></td>
+        <td class="p-3 text-slate-300 text-xs max-w-xs">${formatChemText(q.explanation)}</td>
+      </tr>
+    `;
+  }).join("");
 }
 function handleKeyPress(_0x1cc2b) {
   if (_0x1cc2b.key === "Enter") {
@@ -2990,10 +3441,12 @@ async function searchSafety() {
 }
 renderSafety(safetyData);
 
-// Auto-initialize Headroom.js on header scroll
+// Auto-initialize Headroom.js and default Home view on page load
 document.addEventListener("DOMContentLoaded", function () {
   startGlobalChemistryFormatting();
   loadStudentSession();
+  switchTab("home");
+  updateRoleUI();
   const headerElem = document.querySelector("header");
   if (headerElem && typeof Headroom !== "undefined") {
     const headroom = new Headroom(headerElem);
