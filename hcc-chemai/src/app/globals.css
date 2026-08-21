@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+:root {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --anim-speed: 2s;
+  --skitter-speed: 2.8s;
+  --dissolve-speed: 4.5s;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent auto-zoom on iOS inputs */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area support for iOS Home Bar & Dynamic Island */
+.safe-top {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Hiệu ứng bọt khí */
+@keyframes bubble {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(-130px) scale(1.2); opacity: 0; }
+}
+.bubble {
+  position: absolute;
+  bottom: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: bubble var(--anim-speed, 2s) infinite ease-in;
+}
+
+/* Hiệu ứng kết tủa lắng */
+@keyframes precipitate {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 0.95; transform: translateY(0); }
+}
+.precipitate-effect {
+  animation: precipitate 1.2s ease-out forwards;
+}
+
+/* Hiệu ứng ngọn lửa đun nóng */
+@keyframes flame {
+  0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+  50% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+}
+.flame-effect {
+  animation: flame 0.4s infinite alternate ease-in-out;
+}
+
+/* Hiệu ứng khói/khí bay lên khỏi miệng cốc */
+@keyframes fume {
+  0% { transform: translateY(0) scale(0.9); opacity: 0.2; }
+  50% { opacity: 0.85; }
+  100% { transform: translateY(-70px) scale(1.4); opacity: 0; }
+}
+.fume-particle {
+  position: absolute;
+  top: -10px;
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: fume var(--anim-speed, 2.5s) infinite ease-out;
+}
+
+/* Hiệu ứng viên Na/K chạy nhảy lăn tăn trên mặt nước */
+@keyframes skitter {
+  0% { left: 15%; }
+  20% { left: 75%; }
+  45% { left: 25%; }
+  70% { left: 80%; }
+  85% { left: 35%; }
+  100% { left: 15%; }
+}
+.skitter-effect {
+  animation: skitter var(--skitter-speed, 2.8s) infinite ease-in-out;
+}
+
+/* Hiệu ứng bùng cháy lóe sáng */
+@keyframes spark {
+  0%, 100% { transform: scale(0.9) rotate(-5deg); box-shadow: 0 0 12px #fde047, 0 0 22px #f97316; }
+  50% { transform: scale(1.25) rotate(5deg); box-shadow: 0 0 20px #fde047, 0 0 35px #ef4444; }
+}
+.spark-effect {
+  animation: spark 0.35s infinite alternate ease-in-out;
+}
+
+/* Hiệu ứng kim loại / chất rắn TAN DẦN trong axit */
+@keyframes dissolveRod {
+  0% { height: 140px; opacity: 0.95; transform: translateX(-50%) scaleX(1); }
+  50% { height: 70px; opacity: 0.6; transform: translateX(-50%) scaleX(0.7); }
+  100% { height: 10px; opacity: 0.15; transform: translateX(-50%) scaleX(0.3); }
+}
+.dissolve-rod {
+  animation: dissolveRod var(--dissolve-speed, 4.5s) ease-out forwards;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 4px;
+}
+
+/* Horizontal scroll container for tables & charts */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
