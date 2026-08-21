@@ -146,3 +146,29 @@ html, body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Floating animation for decorative molecule chips */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+.floating-element {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Pulse glow for AI & high-tech components */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; filter: blur(30px); }
+  50% { opacity: 0.8; filter: blur(40px); }
+}
+.pulse-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Custom dark backdrop blur support */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}

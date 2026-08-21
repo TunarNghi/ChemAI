@@ -37,8 +37,12 @@ import {
   Menu,
   X,
   Layers,
+  Home,
+  User,
+  Lock,
 } from 'lucide-react';
 import { theme } from '@/theme/theme';
+import HomeDashboard from '@/components/HomeDashboard';
 import VirtualLab from '@/components/VirtualLab';
 import DifyChatTutor from '@/components/DifyChatTutor';
 import ChemicalBondViewer3D from '@/components/ChemicalBondViewer3D';
@@ -48,8 +52,7 @@ import AuditTab from '@/components/AuditTab';
 import LessonPlanner from '@/components/LessonPlanner';
 import ExamManager from '@/components/ExamManager';
 import StemProjects from '@/components/StemProjects';
-import UserAuthModal, { UserProfile, getStoredCurrentUser } from '@/components/UserAuthModal';
-import { User } from 'lucide-react';
+import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 
 interface NavItem {
   index: number;
@@ -60,14 +63,15 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { index: 0, label: "Thí Nghiệm Ảo", shortLabel: "Thí nghiệm", icon: <FlaskConical size={20} /> },
-  { index: 1, label: "Gia Sư AI", shortLabel: "Gia sư AI", icon: <Bot size={20} /> },
-  { index: 2, label: "Thử Thách AI / Kahoot", shortLabel: "Kahoot", icon: <Trophy size={20} /> },
-  { index: 3, label: "An Toàn & 3D Liên Kết", shortLabel: "3D & An toàn", icon: <ShieldCheck size={20} /> },
-  { index: 4, label: "Soạn Giáo Án (5512)", shortLabel: "Giáo án 5512", icon: <BookOpen size={20} /> },
-  { index: 5, label: "Soạn - Chấm Bài Thi", shortLabel: "Đề thi", icon: <FileCheck2 size={20} /> },
-  { index: 6, label: "Dự Án STEM", shortLabel: "STEM", icon: <Sparkles size={20} /> },
-  { index: 7, label: "Giáo Viên Audit", shortLabel: "Audit", icon: <UserCheck size={20} />, isAudit: true },
+  { index: 0, label: "Trang Chủ", shortLabel: "Trang chủ", icon: <Home size={20} /> },
+  { index: 1, label: "Thí Nghiệm Ảo", shortLabel: "Thí nghiệm", icon: <FlaskConical size={20} /> },
+  { index: 2, label: "Gia Sư AI", shortLabel: "Gia sư AI", icon: <Bot size={20} /> },
+  { index: 3, label: "Thử Thách AI / Kahoot", shortLabel: "Kahoot", icon: <Trophy size={20} /> },
+  { index: 4, label: "An Toàn & 3D Liên Kết", shortLabel: "3D & An toàn", icon: <ShieldCheck size={20} /> },
+  { index: 5, label: "Soạn Giáo Án (5512)", shortLabel: "Giáo án 5512", icon: <BookOpen size={20} /> },
+  { index: 6, label: "Soạn - Chấm Bài Thi", shortLabel: "Đề thi", icon: <FileCheck2 size={20} /> },
+  { index: 7, label: "Dự Án STEM", shortLabel: "STEM", icon: <Sparkles size={20} /> },
+  { index: 8, label: "Giáo Viên Audit", shortLabel: "Audit", icon: <UserCheck size={20} />, isAudit: true },
 ];
 
 export default function AppContainer() {
@@ -86,10 +90,19 @@ export default function AppContainer() {
   }, []);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    if (newValue !== 0 && !currentUser) {
+      setAuthModalOpen(true);
+      return;
+    }
     setCurrentTab(newValue);
   };
 
   const handleSelectTab = (idx: number) => {
+    if (idx !== 0 && !currentUser) {
+      setAuthModalOpen(true);
+      setDrawerOpen(false);
+      return;
+    }
     setCurrentTab(idx);
     setDrawerOpen(false);
     // Scroll smoothly to top on mobile tab change
@@ -110,9 +123,10 @@ export default function AppContainer() {
         <AppBar
           position="sticky"
           sx={{
-            bgcolor: 'rgba(15, 23, 42, 0.95)',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            bgcolor: 'rgba(9, 13, 22, 0.92)',
+            backdropFilter: 'blur(16px)',
+            borderBottom: '1px solid rgba(56, 189, 248, 0.15)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
             zIndex: 1100,
           }}
         >
@@ -125,14 +139,15 @@ export default function AppContainer() {
                   color="primary"
                   onClick={() => setCurrentTab(0)}
                   sx={{
-                    bgcolor: 'rgba(2, 132, 199, 0.18)',
+                    bgcolor: 'rgba(2, 132, 199, 0.15)',
+                    border: '1px solid rgba(56, 189, 248, 0.3)',
                     p: { xs: 0.8, sm: 1 },
-                    '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.3)' }
+                    '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.3)', borderColor: '#38bdf8' }
                   }}
                 >
                   <FlaskConical size={22} color="#38bdf8" />
                 </IconButton>
-                <Box sx={{ minWidth: 0 }}>
+                <Box sx={{ minWidth: 0, cursor: 'pointer' }} onClick={() => setCurrentTab(0)}>
                   <Box display="flex" alignItems="center" gap={0.8}>
                     <Typography
                       variant="h6"
@@ -179,7 +194,7 @@ export default function AppContainer() {
 
               {/* Desktop/Tablet Horizontal Tabs */}
               <Tabs
-                value={currentTab === 7 ? false : currentTab}
+                value={currentTab === 8 ? false : currentTab}
                 onChange={handleTabChange}
                 textColor="primary"
                 indicatorColor="primary"
@@ -189,17 +204,33 @@ export default function AppContainer() {
                   display: { xs: 'none', md: 'flex' },
                   flexGrow: 1,
                   mx: 2,
+                  '& .MuiTabs-indicator': {
+                    height: 3,
+                    borderRadius: '3px 3px 0 0',
+                    bgcolor: '#38bdf8',
+                    boxShadow: '0 0 10px rgba(56, 189, 248, 0.7)',
+                  },
                   '& .MuiTab-root': {
                     textTransform: 'none',
                     fontWeight: 600,
                     fontSize: '13px',
                     minHeight: 64,
-                    px: 1.5,
+                    px: 1.6,
+                    color: '#94a3b8',
                     transition: 'all 0.2s ease',
-                    '&:hover': { color: '#38bdf8' }
+                    '&:hover': {
+                      color: '#e0f2fe',
+                      bgcolor: 'rgba(255, 255, 255, 0.03)',
+                    },
+                    '&.Mui-selected': {
+                      color: '#38bdf8',
+                      fontWeight: 700,
+                      bgcolor: 'rgba(56, 189, 248, 0.06)',
+                    }
                   }
                 }}
               >
+                <Tab label="Trang Chủ" />
                 <Tab label="Thí Nghiệm Ảo" />
                 <Tab label="Gia Sư AI" />
                 <Tab label="Thử Thách Kahoot" />
@@ -263,16 +294,16 @@ export default function AppContainer() {
 
                 {/* Desktop Teacher Audit Button */}
                 <Chip
-                  icon={<UserCheck size={16} />}
+                  icon={!currentUser ? <Lock size={15} /> : <UserCheck size={16} />}
                   label="Giáo viên Audit"
-                  color={currentTab === 7 ? "warning" : "default"}
-                  onClick={() => setCurrentTab(7)}
-                  variant={currentTab === 7 ? "filled" : "outlined"}
+                  color={currentTab === 8 ? "warning" : "default"}
+                  onClick={() => handleSelectTab(8)}
+                  variant={currentTab === 8 ? "filled" : "outlined"}
                   sx={{
                     display: { xs: 'none', md: 'inline-flex' },
                     fontWeight: 'bold',
                     borderColor: 'rgba(245, 158, 11, 0.5)',
-                    color: currentTab === 7 ? '#000' : '#f59e0b',
+                    color: currentTab === 8 ? '#000' : '#f59e0b',
                     cursor: 'pointer',
                     height: 32,
                     '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.2)' }
@@ -299,7 +330,7 @@ export default function AppContainer() {
           </Container>
         </AppBar>
 
-        {/* Mobile Navigation Drawer / Menu */}
+        {/* Mobile Navigation Drawer */}
         <Drawer
           anchor="right"
           open={drawerOpen}
@@ -307,58 +338,82 @@ export default function AppContainer() {
           PaperProps={{
             sx: {
               width: 290,
-              bgcolor: '#0f172a',
-              backgroundImage: 'none',
-              borderLeft: '1px solid rgba(255,255,255,0.1)',
+              bgcolor: '#090d16',
+              backgroundImage: 'linear-gradient(180deg, #0f172a 0%, #090d16 100%)',
+              borderLeft: '1px solid rgba(56, 189, 248, 0.2)',
               p: 2,
-            },
+              display: 'flex',
+              flexDirection: 'column',
+            }
           }}
         >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          {/* Drawer Header */}
+          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Box display="flex" alignItems="center" gap={1}>
-              <FlaskConical size={20} color="#0284c7" />
-              <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                Danh Mục Tính Năng
+              <FlaskConical size={22} color="#38bdf8" />
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#38bdf8' }}>
+                HCC - ChemAI
               </Typography>
             </Box>
-            <IconButton onClick={() => setDrawerOpen(false)} sx={{ color: 'text.secondary', p: 0.5 }}>
+            <IconButton onClick={() => setDrawerOpen(false)} size="small" sx={{ color: 'text.secondary' }}>
               <X size={20} />
             </IconButton>
           </Box>
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
 
-          {/* Mobile User Profile Quick Button */}
-          <Paper
-            onClick={() => { setDrawerOpen(false); setAuthModalOpen(true); }}
-            sx={{
-              p: 1.5,
-              mb: 1.5,
-              bgcolor: currentUser ? 'rgba(56, 189, 248, 0.08)' : '#090d16',
-              border: '1px solid rgba(56, 189, 248, 0.2)',
-              borderRadius: 2,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.2,
-              '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.15)' }
-            }}
-          >
-            <Avatar sx={{ bgcolor: currentUser ? '#0284c7' : 'rgba(255,255,255,0.1)', color: '#fff', width: 38, height: 38 }}>
-              {currentUser ? currentUser.fullName.charAt(0).toUpperCase() : <User size={18} />}
-            </Avatar>
-            <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography variant="body2" fontWeight="bold" noWrap sx={{ color: '#f8fafc', fontSize: '13px' }}>
-                {currentUser ? currentUser.fullName : 'Tài Khoản Học Sinh'}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: '11px', display: 'block' }}>
-                {currentUser ? `${currentUser.className || 'Lớp 10'} — ${currentUser.school || 'THPT'}` : 'Nhấn để Đăng nhập / Đăng ký'}
-              </Typography>
-            </Box>
-          </Paper>
+          <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 2 }} />
 
+          {/* User Profile in Drawer */}
+          <Box sx={{ mb: 2 }}>
+            {currentUser ? (
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(2, 132, 199, 0.12)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  setDrawerOpen(false);
+                  setAuthModalOpen(true);
+                }}
+              >
+                <Typography variant="body2" fontWeight="bold" color="white">
+                  {currentUser.fullName}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {currentUser.className || 'Học sinh'} • {currentUser.school || 'THPT'}
+                </Typography>
+              </Box>
+            ) : (
+              <Chip
+                icon={<User size={16} color="#38bdf8" />}
+                label="Đăng nhập / Đăng ký"
+                onClick={() => {
+                  setDrawerOpen(false);
+                  setAuthModalOpen(true);
+                }}
+                variant="outlined"
+                sx={{
+                  width: '100%',
+                  fontWeight: 'bold',
+                  borderColor: 'rgba(56, 189, 248, 0.5)',
+                  color: '#38bdf8',
+                  bgcolor: 'rgba(2, 132, 199, 0.1)',
+                  height: 38,
+                  justifyContent: 'flex-start',
+                  px: 1,
+                  '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.25)' }
+                }}
+              />
+            )}
+          </Box>
+
+          {/* Drawer Nav Items List */}
           <List sx={{ p: 0 }}>
             {NAV_ITEMS.map((item) => {
               const isSelected = currentTab === item.index;
+              const isLocked = !currentUser && item.index !== 0;
               return (
                 <ListItem key={item.index} disablePadding sx={{ mb: 0.5 }}>
                   <ListItemButton
@@ -399,7 +454,10 @@ export default function AppContainer() {
                           : 'text.primary',
                       }}
                     />
-                    {item.isAudit && (
+                    {isLocked && (
+                      <Lock size={14} color="#64748b" style={{ marginLeft: 'auto' }} />
+                    )}
+                    {item.isAudit && !isLocked && (
                       <Chip
                         label="Admin"
                         size="small"
@@ -430,14 +488,26 @@ export default function AppContainer() {
             maxWidth: '100% !important',
           }}
         >
-          {currentTab === 0 && <VirtualLab />}
-          {currentTab === 1 && <DifyChatTutor />}
-          {currentTab === 2 && <QuizKahootTab />}
-          {currentTab === 3 && <SafetyTab />}
-          {currentTab === 4 && <LessonPlanner />}
-          {currentTab === 5 && <ExamManager />}
-          {currentTab === 6 && <StemProjects />}
-          {currentTab === 7 && <AuditTab />}
+          {(!currentUser || currentTab === 0) && (
+            <HomeDashboard
+              onNavigateTab={(idx) => handleSelectTab(idx)}
+              onOpenAuthModal={() => setAuthModalOpen(true)}
+              currentUser={currentUser}
+              onLogout={() => {
+                saveStoredCurrentUser(null);
+                setCurrentUser(null);
+                setCurrentTab(0);
+              }}
+            />
+          )}
+          {currentUser && currentTab === 1 && <VirtualLab />}
+          {currentUser && currentTab === 2 && <DifyChatTutor />}
+          {currentUser && currentTab === 3 && <QuizKahootTab />}
+          {currentUser && currentTab === 4 && <SafetyTab />}
+          {currentUser && currentTab === 5 && <LessonPlanner />}
+          {currentUser && currentTab === 6 && <ExamManager />}
+          {currentUser && currentTab === 7 && <StemProjects />}
+          {currentUser && currentTab === 8 && <AuditTab />}
         </Container>
 
         {/* Mobile Bottom Navigation Bar (xs & sm screens) */}
@@ -489,6 +559,10 @@ export default function AppContainer() {
             }}
           >
             <BottomNavigationAction
+              label="Trang chủ"
+              icon={<Home size={19} />}
+            />
+            <BottomNavigationAction
               label="Thí nghiệm"
               icon={<FlaskConical size={19} />}
             />
@@ -499,10 +573,6 @@ export default function AppContainer() {
             <BottomNavigationAction
               label="Kahoot"
               icon={<Trophy size={19} />}
-            />
-            <BottomNavigationAction
-              label="3D Liên kết"
-              icon={<ShieldCheck size={19} />}
             />
             <BottomNavigationAction
               label={currentTab >= 4 ? NAV_ITEMS[currentTab]?.shortLabel || "Thêm" : "Thêm"}
