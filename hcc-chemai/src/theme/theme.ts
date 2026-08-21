@@ -23,6 +23,13 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: ['Inter', 'Roboto', 'sans-serif'].join(','),
+    fontFamily: ['Inter', 'var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'].join(','),
+    h1: { fontWeight: 800, letterSpacing: '-0.025em' },
+    h2: { fontWeight: 800, letterSpacing: '-0.025em' },
+    h3: { fontWeight: 800, letterSpacing: '-0.02em' },
+    h4: { fontWeight: 700, letterSpacing: '-0.02em' },
+    h5: { fontWeight: 700, letterSpacing: '-0.015em' },
+    h6: { fontWeight: 600, letterSpacing: '-0.01em' },
+    button: { textTransform: 'none', fontWeight: 600 },
   },
 });
