@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Bot, Database, Send, Zap } from "lucide-react";
+import { Bot, Database, Send, Zap, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { formatMarkdownToHTML, cleanChemicalLatex } from "@/components/AuditTab";
 
@@ -147,7 +147,29 @@ export default function DifyChatTutor() {
     },
   ]);
   const [loading, setLoading] = useState(false);
-  const [sessionId] = useState<string>(() => "session_" + Math.random().toString(36).substring(2, 9));
+  const [sessionId, setSessionId] = useState<string>(() => "session_" + Math.random().toString(36).substring(2, 9));
+
+  const handleClearChat = () => {
+    if (messages.length <= 1) return;
+    if (window.confirm("Bạn có muốn xóa cuộc trò chuyện này và làm mới không?")) {
+      setMessages([
+        {
+          id: Date.now().toString(),
+          sender: "bot",
+          text:
+            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Hệ thống tự động kiểm tra Database để phản hồi tức thì về Cấu tạo nguyên tử, Bảng tuần hoàn, Liên kết hóa học, Phản ứng Oxi hóa - Khử, Phương trình Ion hay Nhóm Halogen...",
+          source: "database",
+        },
+      ]);
+      setSessionId("session_" + Math.random().toString(36).substring(2, 9));
+      // clear local caches
+      try {
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith("chemai_cache_"))
+          .forEach((k) => localStorage.removeItem(k));
+      } catch {}
+    }
+  };
 
   const handleSend = async (customText?: string) => {
     const textToSend = customText || input;
@@ -365,6 +387,24 @@ Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
               sx={{ height: 22, fontSize: 11, bgcolor: 'rgba(16,185,129,0.08)' }} 
             />
             <Chip label="Gemini AI" color="info" size="small" variant="outlined" sx={{ height: 22, fontSize: 11 }} />
+            {messages.length > 1 && (
+              <Button
+                size="small"
+                color="error"
+                variant="outlined"
+                onClick={handleClearChat}
+                startIcon={<Trash2 size={12} />}
+                sx={{
+                  height: 22,
+                  fontSize: "11px",
+                  textTransform: "none",
+                  px: 1,
+                  minWidth: "auto",
+                }}
+              >
+                Xóa chat
+              </Button>
+            )}
           </Box>
         </Box>
 

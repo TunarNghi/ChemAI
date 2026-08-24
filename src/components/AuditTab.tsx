@@ -35,6 +35,7 @@ import {
   StopCircle,
   UserCheck,
   GraduationCap,
+  Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import StudentProgressManager from "@/components/StudentProgressManager";
@@ -335,6 +336,23 @@ export default function AuditTab() {
     }
   };
 
+  const handleClearAllChatLogs = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu Chat Logs AI trên CSDL Supabase không? Thao tác này không thể hoàn tác.")) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.from("chat_logs").delete().neq("id", 0);
+      if (error) throw error;
+      setChatLogs([]);
+      alert("Đã xóa sạch toàn bộ lịch sử Chat Logs trên Supabase thành công!");
+    } catch (e: any) {
+      alert("Lỗi khi xóa Chat Logs: " + e.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCreateKahootRoom = async () => {
     const pin = Math.floor(100000 + Math.random() * 900000).toString();
     try {
@@ -561,13 +579,27 @@ export default function AuditTab() {
               </Stack>
 
               {subTab !== "kahoot" && (
-                <Button
-                  size="small"
-                  onClick={() => fetchCurrentSubData()}
-                  startIcon={<RefreshCw size={14} />}
-                >
-                  Tải Lại CSDL
-                </Button>
+                <Stack direction="row" spacing={1}>
+                  {subTab === "chat" && (
+                    <Button
+                      size="small"
+                      color="error"
+                      variant="outlined"
+                      onClick={handleClearAllChatLogs}
+                      startIcon={<Trash2 size={14} />}
+                      sx={{ textTransform: "none", fontWeight: "bold" }}
+                    >
+                      Xóa Toàn Bộ Chat Logs
+                    </Button>
+                  )}
+                  <Button
+                    size="small"
+                    onClick={() => fetchCurrentSubData()}
+                    startIcon={<RefreshCw size={14} />}
+                  >
+                    Tải Lại CSDL
+                  </Button>
+                </Stack>
               )}
             </Box>
 
