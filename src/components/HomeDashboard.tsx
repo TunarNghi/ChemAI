@@ -309,17 +309,17 @@ const FEATURES: FeatureItem[] = [
   {
     id: 'leaderboard',
     tabIndex: 11,
-    title: 'Bảng Xếp Hạng Học Sinh Hóa Học 10',
-    subtitle: 'Vinh danh Top 3 Học sinh xuất sắc theo Thành Phố, Tỉnh và Toàn Quốc',
+    title: 'Bảng Xếp Hạng Học Sinh THPT',
+    subtitle: 'Vinh danh Top 3 Học sinh THPT xuất sắc theo Thành Phố, Tỉnh và Toàn Quốc',
     category: 'student',
-    categoryLabel: 'Học sinh & Thi đấu',
-    badge: 'Bảng Vàng Học Sinh',
+    categoryLabel: 'Học sinh THPT & Thi đấu',
+    badge: 'Bảng Vàng Học Sinh THPT',
     badgeColor: '#f59e0b',
     icon: <Award size={28} color="#f59e0b" />,
     iconBg: 'rgba(245, 158, 11, 0.15)',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     description:
-      'Trang xếp hạng và vinh danh học sinh toàn diện: hỗ trợ phân vùng theo 3 cấp độ (Thành phố/Thị xã/Huyện, Cấp Tỉnh, và Toàn Quốc). Tích hợp 3 bảng xếp hạng chuyên sâu: Điểm EXP, Chuỗi thắng Kahoot và Chuỗi ngày chuyên cần.',
+      'Trang xếp hạng và vinh danh học sinh THPT toàn diện: hỗ trợ phân vùng theo 3 cấp độ (Thành phố/Thị xã/Huyện, Cấp Tỉnh, và Toàn Quốc). Tích hợp 3 bảng xếp hạng chuyên sâu: Điểm EXP, Chuỗi thắng Kahoot và Chuỗi ngày chuyên cần.',
     highlights: [
       'Phân vùng 3 cấp độ: Thành phố / Thị xã / Huyện, Cấp Tỉnh, và Toàn Quốc (Quốc gia)',
       '3 Bảng xếp hạng độc lập: Điểm EXP, Chuỗi trận Kahoot & Chuỗi ngày đăng nhập',
@@ -327,7 +327,7 @@ const FEATURES: FeatureItem[] = [
       'Thẻ theo dõi thứ hạng cá nhân và xuất báo cáo bảng vàng CSV/Excel',
     ],
     techStack: ['Geo-Location Filter', 'Realtime Sync', 'Podium Showcase', 'CSV Exporter'],
-    actionLabel: 'Xem Bảng Xếp Hạng Học Sinh',
+    actionLabel: 'Xem Bảng Xếp Hạng Học Sinh THPT',
   },
   {
     id: 'periodic-table',
