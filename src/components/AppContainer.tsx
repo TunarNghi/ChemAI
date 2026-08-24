@@ -45,6 +45,7 @@ import {
   Video,
   GraduationCap,
   Award,
+  Atom,
 } from 'lucide-react';
 import { theme } from '@/theme/theme';
 import HomeDashboard from '@/components/HomeDashboard';
@@ -60,6 +61,7 @@ import StemProjects from '@/components/StemProjects';
 import TeacherVideoLectures from '@/components/TeacherVideoLectures';
 import StudentProgressManager from '@/components/StudentProgressManager';
 import LeaderboardTab from '@/components/LeaderboardTab';
+import PeriodicTableTab from '@/components/PeriodicTableTab';
 import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 
 interface NavItem {
@@ -84,6 +86,7 @@ const NAV_ITEMS: NavItem[] = [
   { index: 9, label: "Sổ Học Sinh", shortLabel: "Sổ học sinh", icon: <GraduationCap size={20} />, teacherOnly: true },
   { index: 10, label: "Giáo Viên Audit", shortLabel: "Audit", icon: <UserCheck size={20} />, isAudit: true, teacherOnly: true },
   { index: 11, label: "Bảng Xếp Hạng", shortLabel: "Xếp hạng", icon: <Award size={20} /> },
+  { index: 12, label: "Bảng Hóa Học", shortLabel: "Bảng tuần hoàn", icon: <Atom size={20} /> },
 ];
 
 export default function AppContainer() {
@@ -529,6 +532,7 @@ export default function AppContainer() {
           {currentUser && currentTab === 9 && (isTeacher ? <StudentProgressManager currentUser={currentUser} /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh" />)}
           {currentUser && currentTab === 10 && (isTeacher ? <AuditTab /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Cổng Quản Trị Audit" />)}
           {currentUser && currentTab === 11 && <LeaderboardTab currentUser={currentUser} onNavigateTab={(idx) => handleSelectTab(idx)} />}
+          {currentUser && currentTab === 12 && <PeriodicTableTab />}
         </Container>
 
         {/* Mobile Bottom Navigation Bar (xs & sm screens) */}

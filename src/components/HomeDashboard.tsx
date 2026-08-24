@@ -329,6 +329,29 @@ const FEATURES: FeatureItem[] = [
     techStack: ['Geo-Location Filter', 'Realtime Sync', 'Podium Showcase', 'CSV Exporter'],
     actionLabel: 'Xem Bảng Xếp Hạng Học Sinh',
   },
+  {
+    id: 'periodic-table',
+    tabIndex: 12,
+    title: 'Bảng Tuần Hoàn Hóa Học 118 Nguyên Tố',
+    subtitle: 'Chuẩn IUPAC, phân loại 3 mảng màu & Tra cứu 9 mục chuyên sâu',
+    category: 'simulation',
+    categoryLabel: 'Tra cứu & Mô phỏng',
+    badge: '118 Nguyên Tố IUPAC',
+    badgeColor: '#06b6d4',
+    icon: <Atom size={28} color="#06b6d4" />,
+    iconBg: 'rgba(6, 182, 212, 0.15)',
+    glowColor: 'rgba(6, 182, 212, 0.25)',
+    description:
+      'Khám phá toàn bộ 118 nguyên tố hóa học với 3 mảng màu chuẩn (Kim loại, Phi kim, Khí hiếm). Hỗ trợ tìm kiếm nhanh, mô phỏng trạng thái theo nhiệt độ và tra cứu 9 mục thông tin chi tiết kèm tìm kiếm nội bộ.',
+    highlights: [
+      'Đầy đủ 118 nguyên tố hóa học hiển thị trên lưới IUPAC 18 cột chuẩn quốc tế',
+      'Phân chia trực quan 3 mảng màu chính: Kim loại (Metals), Phi kim (Non-metals), Khí hiếm (Noble gases)',
+      '9 Mục thông tin chuyên sâu: Cấu trúc hạt nhân, nhiệt động học, độ âm điện, quang phổ, quặng tự nhiên, ứng dụng, an toàn NFPA 704',
+      'Tìm kiếm nhanh đa tiêu chí & Tìm kiếm thông tin nhỏ tức thì bên trong từng nguyên tố',
+    ],
+    techStack: ['IUPAC Standard 2026', 'In-Element Search', 'NFPA 704 Diamond', 'State Simulation'],
+    actionLabel: 'Khám Phá Bảng Hóa Học',
+  },
 ];
 
 const SYLLABUS_CHAPTERS = [

@@ -69,6 +69,7 @@ import {
 } from 'lucide-react';
 import { callGeminiAPI, supabase } from '@/lib/api';
 import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
+import { fetchAllUsersFromDatabase, saveUserToDatabase } from '@/lib/userDatabase';
 
 export interface StudentProgressData extends UserProfile {
   kahootExp: number;
@@ -196,56 +197,10 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
 
   const loadStudents = async () => {
     try {
-      const rawRegistered = localStorage.getItem('chemai_registered_users');
-      let registeredUsers: UserProfile[] = rawRegistered ? JSON.parse(rawRegistered) : [];
-      
-      // Purge any legacy seed accounts (std_seed_*) from previous runs
-      const purgedUsers = registeredUsers.filter((u) => !u.id?.startsWith('std_seed_'));
-      if (purgedUsers.length !== registeredUsers.length) {
-        localStorage.setItem('chemai_registered_users', JSON.stringify(purgedUsers));
-        registeredUsers = purgedUsers;
-      }
-
-      let studentOnly = registeredUsers.filter(
+      const allUsers = await fetchAllUsersFromDatabase();
+      const studentOnly = allUsers.filter(
         (u) => !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
       );
-
-      // Sync with Supabase user_profiles if connected
-      try {
-        const { data: remoteUsers } = await supabase.from('user_profiles').select('*').eq('role', 'student');
-        if (remoteUsers && remoteUsers.length > 0) {
-          const map = new Map<string, UserProfile>();
-          studentOnly.forEach((u) => map.set(u.id, u));
-
-          remoteUsers.forEach((r) => {
-            const uid = r.user_id || r.id;
-            if (!map.has(uid)) {
-              map.set(uid, {
-                id: uid,
-                fullName: r.full_name,
-                authType: r.auth_type || 'email',
-                emailOrPhone: r.email_or_phone,
-                role: 'student',
-                className: r.class_name || '10A1',
-                school: r.school || '',
-                location: r.location || '',
-                createdAt: r.created_at || new Date().toISOString(),
-                kahootExp: r.kahoot_exp || 0,
-                kahootStreak: r.kahoot_streak || 0,
-                loginStreak: r.login_streak || 1,
-                nickname: r.nickname || '',
-                totalKahootQuestions: r.total_questions || 0,
-                correctKahootQuestions: r.correct_questions || 0,
-                teacherEvaluation: r.teacher_evaluation || '',
-                lastActiveDate: r.last_active_date || r.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-              });
-            }
-          });
-          studentOnly = Array.from(map.values());
-        }
-      } catch (err) {
-        console.warn('Supabase fetch error:', err);
-      }
 
       const mappedList: StudentProgressData[] = studentOnly.map((u) => {
         const exp = u.kahootExp !== undefined ? u.kahootExp : 0;
@@ -276,18 +231,9 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
   const persistStudentsList = (updatedList: StudentProgressData[]) => {
     setStudents(updatedList);
     try {
-      const rawRegistered = localStorage.getItem('chemai_registered_users');
-      let registeredUsers: UserProfile[] = rawRegistered ? JSON.parse(rawRegistered) : [];
-      
       updatedList.forEach((std) => {
-        const idx = registeredUsers.findIndex((u) => u.id === std.id);
-        if (idx !== -1) {
-          registeredUsers[idx] = { ...registeredUsers[idx], ...std };
-        } else {
-          registeredUsers.push(std);
-        }
+        saveUserToDatabase(std).catch(() => {});
       });
-      localStorage.setItem('chemai_registered_users', JSON.stringify(registeredUsers));
 
       // If current logged-in user is one of updated students, update current_user
       const currentStored = getStoredCurrentUser();
