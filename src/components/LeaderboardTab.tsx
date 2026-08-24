@@ -385,16 +385,16 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
               </Box>
               <Box>
                 <Typography variant="h4" fontWeight="900" color="white" sx={{ fontSize: { xs: '20px', sm: '26px' }, letterSpacing: '-0.5px' }}>
-                  Bảng Xếp Hạng Học Sinh Hóa Học 10
+                  Bảng Xếp Hạng Học Sinh THPT
                 </Typography>
                 <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12px' }}>
-                  Hóa Học 10 GDPT 2018 • Xếp hạng đa cấp: Thành Phố / Thị Xã — Tỉnh — Toàn Quốc
+                  Hóa Học THPT GDPT 2018 • Xếp hạng đa cấp: Thành Phố / Thị Xã — Tỉnh — Toàn Quốc
                 </Typography>
               </Box>
             </Stack>
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 740, lineHeight: 1.7, fontSize: '13.5px' }}>
-              Vinh danh các <b>Học Sinh</b> có thành tích Hóa học xuất sắc nhất theo 3 phạm vi địa lý (<b>Thành Phố / Huyện</b>, <b>Tỉnh</b> và <b>Toàn Quốc</b>), 
+              Vinh danh các <b>Học Sinh THPT</b> có thành tích Hóa học xuất sắc nhất theo 3 phạm vi địa lý (<b>Thành Phố / Huyện</b>, <b>Tỉnh</b> và <b>Toàn Quốc</b>), 
               dựa trên 3 chỉ số cốt lõi: <b>Điểm Kinh Nghiệm (EXP)</b>, <b>Chuỗi Thắng Kahoot</b> và <b>Chuỗi Ngày Đăng Nhập</b>.
             </Typography>
 
