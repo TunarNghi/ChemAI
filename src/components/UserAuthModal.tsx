@@ -54,6 +54,12 @@ import {
   Tag,
 } from 'lucide-react';
 import { supabase } from '@/lib/api';
+import {
+  saveUserToDatabase,
+  fetchUserByIdentifierFromDatabase,
+  fetchAllUsersFromDatabase,
+  getLocalRegisteredUsers,
+} from '@/lib/userDatabase';
 
 export interface UserProfile {
   id: string;
@@ -226,30 +232,13 @@ export default function UserAuthModal({
       }
     }
     setAlertInfo(null);
+    // Background sync all registered users from database
+    fetchAllUsersFromDatabase().catch(() => {});
   }, [currentUser, open, initialRole]);
 
   // Load existing registered users
   const getRegisteredUsers = (): UserProfile[] => {
-    try {
-      const data = localStorage.getItem(LOCAL_USERS_KEY);
-      if (data) {
-        let parsed: UserProfile[] = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Purge any legacy demo seed students
-          parsed = parsed.filter(u => !u.id?.startsWith('std_seed_'));
-          // Ensure default teacher exists
-          if (!parsed.some(u => u.role === 'teacher')) {
-            parsed.push(DEFAULT_TEACHER_ACCOUNT);
-          }
-          localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(parsed));
-          return parsed;
-        }
-      }
-      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(DEFAULT_SEEDED_USERS));
-      return DEFAULT_SEEDED_USERS;
-    } catch {
-      return DEFAULT_SEEDED_USERS;
-    }
+    return getLocalRegisteredUsers();
   };
 
   const saveRegisteredUsers = (users: UserProfile[]) => {
@@ -297,15 +286,15 @@ export default function UserAuthModal({
       : (regClassSelect === "Khác (Tự điền)" ? (regCustomClass.trim() || "Lớp 10") : regClassSelect);
     const finalLocation = regLocation.trim() || "Việt Nam";
 
-    const allUsers = getRegisteredUsers();
+    const allUsers = await fetchAllUsersFromDatabase();
     // Check duplication
     const isExisted = allUsers.some(
-      u => u.emailOrPhone.toLowerCase() === regEmailOrPhone.trim().toLowerCase() ||
-           u.fullName.toLowerCase() === regFullName.trim().toLowerCase()
+      u => (u.emailOrPhone && u.emailOrPhone.toLowerCase() === regEmailOrPhone.trim().toLowerCase()) ||
+           (u.fullName && u.fullName.toLowerCase() === regFullName.trim().toLowerCase())
     );
 
     if (isExisted) {
-      setAlertInfo({ type: 'error', message: 'Tài khoản hoặc Email/SĐT này đã được đăng ký. Hãy chuyển qua Đăng nhập!' });
+      setAlertInfo({ type: 'error', message: 'Tài khoản hoặc Email/SĐT này đã được đăng ký trên hệ thống. Hãy chuyển qua Đăng nhập!' });
       return;
     }
 
@@ -323,28 +312,13 @@ export default function UserAuthModal({
       createdAt: new Date().toISOString(),
     };
 
-    allUsers.push(newUser);
-    saveRegisteredUsers(allUsers);
+    // Save to Database and Local storage
+    await saveUserToDatabase(newUser);
     saveStoredCurrentUser(newUser);
-
-    // Background sync to Supabase (if available)
-    try {
-      supabase.from('user_profiles').upsert({
-        user_id: newUser.id,
-        full_name: newUser.fullName,
-        auth_type: newUser.authType,
-        email_or_phone: newUser.emailOrPhone,
-        role: newUser.role,
-        class_name: newUser.className,
-        school: newUser.school,
-        location: newUser.location,
-        created_at: newUser.createdAt,
-      }).then();
-    } catch {}
 
     setAlertInfo({
       type: 'success',
-      message: `Đăng ký tài khoản ${newUser.role === 'teacher' ? 'Giáo viên' : 'Học sinh'} thành công! Đang đăng nhập...`
+      message: `Đăng ký tài khoản ${newUser.role === 'teacher' ? 'Giáo viên' : 'Học sinh'} thành công & đã lưu vào Database! Đang đăng nhập...`
     });
     setTimeout(() => {
       onLoginSuccess(newUser);
@@ -352,7 +326,7 @@ export default function UserAuthModal({
     }, 800);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAlertInfo(null);
 
@@ -361,7 +335,6 @@ export default function UserAuthModal({
       return;
     }
 
-    const allUsers = getRegisteredUsers();
     const cleanId = loginIdentifier.trim().toLowerCase();
     const cleanPass = loginPassword.trim();
 
@@ -370,6 +343,7 @@ export default function UserAuthModal({
       (cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com' || cleanId === 'thầy hiệp' || cleanId === 'nguyễn văn hiệp') &&
       (cleanPass === 'chemai2026' || cleanPass === '123456')
     ) {
+      const allUsers = await fetchAllUsersFromDatabase();
       const teacher = allUsers.find(u => u.id === DEFAULT_TEACHER_ACCOUNT.id || u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
       saveStoredCurrentUser(teacher);
       setAlertInfo({
@@ -383,11 +357,15 @@ export default function UserAuthModal({
       return;
     }
 
-    // 2. Normal matching by email/phone/name and password
-    const matchedUser = allUsers.find(
-      u => (u.fullName.toLowerCase() === cleanId || u.emailOrPhone.toLowerCase() === cleanId) &&
-           (u.password === loginPassword || cleanPass === 'chemai2026')
-    );
+    // 2. Fetch user from Database (Cloud & Local)
+    let matchedUser = await fetchUserByIdentifierFromDatabase(cleanId);
+    if (!matchedUser) {
+      const allUsers = await fetchAllUsersFromDatabase();
+      matchedUser = allUsers.find(
+        u => (u.fullName && u.fullName.toLowerCase() === cleanId) ||
+             (u.emailOrPhone && u.emailOrPhone.toLowerCase() === cleanId)
+      ) || null;
+    }
 
     if (!matchedUser) {
       // If logging in as teacher and entered password chemai2026
@@ -397,6 +375,7 @@ export default function UserAuthModal({
           fullName: loginIdentifier.includes('@') ? 'Giáo Viên Hóa Học' : loginIdentifier.trim(),
           emailOrPhone: loginIdentifier.trim(),
         };
+        await saveUserToDatabase(teacherAcc);
         saveStoredCurrentUser(teacherAcc);
         setAlertInfo({
           type: 'success',
@@ -409,7 +388,13 @@ export default function UserAuthModal({
         return;
       }
 
-      setAlertInfo({ type: 'error', message: 'Tên đăng nhập hoặc mật khẩu không chính xác.' });
+      setAlertInfo({ type: 'error', message: 'Tài khoản không tồn tại trên hệ thống database.' });
+      return;
+    }
+
+    // Check password
+    if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'chemai2026') {
+      setAlertInfo({ type: 'error', message: 'Mật khẩu không chính xác.' });
       return;
     }
 
@@ -428,9 +413,9 @@ export default function UserAuthModal({
     }, 500);
   };
 
-  const handleQuickLogin = (role: 'student' | 'teacher') => {
+  const handleQuickLogin = async (role: 'student' | 'teacher') => {
+    const allUsers = await fetchAllUsersFromDatabase();
     if (role === 'teacher') {
-      const allUsers = getRegisteredUsers();
       const teacher = allUsers.find(u => u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
       saveStoredCurrentUser(teacher);
       setAlertInfo({
@@ -442,7 +427,6 @@ export default function UserAuthModal({
         onClose();
       }, 400);
     } else {
-      const allUsers = getRegisteredUsers();
       const student = allUsers.find(u => u.role === 'student') || DEFAULT_STUDENT_ACCOUNT;
       saveStoredCurrentUser(student);
       setAlertInfo({
@@ -456,9 +440,8 @@ export default function UserAuthModal({
     }
   };
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!currentUser) return;
-    const allUsers = getRegisteredUsers();
     const updatedUser: UserProfile = {
       ...currentUser,
       fullName: editFullName.trim() || currentUser.fullName,
@@ -469,15 +452,11 @@ export default function UserAuthModal({
       location: editLocation.trim() || currentUser.location,
     };
 
-    const userIndex = allUsers.findIndex(u => u.id === currentUser.id);
-    if (userIndex !== -1) {
-      allUsers[userIndex] = updatedUser;
-      saveRegisteredUsers(allUsers);
-    }
+    await saveUserToDatabase(updatedUser);
     saveStoredCurrentUser(updatedUser);
     onLoginSuccess(updatedUser);
     setIsEditing(false);
-    setAlertInfo({ type: 'success', message: 'Cập nhật thông tin hồ sơ thành công!' });
+    setAlertInfo({ type: 'success', message: 'Cập nhật và đồng bộ thông tin hồ sơ lên Database thành công!' });
   };
 
   const handleDoLogout = () => {

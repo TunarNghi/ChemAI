@@ -49,6 +49,7 @@ import {
 import { supabase } from '@/lib/api';
 import { UserProfile } from '@/components/UserAuthModal';
 import { calculateCompetencyRank } from '@/components/StudentProgressManager';
+import { fetchAllUsersFromDatabase } from '@/lib/userDatabase';
 
 export interface LeaderboardStudent extends UserProfile {
   kahootExp: number;
@@ -141,56 +142,10 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
 
   const loadLeaderboardData = async () => {
     try {
-      const raw = localStorage.getItem('chemai_registered_users');
-      let registeredUsers: UserProfile[] = raw ? JSON.parse(raw) : [];
-
-      // Purge any legacy sample seed accounts (std_seed_*)
-      const purged = registeredUsers.filter((u) => !u.id?.startsWith('std_seed_'));
-      if (purged.length !== registeredUsers.length) {
-        localStorage.setItem('chemai_registered_users', JSON.stringify(purged));
-        registeredUsers = purged;
-      }
-
-      let studentOnly = registeredUsers.filter(
+      const allUsers = await fetchAllUsersFromDatabase();
+      const studentOnly = allUsers.filter(
         (u) => !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
       );
-
-      // Attempt sync with Supabase remote database
-      try {
-        const { data: remoteUsers } = await supabase.from('user_profiles').select('*').eq('role', 'student');
-        if (remoteUsers && remoteUsers.length > 0) {
-          const map = new Map<string, UserProfile>();
-          studentOnly.forEach((u) => map.set(u.id, u));
-
-          remoteUsers.forEach((r) => {
-            const uid = r.user_id || r.id;
-            if (!map.has(uid) && !uid.startsWith('std_seed_')) {
-              map.set(uid, {
-                id: uid,
-                fullName: r.full_name,
-                authType: r.auth_type || 'email',
-                emailOrPhone: r.email_or_phone,
-                role: 'student',
-                className: r.class_name || '10A1',
-                school: r.school || '',
-                location: r.location || '',
-                createdAt: r.created_at || new Date().toISOString(),
-                kahootExp: r.kahoot_exp || 0,
-                kahootStreak: r.kahoot_streak || 0,
-                loginStreak: r.login_streak || 1,
-                nickname: r.nickname || '',
-                totalKahootQuestions: r.total_questions || 0,
-                correctKahootQuestions: r.correct_questions || 0,
-                teacherEvaluation: r.teacher_evaluation || '',
-                lastActiveDate: r.last_active_date || r.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-              });
-            }
-          });
-          studentOnly = Array.from(map.values());
-        }
-      } catch (err) {
-        console.warn('Supabase leaderboard fetch:', err);
-      }
 
       const mapped: LeaderboardStudent[] = studentOnly.map((u) => {
         const exp = u.kahootExp !== undefined ? u.kahootExp : 0;

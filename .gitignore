@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+node_modules/
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -13,16 +15,23 @@
 # testing
 /coverage
 
-# next.js
+# next.js build cache & output
+.next/
+**/.next/
 /.next/
 /out/
+out/
+**/out/
 
 # production
 /build
+build/
 
 # misc
 .DS_Store
 *.pem
+scratch/
+**/scratch/
 
 # debug
 npm-debug.log*
@@ -39,3 +48,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+cloudflared.exe
+*.zip
+hcc-chemai/
+src_backup_safety/
