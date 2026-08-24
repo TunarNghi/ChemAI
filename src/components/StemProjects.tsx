@@ -36,7 +36,7 @@ const DEFAULT_STEM_PROJECTS: StemProject[] = [
   {
     id: "stem-1",
     title: "Chế Tạo Dung Dịch Chỉ Thị Màu Tự Nhiên Từ Bắp Cải Tím",
-    grade: "Lớp 10",
+    grade: "THPT",
     category: "Hóa học Môi trường & Đời sống",
     description:
       "Sử dụng hợp chất Anthocyanin trong bắp cải tím để nhận biết môi trường Axit - Bazơ của các dung dịch sinh hoạt hàng ngày (chanh, xà phòng, giấm, nước bọt).",
@@ -82,7 +82,7 @@ const DEFAULT_STEM_PROJECTS: StemProject[] = [
   {
     id: "stem-3",
     title: "Pin Điện Hóa Sinh Học Từ Chanh & Kim Loại (Citrus Battery)",
-    grade: "Lớp 10 - Lớp 11",
+    grade: "THPT",
     category: "Điện hóa học & Năng lượng xanh",
     description:
       "Tạo dòng điện một chiều thắp sáng bóng đèn LED từ phản ứng oxy hóa - khử giữa đinh đồng/kẽm và axit xitric trong quả chanh.",
@@ -112,7 +112,7 @@ export default function StemProjects() {
   // Modal Dialog Form State
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<string>("");
-  const [newGrade, setNewGrade] = useState<string>("Lớp 10");
+  const [newGrade, setNewGrade] = useState<string>("THPT");
   const [newCategory, setNewCategory] = useState<string>("Hóa học Thực nghiệm & STEM");
   const [newDesc, setNewDesc] = useState<string>("");
   const [newConcept, setNewConcept] = useState<string>("");
@@ -181,7 +181,7 @@ export default function StemProjects() {
     const proj: StemProject = {
       id: "stem_" + Date.now(),
       title: newTitle.trim(),
-      grade: newGrade.trim() || "Lớp 10",
+      grade: newGrade.trim() || "THPT",
       category: newCategory.trim() || "Hóa học Thực nghiệm & STEM",
       description: newDesc.trim() || "Dự án STEM Hóa học sáng tạo ứng dụng thực tế.",
       materials: newMaterials

@@ -1219,7 +1219,7 @@ export default function UserAuthModal({
                   const accuracy = totalQ > 0 ? Math.round((correctQ / totalQ) * 1000) / 10 : 0;
                   const level = Math.floor(exp / 300) + 1;
                   const progressInLevel = exp % 300;
-                  const nickname = currentUser.nickname || 'Chiến Binh Hóa Học 10';
+                  const nickname = currentUser.nickname || 'Chiến Binh Hóa Học THPT';
 
                   let rankLabel = 'Đang Cố Gắng (Hạng Đồng)';
                   let rankColor = '#f97316';

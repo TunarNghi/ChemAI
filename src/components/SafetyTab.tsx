@@ -1109,7 +1109,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
     <Box>
       <ChemicalBondViewer3D />
 
-      {/* CẨM NANG & TRA CỨU QUY LUẬT NHÓM IA ĐẾN VIIA (CHUẨN HÓA 10 GDPT 2018) */}
+      {/* CẨM NANG & TRA CỨU QUY LUẬT NHÓM IA ĐẾN VIIA (CHUẨN HÓA HỌC THPT GDPT 2018) */}
       <Card
         sx={{
           bgcolor: "background.paper",
@@ -1149,7 +1149,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
                   fontWeight="bold"
                   sx={{ fontSize: { xs: "16px", sm: "19px" }, color: "#f8fafc" }}
                 >
-                  ⚡ Cẩm Nang Tính Chất Hóa Học Nhóm IA → VIIA (Hóa Học 10)
+                  ⚡ Cẩm Nang Tính Chất Hóa Học Nhóm IA → VIIA (Hóa Học THPT)
                 </Typography>
                 <Typography
                   variant="caption"

@@ -79,7 +79,7 @@ const FEATURES: FeatureItem[] = [
   {
     id: 'virtual-lab',
     tabIndex: 1,
-    title: 'Phòng Thí Nghiệm Ảo Hóa Học 10',
+    title: 'Phòng Thí Nghiệm Ảo Hóa Học THPT',
     subtitle: 'Mô phỏng phản ứng thực nghiệm tức thì & an toàn tuyệt đối',
     category: 'student',
     categoryLabel: 'Học sinh & Thực hành',
@@ -229,7 +229,7 @@ const FEATURES: FeatureItem[] = [
     description:
       'Ngân hàng dự án STEM hóa học thực tế (Pha chế nước muối sinh lý, Pin điện hóa quả chanh, Làm xà phòng handmade, Xử lý nước phèn) tích hợp quy trình 5 bước sư phạm hoàn chỉnh.',
     highlights: [
-      'Dự án mẫu bám sát đời sống và chuyên đề học tập Hóa 10',
+      'Dự án mẫu bám sát đời sống và chuyên đề học tập Hóa Học THPT',
       'Quy trình 5 bước: Giao nhiệm vụ → Nghiên cứu → Thiết kế → Chế tạo → Báo cáo',
       'Bộ tiêu chí đánh giá sản phẩm (Rubric) chi tiết cho giáo viên và học sinh',
       'Tạo dự án STEM mới tùy chỉnh theo từng bối cảnh lớp học bằng AI',
@@ -250,7 +250,7 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(244, 63, 94, 0.15)',
     glowColor: 'rgba(244, 63, 94, 0.25)',
     description:
-      'Không gian số dành cho giáo viên đăng tải video bài dạy YouTube, phân loại theo 6 Chương Hóa học 10 GDPT 2018. Học sinh theo dõi bài giảng trực tiếp trên web, ghi chú tức thì và nhận tóm tắt kiến thức từ AI.',
+      'Không gian số dành cho giáo viên đăng tải video bài dạy YouTube, phân loại theo các chuyên đề Hóa học THPT GDPT 2018. Học sinh theo dõi bài giảng trực tiếp trên web, ghi chú tức thì và nhận tóm tắt kiến thức từ AI.',
     highlights: [
       'Phát video nhúng trực tiếp không mở tab ngoài, không quảng cáo chen ngang',
       'Đăng tải dễ dàng qua link YouTube với tự động nhận diện ảnh Thumbnail',
@@ -512,7 +512,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
               WebkitTextFillColor: 'transparent',
             }}
           >
-            HCC - ChemAI: Khám Phá Hóa Học 10 <br />
+            HCC - ChemAI: Khám Phá Hóa Học THPT <br />
             Bằng Trí Tuệ Nhân Tạo & Mô Phỏng 3D
           </Typography>
 
@@ -693,7 +693,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                   const correctQ = currentUser.correctKahootQuestions || 11;
                   const accuracy = totalQ > 0 ? Math.round((correctQ / totalQ) * 1000) / 10 : 0;
                   const level = Math.floor(exp / 300) + 1;
-                  const nickname = currentUser.nickname || 'Chiến Binh Hóa Học 10';
+                  const nickname = currentUser.nickname || 'Chiến Binh Hóa Học THPT';
 
                   let rankLabel = 'Đang Cố Gắng';
                   let rankColor = '#f97316';

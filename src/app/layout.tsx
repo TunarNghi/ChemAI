@@ -26,7 +26,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "HCC - ChemAI | Hệ Thống Trợ Lý & Mô Phỏng Hóa Học THPT (2026)",
   description: "Phòng thí nghiệm ảo 2D/3D, gia sư AI giải đáp hóa học, tạo đề thi, soạn giáo án 5512 và dự án STEM dành cho giáo viên & học sinh THPT.",
-  keywords: ["Hóa học 10", "Thí nghiệm ảo", "ChemAI", "Mô phỏng 3D hóa học", "GDPT 2018", "Giáo án 5512", "STEM Hóa học"],
+  keywords: ["Hóa học THPT", "Thí nghiệm ảo", "ChemAI", "Mô phỏng 3D hóa học", "GDPT 2018", "Giáo án 5512", "STEM Hóa học"],
   authors: [{ name: "HCC - ChemAI Team" }],
   appleWebApp: {
     capable: true,

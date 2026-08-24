@@ -236,7 +236,7 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
     setGradeInput('10');
     setTeacherInput('Thầy/Cô Giáo Bộ Môn Hóa Học');
     setDurationInput('30:00');
-    setTagsInput('Hóa học 10, GDPT 2018');
+    setTagsInput('Hóa học THPT, GDPT 2018');
     setKeyReactionsInput('');
     setValidationError(null);
     setModalOpen(true);
@@ -351,7 +351,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
             grade: gradeInput,
             teacherName: teacherInput.trim() || 'Giáo Viên Hóa Học',
             duration: durationInput.trim() || '30:00',
-            tags: tagsArray.length > 0 ? tagsArray : ['Hóa học 10'],
+            tags: tagsArray.length > 0 ? tagsArray : ['Hóa học THPT'],
             keyReactions: reactionsArray,
           };
         }
@@ -464,7 +464,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
                     letterSpacing: '-0.02em',
                   }}
                 >
-                  Thư Viện Video Bài Giảng Hóa Học 10
+                  Thư Viện Video Bài Giảng Hóa Học THPT
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Hệ thống kho học liệu video trực quan • Phát trực tiếp trên Web • Chuẩn CT GDPT 2018
@@ -486,7 +486,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
               />
               <Chip
                 icon={<GraduationCap size={14} color="#a855f7" />}
-                label="Hóa Học 10 GDPT"
+                label="Hóa Học THPT GDPT"
                 size="small"
                 sx={{ bgcolor: 'rgba(168, 85, 247, 0.12)', color: '#a855f7', border: '1px solid rgba(168, 85, 247, 0.3)', fontWeight: 'bold' }}
               />
@@ -1058,7 +1058,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
           <Video size={20} color="#38bdf8" /> Danh Sách Video Bài Dạy ({filteredVideos.length})
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Hiển thị theo chương trình Hóa học 10 GDPT 2018
+          Hiển thị theo chương trình Hóa học THPT GDPT 2018
         </Typography>
       </Box>
 
@@ -1448,9 +1448,9 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
               </Typography>
               <FormControl fullWidth>
                 <Select value={gradeInput} onChange={(e) => setGradeInput(e.target.value)}>
-                  <MenuItem value="10">Hóa Học Lớp 10 (GDPT 2018)</MenuItem>
-                  <MenuItem value="11">Hóa Học Lớp 11 (GDPT 2018)</MenuItem>
-                  <MenuItem value="12">Hóa Học Lớp 12 (GDPT 2018)</MenuItem>
+                  <MenuItem value="10">Hóa Học 10 THPT (GDPT 2018)</MenuItem>
+                  <MenuItem value="11">Hóa Học 11 THPT (GDPT 2018)</MenuItem>
+                  <MenuItem value="12">Hóa Học 12 THPT (GDPT 2018)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -275,7 +275,7 @@ async function generateDocx() {
           // SECTION 3: CHI TIẾT CÁC PHÂN HỆ CHỨC NĂNG
           createHeading1("3. CHI TIẾT CÁC PHÂN HỆ CHỨC NĂNG"),
 
-          createHeading2("3.1. Thí Nghiệm Ảo Hóa Học 10 (VirtualLab.tsx)"),
+          createHeading2("3.1. Thí Nghiệm Ảo Hóa Học THPT (VirtualLab.tsx)"),
           createParagraph(
             "Phân hệ Thí nghiệm Ảo cho phép học sinh và giáo viên thực hiện các phản ứng hóa học trực quan trong ống nghiệm ảo mà không gặp nguy hiểm về hóa chất độc hại hay cháy nổ."
           ),
@@ -369,7 +369,7 @@ async function generateDocx() {
           // SECTION 6: THÔNG TIN TỔNG KẾT
           createHeading1("6. KẾT LUẬN & ĐỊNH HƯỚNG PHÁT TRIỂN"),
           createParagraph(
-            "Dự án HCC - ChemAI là giải pháp chuyển đổi số toàn diện, kết hợp hài hòa giữa kiến thức chuyên môn Hóa học 10 GDPT 2018 và các công nghệ tiên tiến nhất hiện nay (Next.js 16, React 19, Three.js 3D, Supabase Realtime, Gemini AI và Dify AI). Hệ thống sẵn sàng phục vụ công tác giảng dạy thực tế tại các trường THPT và phát triển mở rộng cho các khối lớp 11 và 12 trong tương lai."
+            "Dự án HCC - ChemAI là giải pháp chuyển đổi số toàn diện, kết hợp hài hòa giữa kiến thức chuyên môn Hóa học THPT GDPT 2018 và các công nghệ tiên tiến nhất hiện nay (Next.js 16, React 19, Three.js 3D, Supabase Realtime, Gemini AI và Dify AI). Hệ thống sẵn sàng phục vụ công tác giảng dạy thực tế tại các trường THPT và phát triển mở rộng trong tương lai."
           ),
           new Paragraph({
             alignment: AlignmentType.RIGHT,

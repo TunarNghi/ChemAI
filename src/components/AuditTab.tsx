@@ -867,7 +867,7 @@ export default function AuditTab() {
                       maxWidth={500}
                       mx="auto"
                     >
-                      Hệ thống tự động kết hợp câu hỏi bám sát SGK Hóa 10 từ
+                      Hệ thống tự động kết hợp câu hỏi bám sát SGK Hóa Học THPT từ
                       Dify AI & Gemini AI, tự động lưu vào Supabase DB.
                     </Typography>
 

@@ -91,7 +91,7 @@ export const NICKNAME_PRESETS = [
   'Chiến Binh Cân Bằng Phương Trình',
   'Nhà Hóa Học Trẻ Xuất Sắc',
   'Ngôi Sao Sáng Tạo STEM',
-  'Chiến Binh Chăm Chỉ 10A',
+  'Chiến Binh Chăm Chỉ THPT',
   'Tia Chớp Phản Xạ Nhanh',
   'Bậc Thầy Bảng Tuần Hoàn',
   'Nhà Khám Phá Thí Nghiệm',
@@ -115,7 +115,7 @@ export function calculateCompetencyRank(exp = 0, totalQuestions = 0, correctQues
       accuracy: Math.round(accuracy * 10) / 10,
       currentLevelProgress,
       nextLevelExp,
-      defaultEvaluation: 'Nắm rất vững toàn bộ hệ thống lý thuyết và phương pháp giải bài tập Hóa 10 GDPT 2018. Phản xạ thi đấu nhanh nhẹn, tư duy logic sắc sảo và tỷ lệ chính xác vượt trội.',
+      defaultEvaluation: 'Nắm rất vững toàn bộ hệ thống lý thuyết và phương pháp giải bài tập Hóa học THPT GDPT 2018. Phản xạ thi đấu nhanh nhẹn, tư duy logic sắc sảo và tỷ lệ chính xác vượt trội.',
     };
   } else if (exp >= 1200 || (accuracy >= 70 && totalQuestions >= 15)) {
     return {
@@ -559,7 +559,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
               {analytics.total}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Đang học Hóa học 10 GDPT
+              Đang học Hóa học THPT GDPT
             </Typography>
           </Paper>
         </Grid>

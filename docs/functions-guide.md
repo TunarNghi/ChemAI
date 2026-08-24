@@ -53,9 +53,9 @@ export async function generateParamHash(
 
 ---
 
-## 2. Thí Nghiệm Ảo Hóa Học 10 (`src/components/VirtualLab.tsx`)
+## 2. Thí Nghiệm Ảo Hóa Học THPT (`src/components/VirtualLab.tsx`)
 
-Mô phỏng chân thực các phản ứng hóa học tiêu biểu lớp 10 theo thời gian thực.
+Mô phỏng chân thực các phản ứng hóa học tiêu biểu THPT theo thời gian thực.
 
 ### 2.1. Cấu trúc State & Dữ liệu
 - `PRESETS`: 8 thí nghiệm chuẩn GDPT 2018 ($\text{NaOH}+\text{HCl}$, $\text{Na}+\text{H}_2\text{O}$, $\text{Zn}+\text{H}_2\text{SO}_4$, $\text{Fe}+\text{CuSO}_4$, $\text{KMnO}_4+\text{HCl}$, $\text{KI}+\text{Cl}_2$, $\text{AgNO}_3+\text{NaCl}$, $\text{BaCl}_2+\text{H}_2\text{SO}_4$).
@@ -77,7 +77,7 @@ Mô phỏng chân thực các phản ứng hóa học tiêu biểu lớp 10 theo
 - **Chức năng**: Cung cấp trợ lý học tập cá nhân hóa cho học sinh sử dụng Google Gemini AI (`callGeminiAPI`).
 - **Hàm `handleSend()`**:
   - Ghi nhận câu hỏi từ ô nhập liệu, lưu giữ lịch sử hội thoại gần nhất.
-  - Gửi prompt kèm ngữ cảnh Hóa học Lớp 10 GDPT 2018 tới **Gemini AI**.
+  - Gửi prompt kèm ngữ cảnh Hóa học THPT GDPT 2018 tới **Gemini AI**.
   - Hiển thị Markdown hỗ trợ công thức hóa học, bảng số liệu và danh sách gợi ý.
   - Tự động ghi nhật ký vào Supabase `chat_logs` phục vụ kiểm duyệt của giáo viên.
 
@@ -206,7 +206,7 @@ function Bond({ start, end, color = "#94a3b8", radius = 0.08 }: BondProps) {
    $$\theta = \arccos(\vec{Y}_0 \cdot \hat{D})$$
 5. **Tạo ma trận xoay (`makeRotationAxis`):** Dùng công thức Rodrigues để biến đổi vector cột trụ $Y$ hướng chính xác theo đường nối $AB$.
 
-#### D. Biểu diễn Các Loại Liên Kết Hóa Học Lớp 10
+#### D. Biểu diễn Các Loại Liên Kết Hóa Học THPT
 1. **Liên kết đơn ($H_2O, CH_4, HCl, Cl_2$):** Sử dụng 1 cylinder có bán kính `radius = 0.08`.
 2. **Liên kết đôi ($CO_2$):** Tạo 2 cylinder song song bằng cách tịnh tiến tọa độ $y$ một khoảng $\Delta y = \pm 0.1$:
    - `start: [0, 0.1, 0] -> end: [1.6, 0.1, 0]`
@@ -252,7 +252,7 @@ Hệ thống lưu trữ cấu trúc hình học chuẩn thực tế:
 
 ---
 
-## 8. Thiết Kế Dự Án STEM Hóa Học 10 (`src/components/StemProjects.tsx`)
+## 8. Thiết Kế Dự Án STEM Hóa Học THPT (`src/components/StemProjects.tsx`)
 
 - Cung cấp các dự án STEM mẫu ứng dụng thực tế:
   - Chiết xuất chất chỉ thị màu tự nhiên từ bắp cải tím.
