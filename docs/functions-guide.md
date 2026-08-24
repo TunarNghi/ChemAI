@@ -1,6 +1,6 @@
 # TÀI LIỆU CHI TIẾT TỪNG CHỨC NĂNG & FUNCTION TRONG HCC-CHEMAI
 
-Dự án **HCC-ChemAI** là Hệ thống Trợ lý & Mô phỏng Hóa học Lớp 10 (Chuẩn chương trình GDPT 2018), được phát triển bằng **Next.js 16 (App Router), React 19, TypeScript, Material UI (MUI), Three.js / React Three Fiber, Chart.js, Supabase, Google Gemini API và Dify AI**.
+Dự án **HCC-ChemAI** là Hệ thống Trợ lý & Mô phỏng Hóa học THPT (Chuẩn chương trình GDPT 2018), được phát triển bằng **Next.js 16 (App Router), React 19, TypeScript, Material UI (MUI), Three.js / React Three Fiber, Chart.js, Supabase, Google Gemini API và Dify AI**.
 
 ---
 

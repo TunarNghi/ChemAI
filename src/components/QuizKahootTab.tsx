@@ -71,8 +71,8 @@ export default function QuizKahootTab() {
     }
 
     // 2. Fallback to Gemini AI
-    const prompt = `Bạn là Chuyên gia tạo đề trắc nghiệm Hóa học THPT (Lớp 10) chương trình mới (GDPT 2018). Dùng công thức dạng H2SO4, ion dạng Fe^3+ hoặc SO4^2-, trạng thái (aq)/(s)/(l)/(g) và mũi tên ->.
-Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài toán hóa học lớp 10. Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown codeblock):
+    const prompt = `Bạn là Chuyên gia tạo đề trắc nghiệm Hóa học THPT chương trình mới (GDPT 2018). Dùng công thức dạng H2SO4, ion dạng Fe^3+ hoặc SO4^2-, trạng thái (aq)/(s)/(l)/(g) và mũi tên ->.
+Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài toán hóa học THPT. Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown codeblock):
 {
   "question": "Nội dung câu hỏi...",
   "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],

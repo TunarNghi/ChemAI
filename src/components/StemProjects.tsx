@@ -194,7 +194,7 @@ export default function StemProjects() {
         "Bước 4 (Đánh giá & Chia sẻ): Báo cáo & Đánh giá sản phẩm STEM."
       ],
       chemistryConcept:
-        newConcept.trim() || "Ứng dụng kiến thức Hóa học Lớp 10 vào đời sống thực tế.",
+        newConcept.trim() || "Ứng dụng kiến thức Hóa học THPT vào đời sống thực tế.",
       created_at: new Date().toISOString(),
     };
 

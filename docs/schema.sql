@@ -1,6 +1,6 @@
 -- ====================================================================
 -- HCC-CHEMAI SUPABASE DATABASE SCHEMA
--- Hệ thống Trợ lý & Mô phỏng Hóa học Lớp 10
+-- Hệ thống Trợ lý & Mô phỏng Hóa học THPT
 -- ====================================================================
 
 -- 1. Bảng lưu trữ Cache Thí nghiệm ảo, Giáo án 5512, Đề thi & Dự án STEM

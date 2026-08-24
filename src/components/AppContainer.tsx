@@ -206,7 +206,7 @@ export default function AppContainer() {
                       opacity: 0.85
                     }}
                   >
-                    Hệ Thống Trợ Lý & Mô Phỏng Hóa Học Lớp 10 (GDPT 2018)
+                    Hệ Thống Trợ Lý & Mô Phỏng Hóa Học THPT (GDPT 2018)
                   </Typography>
                 </Box>
               </Box>

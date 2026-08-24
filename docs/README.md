@@ -1,6 +1,6 @@
 # TÀI LIỆU DỰ ÁN HCC-CHEMAI
 
-Thư mục `docs/` chứa toàn bộ tài liệu kỹ thuật, hướng dẫn vận hành, thiết lập cơ sở dữ liệu và triển khai cho hệ thống **HCC-ChemAI (Hệ thống Trợ lý & Mô phỏng Hóa học Lớp 10)**.
+Thư mục `docs/` chứa toàn bộ tài liệu kỹ thuật, hướng dẫn vận hành, thiết lập cơ sở dữ liệu và triển khai cho hệ thống **HCC-ChemAI (Hệ thống Trợ lý & Mô phỏng Hóa học THPT)**.
 
 ---
 

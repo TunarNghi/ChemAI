@@ -287,7 +287,7 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
     setIsAiGenerating(true);
     const comp = calculateCompetencyRank(activeStudent.kahootExp, activeStudent.totalKahootQuestions, activeStudent.correctKahootQuestions);
     
-    const prompt = `Bạn là Giáo viên bộ môn Hóa học THPT (Lớp 10) chương trình GDPT 2018 đầy tâm huyết.
+    const prompt = `Bạn là Giáo viên bộ môn Hóa học THPT chương trình GDPT 2018 đầy tâm huyết.
 Hãy viết một lời nhận xét sư phạm ngắn gọn, súc tích (khoảng 2-3 câu, tối đa 50 từ), mang tính động viên, chuyên môn sâu sắc cho học sinh:
 - Tên học sinh: ${activeStudent.fullName}
 - Lớp: ${activeStudent.className}

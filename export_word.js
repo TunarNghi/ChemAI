@@ -167,7 +167,7 @@ async function generateDocx() {
             spacing: { before: 0, after: 300 },
             children: [
               new TextRun({
-                text: "HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC LỚP 10 THPT (GDPT 2018)",
+                text: "HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC THPT (GDPT 2018)",
                 bold: true,
                 size: 26,
                 color: "475569",
@@ -192,10 +192,10 @@ async function generateDocx() {
           // SECTION 1: TỔNG QUAN DỰ ÁN
           createHeading1("1. TỔNG QUAN DỰ ÁN"),
           createParagraph(
-            "HCC - ChemAI là nền tảng số hóa giáo dục chuyên sâu dành cho môn Hóa học Lớp 10 THPT theo định hướng Chương trình Giáo dục Phổ thông 2018. Dự án kết hợp công nghệ Trí tuệ nhân tạo (Generative AI), công nghệ mô phỏng 3D tương tác theo thời gian thực và nền tảng đấu trường học tập trực tuyến nhằm nâng cao chất lượng dạy và học môn Hóa học."
+            "HCC - ChemAI là nền tảng số hóa giáo dục chuyên sâu dành cho môn Hóa học THPT theo định hướng Chương trình Giáo dục Phổ thông 2018. Dự án kết hợp công nghệ Trí tuệ nhân tạo (Generative AI), công nghệ mô phỏng 3D tương tác theo thời gian thực và nền tảng đấu trường học tập trực tuyến nhằm nâng cao chất lượng dạy và học môn Hóa học."
           ),
           createBullet("Tên dự án", "HCC - ChemAI (Chemistry AI Assistant & Virtual Laboratory)"),
-          createBullet("Đối tượng phục vụ", "Học sinh Lớp 10 THPT, Giáo viên bộ môn Hóa học, Tổ chuyên môn Nhà trường"),
+          createBullet("Đối tượng phục vụ", "Học sinh THPT, Giáo viên bộ môn Hóa học, Tổ chuyên môn Nhà trường"),
           createBullet("Định hướng chương trình", "Chuẩn GDPT 2018, Công văn 5512/BGDĐT, Định dạng cấu trúc đề thi mới của BGD&ĐT"),
           createBullet("Môi trường triển khai", "Web Application (Đa nền tảng PC, Tablet, Smartphone, Bảng tương tác thông minh)"),
 

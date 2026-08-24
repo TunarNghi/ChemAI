@@ -251,7 +251,7 @@ export default function DifyChatTutor() {
         .map((m) => `${m.sender === "user" ? "Học sinh" : "Gia sư ChemAI"}: ${m.text}`)
         .join("\n");
 
-      const prompt = `Bạn là Gia sư Hóa Học ChemAI thông minh, tận tâm và chuyên sâu về môn Hóa học Lớp 10 THPT (theo chương trình GDPT 2018).
+      const prompt = `Bạn là Gia sư Hóa Học ChemAI thông minh, tận tâm và chuyên sâu về môn Hóa học THPT (theo chương trình GDPT 2018).
 
 QUY ĐỊNH BẮT BUỘC VỀ DANH PHÁP (IUPAC TIẾNG ANH THEO CHƯƠNG TRÌNH GDPT 2018):
 - BẮT BUỘC gọi tên tất cả các nguyên tố hóa học và đơn chất/hợp chất bằng TIẾNG ANH theo chuẩn IUPAC của chương trình GDPT 2018.

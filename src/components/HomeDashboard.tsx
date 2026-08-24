@@ -112,9 +112,9 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(129, 140, 248, 0.15)',
     glowColor: 'rgba(129, 140, 248, 0.25)',
     description:
-      'Được tinh chỉnh sâu với toàn bộ kiến thức Hóa học 10 THPT. Sẵn sàng giải thích hiện tượng, hướng dẫn giải bài tập cân bằng oxi hóa - khử, cấu hình electron và bài toán nhiệt phản ứng.',
+      'Được tinh chỉnh sâu với toàn bộ kiến thức Hóa học THPT. Sẵn sàng giải thích hiện tượng, hướng dẫn giải bài tập cân bằng oxi hóa - khử, cấu hình electron và bài toán nhiệt phản ứng.',
     highlights: [
-      'Hỏi đáp tự nhiên mọi chủ đề Hóa học 10 (Sách Cánh Diều, Kết Nối Tri Thức, Chân Trời Sáng Tạo)',
+      'Hỏi đáp tự nhiên mọi chủ đề Hóa học THPT (Sách Cánh Diều, Kết Nối Tri Thức, Chân Trời Sáng Tạo)',
       'Định dạng công thức hóa học, phương trình phản ứng chuẩn xác',
       'Gợi ý câu hỏi thông minh giúp tư duy logic',
       'Lưu trữ nhật ký hội thoại phục vụ ôn tập cá nhân',
@@ -1286,7 +1286,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         <Box display="flex" alignItems="center" gap={1.5} mb={1}>
           <Compass size={24} color="#38bdf8" />
           <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '18px', sm: '22px' } }}>
-            Khung Chương Trình Hóa Học Lớp 10 THPT (Chuẩn GDPT 2018)
+            Khung Chương Trình Hóa Học THPT (Chuẩn GDPT 2018)
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -1487,7 +1487,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         }}
       >
         <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500 }}>
-          HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Mô Phỏng Hóa Học Lớp 10 THPT
+          HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Mô Phỏng Hóa Học THPT
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
           Phát triển trên nền tảng Next.js, Material UI, Three.js, Supabase, Google Gemini API và Dify AI Platform.
