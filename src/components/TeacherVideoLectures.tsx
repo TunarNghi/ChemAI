@@ -81,117 +81,8 @@ export interface VideoLecture {
   isCustom?: boolean;
 }
 
-// 6 Curated Chemistry 10 GDPT 2018 Core Curriculum Lectures
-const DEFAULT_VIDEO_LECTURES: VideoLecture[] = [
-  {
-    id: 'chem10-vid-1',
-    youtubeId: 'b_7i011j6o4',
-    originalUrl: 'https://www.youtube.com/watch?v=b_7i011j6o4',
-    title: 'Chương 1: Thành Phần Nguyên Tử & Cấu Trúc Vỏ Nguyên Tử',
-    description:
-      'Bài giảng chi tiết về các hạt cơ bản cấu tạo nên nguyên tử (proton, neutron, electron), điện tích hạt nhân, kích thước và khối lượng nguyên tử. Hướng dẫn cách xác định số khối A và viết kí hiệu nguyên tử chuẩn xác theo chương trình GDPT 2018.',
-    chapter: 'Chương 1: Cấu Tạo Nguyên Tử',
-    grade: '10',
-    teacherName: 'Tổ Chuyên Môn Hóa Học THPT',
-    duration: '28:45',
-    tags: ['Cấu tạo nguyên tử', 'Proton', 'Electron', 'Hạt nhân', 'Kí hiệu hóa học'],
-    keyReactions: ['A = Z + N', 'q_p = +1, q_e = -1', 'm_e ≈ 0.00055 amu'],
-    studyNotes:
-      '• Hạt nhân gồm Proton (p) và Neutron (n), vỏ gồm Electron (e).\n• Khối lượng nguyên tử tập trung hầu hết ở hạt nhân vì electron có khối lượng rất nhỏ.\n• Đồng vị là những nguyên tử có cùng số proton nhưng khác số neutron.',
-    createdAt: '2026-08-15T08:00:00Z',
-    isCustom: false,
-  },
-  {
-    id: 'chem10-vid-2',
-    youtubeId: 'Oq5g4w9XyS0',
-    originalUrl: 'https://www.youtube.com/watch?v=Oq5g4w9XyS0',
-    title: 'Chương 1: Cấu Hình Electron Nguyên Tử & Nguyên Lý Pauli - Hund',
-    description:
-      'Hướng dẫn nguyên lý vững bền, nguyên lý Pauli và quy tắc Hund. Cách viết cấu hình electron từ Z = 1 đến Z = 30 và phân loại nguyên tố thành kim loại, phi kim hay khí hiếm dựa trên số electron lớp ngoài cùng.',
-    chapter: 'Chương 1: Cấu Tạo Nguyên Tử',
-    grade: '10',
-    teacherName: 'Thầy Cô Nhóm Sáng Tạo ChemAI',
-    duration: '32:10',
-    tags: ['Cấu hình electron', 'Orbital AO', 'Nguyên lý Pauli', 'Quy tắc Hund', 'Kim loại - Phi kim'],
-    keyReactions: ['1s 2s 2p 3s 3p 4s 3d 4p...', 's² p⁶ d¹⁰ f¹⁴'],
-    studyNotes:
-      '• Số e tối đa trong 1 orbital là 2e ghép đôi ngược chiều quay (spin).\n• Phân lớp: s (tối đa 2e), p (tối đa 6e), d (tối đa 10e), f (tối đa 14e).\n• 1, 2, 3 e lớp ngoài cùng: Kim loại. 5, 6, 7 e: Phi kim. 8 e (hoặc 2e với He): Khí hiếm.',
-    createdAt: '2026-08-16T09:30:00Z',
-    isCustom: false,
-  },
-  {
-    id: 'chem10-vid-3',
-    youtubeId: '3tX9_Kz1j30',
-    originalUrl: 'https://www.youtube.com/watch?v=3tX9_Kz1j30',
-    title: 'Chương 2: Bảng Tuần Hoàn & Quy Luật Biến Đổi Tính Chất Nguyên Tố',
-    description:
-      'Tìm hiểu cấu tạo Bảng tuần hoàn Men-đê-lê-ép (Ô, Chu kì, Nhóm A/B). Phân tích quy luật biến thiên bán kính nguyên tử, độ âm điện, tính kim loại - tính phi kim và tính acid - base của oxide/hydroxide.',
-    chapter: 'Chương 2: Bảng Tuần Hoàn',
-    grade: '10',
-    teacherName: 'Giáo Viên Cốt Cán Hóa Học 10',
-    duration: '35:20',
-    tags: ['Bảng tuần hoàn', 'Độ âm điện', 'Bán kính nguyên tử', 'Tính kim loại/phi kim'],
-    keyReactions: ['Trong 1 chu kì (Trái -> Phải): R↓, ĐÂĐ↑, Phi kim↑', 'Trong 1 nhóm A (Trên -> Dưới): R↑, ĐÂĐ↓, Kim loại↑'],
-    studyNotes:
-      '• Số thứ tự chu kì = Số lớp electron.\n• Số thứ tự nhóm A = Số electron hóa trị (electron lớp ngoài cùng).\n• Flo (F) là phi kim mạnh nhất, độ âm điện lớn nhất (3.98).',
-    createdAt: '2026-08-17T10:15:00Z',
-    isCustom: false,
-  },
-  {
-    id: 'chem10-vid-4',
-    youtubeId: 'N9i8mG0K3xA',
-    originalUrl: 'https://www.youtube.com/watch?v=N9i8mG0K3xA',
-    title: 'Chương 3: Liên Kết Cộng Hóa Trị, Liên Kết Ion & Quy Tắc Octet',
-    description:
-      'Giải thích bản chất hình thành liên kết ion (chuyển e giữa kim loại điển hình và phi kim điển hình) và liên kết cộng hóa trị (góp chung cặp e). Nhận biết phân tử có cực, không cực và liên kết hydrogen.',
-    chapter: 'Chương 3: Liên Kết Hóa Học',
-    grade: '10',
-    teacherName: 'Ban Cố Vấn Sư Phạm Hóa Học',
-    duration: '30:50',
-    tags: ['Liên kết Ion', 'Liên kết Cộng hóa trị', 'Quy tắc Octet', 'Liên kết Hydrogen'],
-    keyReactions: ['Na + Cl₂ → 2NaCl (Na⁺ + Cl⁻)', '2H₂ + O₂ → 2H₂O (Cộng hóa trị phân cực)'],
-    studyNotes:
-      '• Hiệu độ âm điện Δχ < 0.4: CHT không cực.\n• 0.4 ≤ Δχ < 1.7: CHT có cực.\n• Δχ ≥ 1.7: Liên kết Ion.',
-    createdAt: '2026-08-18T14:20:00Z',
-    isCustom: false,
-  },
-  {
-    id: 'chem10-vid-5',
-    youtubeId: 'kJQP7kiw5Fk',
-    originalUrl: 'https://www.youtube.com/watch?v=kJQP7kiw5Fk',
-    title: 'Chương 4: Phản Ứng Oxi Hóa - Khử & Phương Pháp Thăng Bằng Electron',
-    description:
-      'Nắm vững khái niệm Số oxi hóa, Chất khử (cho e, tăng số oxh), Chất oxi hóa (nhận e, giảm số oxh). Rèn luyện thành thạo quy trình 4 bước cân bằng phản ứng oxi hóa - khử phức tạp bằng phương pháp thăng bằng electron.',
-    chapter: 'Chương 4: Phản Ứng Oxi Hóa - Khử',
-    grade: '10',
-    teacherName: 'Tổ Chuyên Môn Hóa Học THPT',
-    duration: '40:15',
-    tags: ['Oxi hóa khử', 'Số oxi hóa', 'Thăng bằng electron', 'Chất khử', 'Chất oxi hóa'],
-    keyReactions: ['Khử cho - O nhận (Tăng cho - Giảm nhận)', 'Cu + 4HNO₃(đặc) → Cu(NO₃)₂ + 2NO₂↑ + 2H₂O'],
-    studyNotes:
-      '• Bước 1: Xác định số oxi hóa của các nguyên tố thay đổi.\n• Bước 2: Viết quá trình oxi hóa và quá trình khử.\n• Bước 3: Tìm hệ số thích hợp sao cho Tổng e nhường = Tổng e nhận.\n• Bước 4: Đặt hệ số vào phương trình và kiểm tra nguyên tố O, H.',
-    createdAt: '2026-08-19T11:00:00Z',
-    isCustom: false,
-  },
-  {
-    id: 'chem10-vid-6',
-    youtubeId: '7wtfhZwyrcc',
-    originalUrl: 'https://www.youtube.com/watch?v=7wtfhZwyrcc',
-    title: 'Chương 5: Năng Lượng Hóa Học - Biến Thiên Enthalpy Chuẩn (ΔᵣH°₂₉₈)',
-    description:
-      'Khái niệm phản ứng tỏa nhiệt (Exothermic, ΔᵣH° < 0) và phản ứng thu nhiệt (Endothermic, ΔᵣH° > 0). Hướng dẫn tính nhiệt phản ứng từ nhiệt tạo thành chuẩn (ΔᵪH°₂₉₈) và từ năng lượng liên kết (E_b).',
-    chapter: 'Chương 5: Năng Lượng Hóa Học',
-    grade: '10',
-    teacherName: 'Giáo Viên Cốt Cán Hóa Học 10',
-    duration: '33:40',
-    tags: ['Năng lượng hóa học', 'Biến thiên Enthalpy', 'Phản ứng tỏa nhiệt', 'Nhiệt tạo thành'],
-    keyReactions: ['ΔᵣH°₂₉₈ = ΣΔᵪH°(sp) - ΣΔᵪH°(cđ)', 'ΔᵣH°₂₉₈ = ΣE_b(cđ) - ΣE_b(sp)'],
-    studyNotes:
-      '• Phản ứng tỏa nhiệt: Giải phóng năng lượng ra môi trường, cảm thấy nóng lên (ΔᵣH° < 0).\n• Phản ứng thu nhiệt: Hấp thụ năng lượng từ môi trường, cảm thấy lạnh đi (ΔᵣH° > 0).\n• Đơn chất bền ở điều kiện chuẩn có ΔᵪH°₂₉₈ = 0 kJ/mol.',
-    createdAt: '2026-08-20T16:30:00Z',
-    isCustom: false,
-  },
-];
+// Video Lectures default list (Empty by default)
+const DEFAULT_VIDEO_LECTURES: VideoLecture[] = [];
 
 const CHAPTER_LIST = [
   'Tất cả chương',
@@ -283,9 +174,9 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
     } catch (e) {
       console.warn('Error reading stored videos:', e);
     }
-    // Fallback to default lectures
-    setVideos(DEFAULT_VIDEO_LECTURES);
-    setSelectedVideo(DEFAULT_VIDEO_LECTURES[0]);
+    // No default lectures
+    setVideos([]);
+    setSelectedVideo(null);
   }, []);
 
   // Update user note when selected video changes
@@ -380,11 +271,11 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
     }
   };
 
-  // Reset to default sample videos
-  const handleResetDefaults = () => {
-    if (window.confirm('Khôi phục danh sách bài giảng mẫu ban đầu (6 bài giảng Hóa 10)?')) {
-      saveVideosList(DEFAULT_VIDEO_LECTURES);
-      setSelectedVideo(DEFAULT_VIDEO_LECTURES[0]);
+  // Clear all videos
+  const handleClearAllVideos = () => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ danh sách bài giảng video đã lưu?')) {
+      saveVideosList([]);
+      setSelectedVideo(null);
     }
   };
 
@@ -629,22 +520,25 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
                   >
                     Đăng Tải Video Mới
                   </Button>
-                  <Tooltip title="Khôi phục 6 bài giảng mẫu chuẩn">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleResetDefaults}
-                      startIcon={<RefreshCw size={14} />}
-                      sx={{
-                        borderColor: 'rgba(255, 255, 255, 0.15)',
-                        color: 'text.secondary',
-                        borderRadius: 2,
-                        '&:hover': { borderColor: '#38bdf8', color: '#38bdf8' },
-                      }}
-                    >
-                      Mẫu
-                    </Button>
-                  </Tooltip>
+                  {videos.length > 0 && (
+                    <Tooltip title="Xóa toàn bộ bài giảng video">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color="error"
+                        onClick={handleClearAllVideos}
+                        startIcon={<Trash2 size={14} />}
+                        sx={{
+                          borderColor: 'rgba(239, 68, 68, 0.3)',
+                          color: '#f87171',
+                          borderRadius: 2,
+                          '&:hover': { borderColor: '#ef4444', bgcolor: 'rgba(239, 68, 68, 0.1)' },
+                        }}
+                      >
+                        Xóa tất cả
+                      </Button>
+                    </Tooltip>
+                  )}
                 </>
               ) : (
                 <Chip

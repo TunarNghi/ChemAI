@@ -112,8 +112,8 @@ const LOCAL_USERS_KEY = "chemai_registered_users";
 const CURRENT_USER_KEY = "chemai_current_user";
 
 export const DEFAULT_TEACHER_ACCOUNT: UserProfile = {
-  id: "teacher_hiep_01",
-  fullName: "Thầy Nguyễn Văn Hiệp",
+  id: "teacher_chinh_01",
+  fullName: "Cô Trần Thị Bé Chính",
   authType: "email",
   emailOrPhone: "giaovien.hoahoc@gmail.com",
   role: "teacher",
@@ -340,7 +340,7 @@ export default function UserAuthModal({
 
     // 1. Direct Master Teacher Passkey match
     if (
-      (cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com' || cleanId === 'thầy hiệp' || cleanId === 'nguyễn văn hiệp') &&
+      (cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com' || cleanId === 'cô chính' || cleanId === 'trần thị bé chính' || cleanId === 'thầy hiệp' || cleanId === 'nguyễn văn hiệp') &&
       (cleanPass === 'chemai2026' || cleanPass === '123456')
     ) {
       const allUsers = await fetchAllUsersFromDatabase();
@@ -680,7 +680,7 @@ export default function UserAuthModal({
 
             <TextField
               label={loginRole === 'teacher' ? 'Email / SĐT / Tên Giáo Viên' : 'Tên đăng nhập / Email / Số điện thoại'}
-              placeholder={loginRole === 'teacher' ? 'Ví dụ: giaovien.hoahoc@gmail.com hoặc Thầy Hiệp...' : 'Nhập tên đăng nhập, email hoặc SĐT...'}
+              placeholder={loginRole === 'teacher' ? 'Ví dụ: giaovien.hoahoc@gmail.com hoặc Cô Chính...' : 'Nhập tên đăng nhập, email hoặc SĐT...'}
               value={loginIdentifier}
               onChange={(e) => setLoginIdentifier(e.target.value)}
               fullWidth
@@ -698,7 +698,7 @@ export default function UserAuthModal({
             <TextField
               label="Mật khẩu"
               type={showPassword ? 'text' : 'password'}
-              placeholder={loginRole === 'teacher' ? 'Nhập mật khẩu (hoặc mã quản trị chemai2026)...' : 'Nhập mật khẩu...'}
+              placeholder={loginRole === 'teacher' ? 'Nhập mật khẩu giáo viên...' : 'Nhập mật khẩu...'}
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               fullWidth
@@ -760,7 +760,7 @@ export default function UserAuthModal({
                   }
                 }}
               >
-                ⚡ 1-Chạm: Đăng Nhập Thầy Nguyễn Văn Hiệp (Demo GV)
+                ⚡ 1-Chạm: Đăng Nhập Cô Trần Thị Bé Chính (Demo GV)
               </Button>
             )}
 
