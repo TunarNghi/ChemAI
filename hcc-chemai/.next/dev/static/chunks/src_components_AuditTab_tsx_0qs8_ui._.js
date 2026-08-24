@@ -44,6 +44,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$stop$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__StopCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-stop.js [app-client] (ecmascript) <export default as StopCircle>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$user$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__UserCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/user-check.js [app-client] (ecmascript) <export default as UserCheck>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/graduation-cap.js [app-client] (ecmascript) <export default as GraduationCap>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trash-2.js [app-client] (ecmascript) <export default as Trash2>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StudentProgressManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/StudentProgressManager.tsx [app-client] (ecmascript)");
 ;
@@ -237,6 +238,22 @@ function AuditTab() {
             setIsLoading(false);
         }
     };
+    const handleClearAllChatLogs = async ()=>{
+        if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu Chat Logs AI trên CSDL Supabase không? Thao tác này không thể hoàn tác.")) {
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("chat_logs").delete().neq("id", 0);
+            if (error) throw error;
+            setChatLogs([]);
+            alert("Đã xóa sạch toàn bộ lịch sử Chat Logs trên Supabase thành công!");
+        } catch (e) {
+            alert("Lỗi khi xóa Chat Logs: " + e.message);
+        } finally{
+            setIsLoading(false);
+        }
+    };
     const handleCreateKahootRoom = async ()=>{
         const pin = Math.floor(100000 + Math.random() * 900000).toString();
         try {
@@ -362,7 +379,7 @@ function AuditTab() {
                                     size: 22
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 456,
+                                    lineNumber: 474,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -377,13 +394,13 @@ function AuditTab() {
                                     children: "Cổng Kiểm Duyệt Audit & Kahoot Host"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 457,
+                                    lineNumber: 475,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 455,
+                            lineNumber: 473,
                             columnNumber: 11
                         }, this),
                         isAuthed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -401,7 +418,7 @@ function AuditTab() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 464,
+                                    lineNumber: 482,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -413,7 +430,7 @@ function AuditTab() {
                                         size: 14
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 470,
+                                        lineNumber: 488,
                                         columnNumber: 28
                                     }, this),
                                     sx: {
@@ -423,19 +440,19 @@ function AuditTab() {
                                     children: "Khóa cổng"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 465,
+                                    lineNumber: 483,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 463,
+                            lineNumber: 481,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/AuditTab.tsx",
-                    lineNumber: 447,
+                    lineNumber: 465,
                     columnNumber: 9
                 }, this),
                 !isAuthed ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -462,7 +479,7 @@ function AuditTab() {
                             children: "Vui lòng nhập mật khẩu quản trị dành cho Giáo viên để xem nhật ký thao tác AI, Ngân hàng câu hỏi trắc nghiệm & Quản lý điều hành phòng đấu Kahoot Multiplayer."
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 488,
+                            lineNumber: 506,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -473,7 +490,7 @@ function AuditTab() {
                                 size: 16
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 497,
+                                lineNumber: 515,
                                 columnNumber: 26
                             }, this),
                             sx: {
@@ -487,13 +504,13 @@ function AuditTab() {
                             children: "Nhập Mật Khẩu Đăng Nhập"
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 493,
+                            lineNumber: 511,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/AuditTab.tsx",
-                    lineNumber: 480,
+                    lineNumber: 498,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                     children: [
@@ -520,7 +537,7 @@ function AuditTab() {
                                                 size: 14
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 520,
+                                                lineNumber: 538,
                                                 columnNumber: 30
                                             }, this),
                                             sx: {
@@ -530,7 +547,7 @@ function AuditTab() {
                                             children: "Sổ Học Sinh & Năng Lực"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 515,
+                                            lineNumber: 533,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -545,7 +562,7 @@ function AuditTab() {
                                                 size: 14
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 533,
+                                                lineNumber: 551,
                                                 columnNumber: 30
                                             }, this),
                                             sx: {
@@ -555,7 +572,7 @@ function AuditTab() {
                                             children: "Chat Logs AI"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 525,
+                                            lineNumber: 543,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -570,7 +587,7 @@ function AuditTab() {
                                                 size: 14
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 546,
+                                                lineNumber: 564,
                                                 columnNumber: 30
                                             }, this),
                                             sx: {
@@ -580,7 +597,7 @@ function AuditTab() {
                                             children: "Quiz Bank (Ngân hàng)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 538,
+                                            lineNumber: 556,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -592,7 +609,7 @@ function AuditTab() {
                                                 size: 14
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 556,
+                                                lineNumber: 574,
                                                 columnNumber: 30
                                             }, this),
                                             sx: {
@@ -602,35 +619,67 @@ function AuditTab() {
                                             children: "Kahoot Host Portal"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 551,
+                                            lineNumber: 569,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 514,
+                                    lineNumber: 532,
                                     columnNumber: 15
                                 }, this),
-                                subTab !== "kahoot" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
-                                    size: "small",
-                                    onClick: ()=>fetchCurrentSubData(),
-                                    startIcon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
-                                        size: 14
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 567,
-                                        columnNumber: 30
-                                    }, this),
-                                    children: "Tải Lại CSDL"
-                                }, void 0, false, {
+                                subTab !== "kahoot" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
+                                    direction: "row",
+                                    spacing: 1,
+                                    children: [
+                                        subTab === "chat" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                                            size: "small",
+                                            color: "error",
+                                            variant: "outlined",
+                                            onClick: handleClearAllChatLogs,
+                                            startIcon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
+                                                size: 14
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/AuditTab.tsx",
+                                                lineNumber: 589,
+                                                columnNumber: 34
+                                            }, this),
+                                            sx: {
+                                                textTransform: "none",
+                                                fontWeight: "bold"
+                                            },
+                                            children: "Xóa Toàn Bộ Chat Logs"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/AuditTab.tsx",
+                                            lineNumber: 584,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                                            size: "small",
+                                            onClick: ()=>fetchCurrentSubData(),
+                                            startIcon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
+                                                size: 14
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/AuditTab.tsx",
+                                                lineNumber: 598,
+                                                columnNumber: 32
+                                            }, this),
+                                            children: "Tải Lại CSDL"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/AuditTab.tsx",
+                                            lineNumber: 595,
+                                            columnNumber: 19
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 564,
+                                    lineNumber: 582,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 506,
+                            lineNumber: 524,
                             columnNumber: 13
                         }, this),
                         subTab !== "kahoot" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -643,12 +692,12 @@ function AuditTab() {
                                 onChange: (e)=>setFilterText(e.target.value)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 577,
+                                lineNumber: 609,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 576,
+                            lineNumber: 608,
                             columnNumber: 15
                         }, this),
                         subTab === "students" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -657,12 +706,12 @@ function AuditTab() {
                             },
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StudentProgressManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 590,
+                                lineNumber: 622,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 589,
+                            lineNumber: 621,
                             columnNumber: 15
                         }, this),
                         subTab === "chat" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -691,7 +740,7 @@ function AuditTab() {
                                                     children: "Thời gian"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 608,
+                                                    lineNumber: 640,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -703,7 +752,7 @@ function AuditTab() {
                                                     children: "Session ID"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 611,
+                                                    lineNumber: 643,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -715,7 +764,7 @@ function AuditTab() {
                                                     children: "Câu hỏi Học sinh"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 614,
+                                                    lineNumber: 646,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -727,18 +776,18 @@ function AuditTab() {
                                                     children: "AI Trả lời"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 617,
+                                                    lineNumber: 649,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 607,
+                                            lineNumber: 639,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 606,
+                                        lineNumber: 638,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableBody$2f$TableBody$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableBody$3e$__["TableBody"], {
@@ -753,12 +802,12 @@ function AuditTab() {
                                                 children: "Chưa có dữ liệu Chat Log được ghi nhận trên Supabase."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 625,
+                                                lineNumber: 657,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 624,
+                                            lineNumber: 656,
                                             columnNumber: 23
                                         }, this) : filteredChatLogs.map((row)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableRow$2f$TableRow$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableRow$3e$__["TableRow"], {
                                                 children: [
@@ -771,7 +820,7 @@ function AuditTab() {
                                                         children: new Date(row.created_at).toLocaleString("vi-VN")
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 636,
+                                                        lineNumber: 668,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -784,7 +833,7 @@ function AuditTab() {
                                                         children: row.session_id || "N/A"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 645,
+                                                        lineNumber: 677,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -795,7 +844,7 @@ function AuditTab() {
                                                         children: row.user_message
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 655,
+                                                        lineNumber: 687,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -840,34 +889,34 @@ function AuditTab() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 667,
+                                                            lineNumber: 699,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 660,
+                                                        lineNumber: 692,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, row.id, true, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 635,
+                                                lineNumber: 667,
                                                 columnNumber: 25
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 622,
+                                        lineNumber: 654,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 605,
+                                lineNumber: 637,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 596,
+                            lineNumber: 628,
                             columnNumber: 15
                         }, this),
                         subTab === "quiz" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -895,7 +944,7 @@ function AuditTab() {
                                                     children: "Thời gian"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 723,
+                                                    lineNumber: 755,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -906,7 +955,7 @@ function AuditTab() {
                                                     children: "Nội dung Câu hỏi"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 726,
+                                                    lineNumber: 758,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -917,7 +966,7 @@ function AuditTab() {
                                                     children: "Đáp án Lựa chọn"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 729,
+                                                    lineNumber: 761,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -929,7 +978,7 @@ function AuditTab() {
                                                     children: "Đúng"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 732,
+                                                    lineNumber: 764,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -940,18 +989,18 @@ function AuditTab() {
                                                     children: "Lời Giải thích"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 738,
+                                                    lineNumber: 770,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 722,
+                                            lineNumber: 754,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 721,
+                                        lineNumber: 753,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableBody$2f$TableBody$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableBody$3e$__["TableBody"], {
@@ -966,12 +1015,12 @@ function AuditTab() {
                                                 children: "Chưa có câu hỏi trắc nghiệm nào trong Ngân hàng CSDL Supabase."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 746,
+                                                lineNumber: 778,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 745,
+                                            lineNumber: 777,
                                             columnNumber: 23
                                         }, this) : filteredQuizBank.map((row)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableRow$2f$TableRow$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableRow$3e$__["TableRow"], {
                                                 children: [
@@ -984,7 +1033,7 @@ function AuditTab() {
                                                         children: new Date(row.created_at).toLocaleString("vi-VN")
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 758,
+                                                        lineNumber: 790,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -996,7 +1045,7 @@ function AuditTab() {
                                                         children: row.question
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 767,
+                                                        lineNumber: 799,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1018,7 +1067,7 @@ function AuditTab() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 782,
+                                                                        lineNumber: 814,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     " ",
@@ -1026,12 +1075,12 @@ function AuditTab() {
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 781,
+                                                                lineNumber: 813,
                                                                 columnNumber: 33
                                                             }, this)) : ""
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 776,
+                                                        lineNumber: 808,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1050,12 +1099,12 @@ function AuditTab() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 788,
+                                                            lineNumber: 820,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 787,
+                                                        lineNumber: 819,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1066,29 +1115,29 @@ function AuditTab() {
                                                         children: row.explanation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 797,
+                                                        lineNumber: 829,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, row.id, true, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 757,
+                                                lineNumber: 789,
                                                 columnNumber: 25
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                        lineNumber: 743,
+                                        lineNumber: 775,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 720,
+                                lineNumber: 752,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 711,
+                            lineNumber: 743,
                             columnNumber: 15
                         }, this),
                         subTab === "kahoot" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1109,7 +1158,7 @@ function AuditTab() {
                                             className: "mx-auto mb-2"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 822,
+                                            lineNumber: 854,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1120,7 +1169,7 @@ function AuditTab() {
                                             children: "Tạo Phòng Đấu Kahoot Hóa Học (Bộ 10 Câu)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 823,
+                                            lineNumber: 855,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1132,7 +1181,7 @@ function AuditTab() {
                                             children: "Hệ thống tự động kết hợp câu hỏi bám sát SGK Hóa 10 từ Dify AI & Gemini AI, tự động lưu vào Supabase DB."
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 831,
+                                            lineNumber: 863,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1148,7 +1197,7 @@ function AuditTab() {
                                                     children: "Thời gian/câu:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 849,
+                                                    lineNumber: 881,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1166,7 +1215,7 @@ function AuditTab() {
                                                             children: "10 giây"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 862,
+                                                            lineNumber: 894,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1174,7 +1223,7 @@ function AuditTab() {
                                                             children: "15 giây"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 863,
+                                                            lineNumber: 895,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1182,7 +1231,7 @@ function AuditTab() {
                                                             children: "20 giây (Khuyên dùng)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 864,
+                                                            lineNumber: 896,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1190,19 +1239,19 @@ function AuditTab() {
                                                             children: "30 giây"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 865,
+                                                            lineNumber: 897,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 852,
+                                                    lineNumber: 884,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 842,
+                                            lineNumber: 874,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1213,7 +1262,7 @@ function AuditTab() {
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 873,
+                                                lineNumber: 905,
                                                 columnNumber: 34
                                             }, this),
                                             sx: {
@@ -1224,13 +1273,13 @@ function AuditTab() {
                                             children: "Khởi Tạo Mã Phòng Mới 🚀"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 869,
+                                            lineNumber: 901,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 821,
+                                    lineNumber: 853,
                                     columnNumber: 19
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                                     children: [
@@ -1251,7 +1300,7 @@ function AuditTab() {
                                                             children: "MÃ PIN KAHOOT PHÒNG LỚP:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 891,
+                                                            lineNumber: 923,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1262,13 +1311,13 @@ function AuditTab() {
                                                             children: hostPin
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 894,
+                                                            lineNumber: 926,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 890,
+                                                    lineNumber: 922,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1282,7 +1331,7 @@ function AuditTab() {
                                                                 size: 16
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 908,
+                                                                lineNumber: 940,
                                                                 columnNumber: 38
                                                             }, this),
                                                             disabled: gameStatus === "finished",
@@ -1304,7 +1353,7 @@ function AuditTab() {
                                                             children: gameStatus === "finished" ? "🏁 TRẬN ĐẤU ĐÃ HOÀN THÀNH" : gameStatus === "active" ? "Đang Đấu (Trận đấu Đang Diễn Ra)" : "Bắt Đầu Đấu (10 Câu)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 905,
+                                                            lineNumber: 937,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1333,25 +1382,25 @@ function AuditTab() {
                                                                 size: 16
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 958,
+                                                                lineNumber: 990,
                                                                 columnNumber: 38
                                                             }, this),
                                                             children: "Kết Thúc & Lưu BXH"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 933,
+                                                            lineNumber: 965,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 904,
+                                                    lineNumber: 936,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 881,
+                                            lineNumber: 913,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1381,7 +1430,7 @@ function AuditTab() {
                                                                         children: "👥 Học sinh đã tham gia"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 979,
+                                                                        lineNumber: 1011,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1390,13 +1439,13 @@ function AuditTab() {
                                                                         color: "primary"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 986,
+                                                                        lineNumber: 1018,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 973,
+                                                                lineNumber: 1005,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1409,7 +1458,7 @@ function AuditTab() {
                                                                     children: "Đang chờ học sinh nhập mã PIN vào phòng..."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 995,
+                                                                    lineNumber: 1027,
                                                                     columnNumber: 31
                                                                 }, this) : participants.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
                                                                         label: p.nickname,
@@ -1424,23 +1473,23 @@ function AuditTab() {
                                                                         }
                                                                     }, p.id, false, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 1003,
+                                                                        lineNumber: 1035,
                                                                         columnNumber: 33
                                                                     }, this))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 993,
+                                                                lineNumber: 1025,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 967,
+                                                        lineNumber: 999,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 966,
+                                                    lineNumber: 998,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1461,7 +1510,7 @@ function AuditTab() {
                                                                 children: "🏆 Bảng Xếp Hạng & Chi Tiết Học Sinh (Click Xem Chi Tiết)"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 1029,
+                                                                lineNumber: 1061,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1502,7 +1551,7 @@ function AuditTab() {
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                        lineNumber: 1065,
+                                                                                        lineNumber: 1097,
                                                                                         columnNumber: 37
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1515,13 +1564,13 @@ function AuditTab() {
                                                                                         }
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                        lineNumber: 1074,
+                                                                                        lineNumber: 1106,
                                                                                         columnNumber: 37
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                lineNumber: 1060,
+                                                                                lineNumber: 1092,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1539,36 +1588,36 @@ function AuditTab() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                lineNumber: 1085,
+                                                                                lineNumber: 1117,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         ]
                                                                     }, p.id, true, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 1042,
+                                                                        lineNumber: 1074,
                                                                         columnNumber: 33
                                                                     }, this);
                                                                 })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 1038,
+                                                                lineNumber: 1070,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 1023,
+                                                        lineNumber: 1055,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 1022,
+                                                    lineNumber: 1054,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 965,
+                                            lineNumber: 997,
                                             columnNumber: 21
                                         }, this),
                                         gameStatus === "finished" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1585,7 +1634,7 @@ function AuditTab() {
                                                     children: "📊 Báo Cáo & Thống Kê Chi Tiết Đáp Án Học Sinh Chọn (Hoàn Thành Trận Đấu)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 1107,
+                                                    lineNumber: 1139,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1611,7 +1660,7 @@ function AuditTab() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1126,
+                                                                    lineNumber: 1158,
                                                                     columnNumber: 31
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1657,7 +1706,7 @@ function AuditTab() {
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                                lineNumber: 1163,
+                                                                                                lineNumber: 1195,
                                                                                                 columnNumber: 45
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1671,13 +1720,13 @@ function AuditTab() {
                                                                                                 }
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                                lineNumber: 1176,
+                                                                                                lineNumber: 1208,
                                                                                                 columnNumber: 45
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                        lineNumber: 1157,
+                                                                                        lineNumber: 1189,
                                                                                         columnNumber: 43
                                                                                     }, this),
                                                                                     pickedStudents.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1696,29 +1745,29 @@ function AuditTab() {
                                                                                                 }
                                                                                             }, p.id, false, {
                                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                                lineNumber: 1201,
+                                                                                                lineNumber: 1233,
                                                                                                 columnNumber: 49
                                                                                             }, this))
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                        lineNumber: 1194,
+                                                                                        lineNumber: 1226,
                                                                                         columnNumber: 45
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                lineNumber: 1147,
+                                                                                lineNumber: 1179,
                                                                                 columnNumber: 41
                                                                             }, this)
                                                                         }, optIdx, false, {
                                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                                            lineNumber: 1146,
+                                                                            lineNumber: 1178,
                                                                             columnNumber: 39
                                                                         }, this);
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1135,
+                                                                    lineNumber: 1167,
                                                                     columnNumber: 31
                                                                 }, this),
                                                                 (()=>{
@@ -1737,7 +1786,7 @@ function AuditTab() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                                lineNumber: 1238,
+                                                                                lineNumber: 1270,
                                                                                 columnNumber: 39
                                                                             }, this),
                                                                             " ",
@@ -1745,31 +1794,31 @@ function AuditTab() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 1233,
+                                                                        lineNumber: 1265,
                                                                         columnNumber: 35
                                                                     }, this);
                                                                 })()
                                                             ]
                                                         }, q.id || qIdx, true, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 1117,
+                                                            lineNumber: 1149,
                                                             columnNumber: 29
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 1115,
+                                                    lineNumber: 1147,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 1106,
+                                            lineNumber: 1138,
                                             columnNumber: 23
                                         }, this) : null
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 880,
+                                    lineNumber: 912,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1785,7 +1834,7 @@ function AuditTab() {
                                             children: "📜 Lịch Sử Bảng Xếp Hạng Các Trận Đấu Kahoot Đã Lưu CSDL"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 1253,
+                                            lineNumber: 1285,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1796,7 +1845,7 @@ function AuditTab() {
                                                 children: "Chưa có lịch sử kết quả trận đấu Kahoot nào được lưu."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 1263,
+                                                lineNumber: 1295,
                                                 columnNumber: 23
                                             }, this) : kahootHistory.map((h, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
                                                     sx: {
@@ -1821,7 +1870,7 @@ function AuditTab() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1278,
+                                                                    lineNumber: 1310,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1834,13 +1883,13 @@ function AuditTab() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1285,
+                                                                    lineNumber: 1317,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 1272,
+                                                            lineNumber: 1304,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1856,41 +1905,41 @@ function AuditTab() {
                                                                     }
                                                                 }, pIdx, false, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1297,
+                                                                    lineNumber: 1329,
                                                                     columnNumber: 33
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 1293,
+                                                            lineNumber: 1325,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, i, true, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 1268,
+                                                    lineNumber: 1300,
                                                     columnNumber: 25
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 1261,
+                                            lineNumber: 1293,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1252,
+                                    lineNumber: 1284,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 812,
+                            lineNumber: 844,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/AuditTab.tsx",
-                    lineNumber: 504,
+                    lineNumber: 522,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Dialog$2f$Dialog$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Dialog$3e$__["Dialog"], {
@@ -1907,7 +1956,7 @@ function AuditTab() {
                             children: "Xác Thực Quyền Giáo Viên"
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1329,
+                            lineNumber: 1361,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogContent$2f$DialogContent$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogContent$3e$__["DialogContent"], {
@@ -1923,7 +1972,7 @@ function AuditTab() {
                                     children: "Vui lòng nhập mật khẩu quản trị để truy cập cổng Audit & Kahoot Host"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1333,
+                                    lineNumber: 1365,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1938,13 +1987,13 @@ function AuditTab() {
                                     helperText: errorMsg ? "Mật khẩu không chính xác!" : ""
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1342,
+                                    lineNumber: 1374,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1332,
+                            lineNumber: 1364,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogActions$2f$DialogActions$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogActions$3e$__["DialogActions"], {
@@ -1957,7 +2006,7 @@ function AuditTab() {
                                     children: "Hủy"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1355,
+                                    lineNumber: 1387,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1967,19 +2016,19 @@ function AuditTab() {
                                     children: "Xác Nhận"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1356,
+                                    lineNumber: 1388,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1354,
+                            lineNumber: 1386,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/AuditTab.tsx",
-                    lineNumber: 1323,
+                    lineNumber: 1355,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Dialog$2f$Dialog$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Dialog$3e$__["Dialog"], {
@@ -2003,7 +2052,7 @@ function AuditTab() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1368,
+                            lineNumber: 1400,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogContent$2f$DialogContent$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogContent$3e$__["DialogContent"], {
@@ -2021,14 +2070,14 @@ function AuditTab() {
                                             children: selectedStudent?.nickname
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                            lineNumber: 1376,
+                                            lineNumber: 1408,
                                             columnNumber: 41
                                         }, this),
                                         " đã chọn trên tất cả 10 câu hỏi của trận đấu Kahoot:"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1375,
+                                    lineNumber: 1407,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -2052,19 +2101,19 @@ function AuditTab() {
                                                             children: selectedStudent?.nickname
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/AuditTab.tsx",
-                                                            lineNumber: 1390,
+                                                            lineNumber: 1422,
                                                             columnNumber: 36
                                                         }, this),
                                                         " chưa thực hiện trả lời câu hỏi nào trong trận đấu này."
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                    lineNumber: 1389,
+                                                    lineNumber: 1421,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 1388,
+                                                lineNumber: 1420,
                                                 columnNumber: 21
                                             }, this);
                                         }
@@ -2098,7 +2147,7 @@ function AuditTab() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 1419,
+                                                                lineNumber: 1451,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2115,13 +2164,13 @@ function AuditTab() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 1426,
+                                                                lineNumber: 1458,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 1413,
+                                                        lineNumber: 1445,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2160,42 +2209,42 @@ function AuditTab() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                                        lineNumber: 1468,
+                                                                        lineNumber: 1500,
                                                                         columnNumber: 35
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                                                    lineNumber: 1454,
+                                                                    lineNumber: 1486,
                                                                     columnNumber: 33
                                                                 }, this)
                                                             }, optIdx, false, {
                                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                                lineNumber: 1453,
+                                                                lineNumber: 1485,
                                                                 columnNumber: 31
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AuditTab.tsx",
-                                                        lineNumber: 1446,
+                                                        lineNumber: 1478,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, q.id || qIdx, true, {
                                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                                lineNumber: 1404,
+                                                lineNumber: 1436,
                                                 columnNumber: 21
                                             }, this);
                                         });
                                     })()
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AuditTab.tsx",
-                                    lineNumber: 1380,
+                                    lineNumber: 1412,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1374,
+                            lineNumber: 1406,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogActions$2f$DialogActions$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogActions$3e$__["DialogActions"], {
@@ -2209,29 +2258,29 @@ function AuditTab() {
                                 children: "Đóng Xem Chi Tiết"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AuditTab.tsx",
-                                lineNumber: 1501,
+                                lineNumber: 1533,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AuditTab.tsx",
-                            lineNumber: 1500,
+                            lineNumber: 1532,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/AuditTab.tsx",
-                    lineNumber: 1362,
+                    lineNumber: 1394,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/AuditTab.tsx",
-            lineNumber: 446,
+            lineNumber: 464,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/AuditTab.tsx",
-        lineNumber: 439,
+        lineNumber: 457,
         columnNumber: 5
     }, this);
 }

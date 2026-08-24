@@ -688,6 +688,10 @@
     display: none;
   }
 
+  .inline-block {
+    display: inline-block;
+  }
+
   .inline-flex {
     display: inline-flex;
   }
@@ -1100,6 +1104,10 @@
 
   .text-slate-400 {
     color: var(--color-slate-400);
+  }
+
+  .uppercase {
+    text-transform: uppercase;
   }
 
   .italic {
