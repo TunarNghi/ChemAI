@@ -49,8 +49,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$building$2d$2$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Building2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/building-2.js [app-client] (ecmascript) <export default as Building2>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$map$2d$pin$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MapPin$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/map-pin.js [app-client] (ecmascript) <export default as MapPin>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$compass$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Compass$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/compass.js [app-client] (ecmascript) <export default as Compass>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/api.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StudentProgressManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/StudentProgressManager.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/userDatabase.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
@@ -135,50 +135,8 @@ function LeaderboardTab({ currentUser }) {
     }["LeaderboardTab.useEffect"], []);
     const loadLeaderboardData = async ()=>{
         try {
-            const raw = localStorage.getItem('chemai_registered_users');
-            let registeredUsers = raw ? JSON.parse(raw) : [];
-            // Purge any legacy sample seed accounts (std_seed_*)
-            const purged = registeredUsers.filter((u)=>!u.id?.startsWith('std_seed_'));
-            if (purged.length !== registeredUsers.length) {
-                localStorage.setItem('chemai_registered_users', JSON.stringify(purged));
-                registeredUsers = purged;
-            }
-            let studentOnly = registeredUsers.filter((u)=>!u.id?.startsWith('std_seed_') && (u.role === 'student' || !u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')));
-            // Attempt sync with Supabase remote database
-            try {
-                const { data: remoteUsers } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('*').eq('role', 'student');
-                if (remoteUsers && remoteUsers.length > 0) {
-                    const map = new Map();
-                    studentOnly.forEach((u)=>map.set(u.id, u));
-                    remoteUsers.forEach((r)=>{
-                        const uid = r.user_id || r.id;
-                        if (!map.has(uid) && !uid.startsWith('std_seed_')) {
-                            map.set(uid, {
-                                id: uid,
-                                fullName: r.full_name,
-                                authType: r.auth_type || 'email',
-                                emailOrPhone: r.email_or_phone,
-                                role: 'student',
-                                className: r.class_name || '10A1',
-                                school: r.school || '',
-                                location: r.location || '',
-                                createdAt: r.created_at || new Date().toISOString(),
-                                kahootExp: r.kahoot_exp || 0,
-                                kahootStreak: r.kahoot_streak || 0,
-                                loginStreak: r.login_streak || 1,
-                                nickname: r.nickname || '',
-                                totalKahootQuestions: r.total_questions || 0,
-                                correctKahootQuestions: r.correct_questions || 0,
-                                teacherEvaluation: r.teacher_evaluation || '',
-                                lastActiveDate: r.last_active_date || r.created_at?.split('T')[0] || new Date().toISOString().split('T')[0]
-                            });
-                        }
-                    });
-                    studentOnly = Array.from(map.values());
-                }
-            } catch (err) {
-                console.warn('Supabase leaderboard fetch:', err);
-            }
+            const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
+            const studentOnly = allUsers.filter((u)=>!u.id?.startsWith('std_seed_') && (u.role === 'student' || !u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')));
             const mapped = studentOnly.map((u)=>{
                 const exp = u.kahootExp !== undefined ? u.kahootExp : 0;
                 const totalQ = u.totalKahootQuestions !== undefined ? u.totalKahootQuestions : 0;
@@ -409,7 +367,7 @@ function LeaderboardTab({ currentUser }) {
                 children: notification.message
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 376,
+                lineNumber: 331,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -442,7 +400,7 @@ function LeaderboardTab({ currentUser }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 400,
+                        lineNumber: 355,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -476,12 +434,12 @@ function LeaderboardTab({ currentUser }) {
                                                     size: 32
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 429,
+                                                    lineNumber: 384,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 417,
+                                                lineNumber: 372,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -500,7 +458,7 @@ function LeaderboardTab({ currentUser }) {
                                                         children: "Bảng Xếp Hạng Học Sinh Hóa Học 10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 432,
+                                                        lineNumber: 387,
                                                         columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -512,19 +470,19 @@ function LeaderboardTab({ currentUser }) {
                                                         children: "Hóa Học 10 GDPT 2018 • Xếp hạng đa cấp: Thành Phố / Thị Xã — Tỉnh — Toàn Quốc"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 435,
+                                                        lineNumber: 390,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 431,
+                                                lineNumber: 386,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 416,
+                                        lineNumber: 371,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -541,7 +499,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Học Sinh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 442,
+                                                lineNumber: 397,
                                                 columnNumber: 29
                                             }, this),
                                             " có thành tích Hóa học xuất sắc nhất theo 3 phạm vi địa lý (",
@@ -549,7 +507,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Thành Phố / Huyện"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 442,
+                                                lineNumber: 397,
                                                 columnNumber: 104
                                             }, this),
                                             ", ",
@@ -557,7 +515,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Tỉnh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 442,
+                                                lineNumber: 397,
                                                 columnNumber: 130
                                             }, this),
                                             " và ",
@@ -565,7 +523,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Toàn Quốc"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 442,
+                                                lineNumber: 397,
                                                 columnNumber: 145
                                             }, this),
                                             "), dựa trên 3 chỉ số cốt lõi: ",
@@ -573,7 +531,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Điểm Kinh Nghiệm (EXP)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 443,
+                                                lineNumber: 398,
                                                 columnNumber: 42
                                             }, this),
                                             ", ",
@@ -581,7 +539,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Chuỗi Thắng Kahoot"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 443,
+                                                lineNumber: 398,
                                                 columnNumber: 73
                                             }, this),
                                             " và ",
@@ -589,14 +547,14 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Chuỗi Ngày Đăng Nhập"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 443,
+                                                lineNumber: 398,
                                                 columnNumber: 102
                                             }, this),
                                             "."
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 441,
+                                        lineNumber: 396,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -614,7 +572,7 @@ function LeaderboardTab({ currentUser }) {
                                                     color: "#38bdf8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 449,
+                                                    lineNumber: 404,
                                                     columnNumber: 23
                                                 }, this),
                                                 label: `Tổng số học sinh: ${scopedStudents.length} học sinh`,
@@ -627,7 +585,7 @@ function LeaderboardTab({ currentUser }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 448,
+                                                lineNumber: 403,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -636,7 +594,7 @@ function LeaderboardTab({ currentUser }) {
                                                     color: "#f59e0b"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 455,
+                                                    lineNumber: 410,
                                                     columnNumber: 23
                                                 }, this),
                                                 label: `Quán quân: ${top1?.fullName || 'Chưa xác định'}`,
@@ -649,7 +607,7 @@ function LeaderboardTab({ currentUser }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 454,
+                                                lineNumber: 409,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -658,7 +616,7 @@ function LeaderboardTab({ currentUser }) {
                                                     color: "#10b981"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 461,
+                                                    lineNumber: 416,
                                                     columnNumber: 23
                                                 }, this),
                                                 label: scopeType === 'national' ? 'Phạm vi: Toàn Quốc 🇻🇳' : scopeType === 'province' ? `Phạm vi: ${selectedProvince}` : `Phạm vi: ${selectedCity}`,
@@ -671,19 +629,19 @@ function LeaderboardTab({ currentUser }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 460,
+                                                lineNumber: 415,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 447,
+                                        lineNumber: 402,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 415,
+                                lineNumber: 370,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -712,7 +670,7 @@ function LeaderboardTab({ currentUser }) {
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 479,
+                                                lineNumber: 434,
                                                 columnNumber: 28
                                             }, this),
                                             onClick: ()=>{
@@ -737,7 +695,7 @@ function LeaderboardTab({ currentUser }) {
                                             children: "Làm Mới BXH"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 477,
+                                            lineNumber: 432,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -746,7 +704,7 @@ function LeaderboardTab({ currentUser }) {
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 499,
+                                                lineNumber: 454,
                                                 columnNumber: 28
                                             }, this),
                                             onClick: handleExportLeaderboardCSV,
@@ -762,30 +720,30 @@ function LeaderboardTab({ currentUser }) {
                                             children: "Xuất Báo Cáo"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 497,
+                                            lineNumber: 452,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 476,
+                                    lineNumber: 431,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 475,
+                                lineNumber: 430,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 414,
+                        lineNumber: 369,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 386,
+                lineNumber: 341,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -819,7 +777,7 @@ function LeaderboardTab({ currentUser }) {
                                     children: "📍 CHỌN PHẠM VI KHU VỰC XẾP HẠNG:"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 530,
+                                    lineNumber: 485,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -836,7 +794,7 @@ function LeaderboardTab({ currentUser }) {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 538,
+                                                    lineNumber: 493,
                                                     columnNumber: 30
                                                 }, this),
                                                 onClick: ()=>setScopeType('city'),
@@ -859,12 +817,12 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Thành Phố / Huyện"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 535,
+                                                lineNumber: 490,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 534,
+                                            lineNumber: 489,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -877,7 +835,7 @@ function LeaderboardTab({ currentUser }) {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 560,
+                                                    lineNumber: 515,
                                                     columnNumber: 30
                                                 }, this),
                                                 onClick: ()=>setScopeType('province'),
@@ -900,12 +858,12 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Cấp Tỉnh / Thành"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 557,
+                                                lineNumber: 512,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 556,
+                                            lineNumber: 511,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -918,7 +876,7 @@ function LeaderboardTab({ currentUser }) {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 537,
                                                     columnNumber: 30
                                                 }, this),
                                                 onClick: ()=>setScopeType('national'),
@@ -941,24 +899,24 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Toàn Quốc 🇻🇳"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 579,
+                                                lineNumber: 534,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 578,
+                                            lineNumber: 533,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 533,
+                                    lineNumber: 488,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 529,
+                            lineNumber: 484,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -974,7 +932,7 @@ function LeaderboardTab({ currentUser }) {
                                             children: "Chọn Thành Phố / Thị Xã / Huyện"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 606,
+                                            lineNumber: 561,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -986,18 +944,18 @@ function LeaderboardTab({ currentUser }) {
                                                     children: c
                                                 }, c, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 613,
+                                                    lineNumber: 568,
                                                     columnNumber: 21
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 607,
+                                            lineNumber: 562,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 605,
+                                    lineNumber: 560,
                                     columnNumber: 15
                                 }, this),
                                 scopeType === 'province' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$FormControl$2f$FormControl$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FormControl$3e$__["FormControl"], {
@@ -1008,7 +966,7 @@ function LeaderboardTab({ currentUser }) {
                                             children: "Chọn Tỉnh / Thành Phố"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 621,
+                                            lineNumber: 576,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1020,18 +978,18 @@ function LeaderboardTab({ currentUser }) {
                                                     children: p
                                                 }, p, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 628,
+                                                    lineNumber: 583,
                                                     columnNumber: 21
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 622,
+                                            lineNumber: 577,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 620,
+                                    lineNumber: 575,
                                     columnNumber: 15
                                 }, this),
                                 scopeType === 'national' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1050,7 +1008,7 @@ function LeaderboardTab({ currentUser }) {
                                             color: "#f59e0b"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 646,
+                                            lineNumber: 601,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1060,30 +1018,30 @@ function LeaderboardTab({ currentUser }) {
                                             children: "Bảng Xếp Hạng Toàn Quốc (63 Tỉnh Thành Việt Nam)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 647,
+                                            lineNumber: 602,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 635,
+                                    lineNumber: 590,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 603,
+                            lineNumber: 558,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 527,
+                    lineNumber: 482,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 516,
+                lineNumber: 471,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1129,14 +1087,14 @@ function LeaderboardTab({ currentUser }) {
                                 size: 18
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 699,
+                                lineNumber: 654,
                                 columnNumber: 19
                             }, this),
                             iconPosition: "start",
                             label: "1. Xếp Hạng Điểm Kinh Nghiệm (EXP)"
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 698,
+                            lineNumber: 653,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tab$2f$Tab$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tab$3e$__["Tab"], {
@@ -1144,14 +1102,14 @@ function LeaderboardTab({ currentUser }) {
                                 size: 18
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 704,
+                                lineNumber: 659,
                                 columnNumber: 19
                             }, this),
                             iconPosition: "start",
                             label: "2. Xếp Hạng Chuỗi Kahoot (Streak)"
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 703,
+                            lineNumber: 658,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tab$2f$Tab$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tab$3e$__["Tab"], {
@@ -1159,25 +1117,25 @@ function LeaderboardTab({ currentUser }) {
                                 size: 18
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 709,
+                                lineNumber: 664,
                                 columnNumber: 19
                             }, this),
                             iconPosition: "start",
                             label: "3. Xếp Hạng Chuỗi Ngày Đăng Nhập"
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 708,
+                            lineNumber: 663,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 667,
+                    lineNumber: 622,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 657,
+                lineNumber: 612,
                 columnNumber: 7
             }, this),
             sortedStudents.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1203,14 +1161,14 @@ function LeaderboardTab({ currentUser }) {
                                 color: "#f59e0b"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 726,
+                                lineNumber: 681,
                                 columnNumber: 13
                             }, this),
                             " Bục Vinh Quang Top 3 Học Sinh Xuất Sắc"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 719,
+                        lineNumber: 674,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1236,12 +1194,12 @@ function LeaderboardTab({ currentUser }) {
                                     activeCategory: activeCategory
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 732,
+                                    lineNumber: 687,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 731,
+                                lineNumber: 686,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1262,12 +1220,12 @@ function LeaderboardTab({ currentUser }) {
                                     isCenter: true
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 744,
+                                    lineNumber: 699,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 743,
+                                lineNumber: 698,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1287,24 +1245,24 @@ function LeaderboardTab({ currentUser }) {
                                     activeCategory: activeCategory
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 757,
+                                    lineNumber: 712,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 756,
+                                lineNumber: 711,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 729,
+                        lineNumber: 684,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 718,
+                lineNumber: 673,
                 columnNumber: 9
             }, this),
             currentUser && currentUser.role !== 'teacher' && myStudentData && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1351,7 +1309,7 @@ function LeaderboardTab({ currentUser }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 786,
+                                        lineNumber: 741,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1371,7 +1329,7 @@ function LeaderboardTab({ currentUser }) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 805,
+                                                        lineNumber: 760,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1386,13 +1344,13 @@ function LeaderboardTab({ currentUser }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 808,
+                                                        lineNumber: 763,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 804,
+                                                lineNumber: 759,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1407,30 +1365,30 @@ function LeaderboardTab({ currentUser }) {
                                                         children: myStudentData.nickname || 'Chiến Binh Hóa Học'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 811,
+                                                        lineNumber: 766,
                                                         columnNumber: 87
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 810,
+                                                lineNumber: 765,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 803,
+                                        lineNumber: 758,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 785,
+                                lineNumber: 740,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 784,
+                            lineNumber: 739,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1450,7 +1408,7 @@ function LeaderboardTab({ currentUser }) {
                                             color: "#eab308"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 820,
+                                            lineNumber: 775,
                                             columnNumber: 25
                                         }, this),
                                         label: `${myStudentData.kahootExp.toLocaleString()} EXP`,
@@ -1461,7 +1419,7 @@ function LeaderboardTab({ currentUser }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 819,
+                                        lineNumber: 774,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1470,7 +1428,7 @@ function LeaderboardTab({ currentUser }) {
                                             color: "#f43f5e"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 825,
+                                            lineNumber: 780,
                                             columnNumber: 25
                                         }, this),
                                         label: `🔥 ${myStudentData.kahootStreak} trận`,
@@ -1481,7 +1439,7 @@ function LeaderboardTab({ currentUser }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 824,
+                                        lineNumber: 779,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1490,7 +1448,7 @@ function LeaderboardTab({ currentUser }) {
                                             color: "#10b981"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 830,
+                                            lineNumber: 785,
                                             columnNumber: 25
                                         }, this),
                                         label: `📅 ${myStudentData.loginStreak}d`,
@@ -1501,29 +1459,29 @@ function LeaderboardTab({ currentUser }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 829,
+                                        lineNumber: 784,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 818,
+                                lineNumber: 773,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 817,
+                            lineNumber: 772,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 783,
+                    lineNumber: 738,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 772,
+                lineNumber: 727,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1559,7 +1517,7 @@ function LeaderboardTab({ currentUser }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 860,
+                                        lineNumber: 815,
                                         columnNumber: 33
                                     }, this),
                                     endAdornment: searchQuery ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -1569,23 +1527,23 @@ function LeaderboardTab({ currentUser }) {
                                             size: 15
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 863,
+                                            lineNumber: 818,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 862,
+                                        lineNumber: 817,
                                         columnNumber: 19
                                     }, this) : null
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 853,
+                                lineNumber: 808,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 852,
+                            lineNumber: 807,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1601,7 +1559,7 @@ function LeaderboardTab({ currentUser }) {
                                         children: "Lọc theo Lớp Học"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 872,
+                                        lineNumber: 827,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1613,23 +1571,23 @@ function LeaderboardTab({ currentUser }) {
                                                 children: cls
                                             }, cls, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 879,
+                                                lineNumber: 834,
                                                 columnNumber: 19
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 873,
+                                        lineNumber: 828,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 871,
+                                lineNumber: 826,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 870,
+                            lineNumber: 825,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1653,7 +1611,7 @@ function LeaderboardTab({ currentUser }) {
                                         children: filteredStudents.length
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 887,
+                                        lineNumber: 842,
                                         columnNumber: 25
                                     }, this),
                                     " / ",
@@ -1662,23 +1620,23 @@ function LeaderboardTab({ currentUser }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 886,
+                                lineNumber: 841,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 885,
+                            lineNumber: 840,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 851,
+                    lineNumber: 806,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 841,
+                lineNumber: 796,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1707,7 +1665,7 @@ function LeaderboardTab({ currentUser }) {
                                         color: "#f59e0b"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 905,
+                                        lineNumber: 860,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1721,13 +1679,13 @@ function LeaderboardTab({ currentUser }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 906,
+                                        lineNumber: 861,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 904,
+                                lineNumber: 859,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1740,13 +1698,13 @@ function LeaderboardTab({ currentUser }) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 911,
+                                lineNumber: 866,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 903,
+                        lineNumber: 858,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableContainer$2f$TableContainer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableContainer$3e$__["TableContainer"], {
@@ -1771,7 +1729,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Hạng"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 922,
+                                                lineNumber: 877,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1783,7 +1741,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Học Sinh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 923,
+                                                lineNumber: 878,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1795,7 +1753,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Khu Vực / Tỉnh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 924,
+                                                lineNumber: 879,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1807,7 +1765,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Biệt Danh Phong Tặng"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 925,
+                                                lineNumber: 880,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1819,7 +1777,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: activeCategory === 0 ? '⚡ Kinh Nghiệm (EXP)' : activeCategory === 1 ? '🔥 Chuỗi Thắng Kahoot' : '📅 Chuỗi Đăng Nhập'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 926,
+                                                lineNumber: 881,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1831,7 +1789,7 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Chỉ Số Phụ"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 929,
+                                                lineNumber: 884,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1843,18 +1801,18 @@ function LeaderboardTab({ currentUser }) {
                                                 children: "Xếp Loại Năng Lực"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 930,
+                                                lineNumber: 885,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 921,
+                                        lineNumber: 876,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 920,
+                                    lineNumber: 875,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableBody$2f$TableBody$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableBody$3e$__["TableBody"], {
@@ -1879,7 +1837,7 @@ function LeaderboardTab({ currentUser }) {
                                                         color: "#64748b"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 938,
+                                                        lineNumber: 893,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1889,7 +1847,7 @@ function LeaderboardTab({ currentUser }) {
                                                         children: students.length === 0 ? 'Chưa có tài khoản học sinh nào đăng ký trên hệ thống' : 'Không tìm thấy học sinh nào phù hợp với phạm vi & bộ lọc tìm kiếm!'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 939,
+                                                        lineNumber: 894,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1901,23 +1859,23 @@ function LeaderboardTab({ currentUser }) {
                                                         children: students.length === 0 ? 'Dữ liệu xếp hạng sẽ tự động cập nhật ngay khi học sinh đăng ký tài khoản và hoàn thành các bài thi đấu Kahoot.' : 'Hãy thử đổi sang phạm vi Toàn Quốc hoặc chọn "Tất cả lớp".'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 944,
+                                                        lineNumber: 899,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                lineNumber: 937,
+                                                lineNumber: 892,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 936,
+                                            lineNumber: 891,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                        lineNumber: 935,
+                                        lineNumber: 890,
                                         columnNumber: 17
                                     }, this) : filteredStudents.map((std, idx)=>{
                                         const rankNum = idx + 1;
@@ -1959,7 +1917,7 @@ function LeaderboardTab({ currentUser }) {
                                                         children: "👑 1"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 979,
+                                                        lineNumber: 934,
                                                         columnNumber: 27
                                                     }, this) : isTop2 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                                                         sx: {
@@ -1979,7 +1937,7 @@ function LeaderboardTab({ currentUser }) {
                                                         children: "🥈 2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 998,
+                                                        lineNumber: 953,
                                                         columnNumber: 27
                                                     }, this) : isTop3 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                                                         sx: {
@@ -1999,7 +1957,7 @@ function LeaderboardTab({ currentUser }) {
                                                         children: "🥉 3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1017,
+                                                        lineNumber: 972,
                                                         columnNumber: 27
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
                                                         variant: "body2",
@@ -2011,12 +1969,12 @@ function LeaderboardTab({ currentUser }) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1036,
+                                                        lineNumber: 991,
                                                         columnNumber: 27
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 977,
+                                                    lineNumber: 932,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2037,7 +1995,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 children: std.fullName.charAt(0).toUpperCase()
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1045,
+                                                                lineNumber: 1000,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2058,7 +2016,7 @@ function LeaderboardTab({ currentUser }) {
                                                                                 children: std.fullName
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                                lineNumber: 1059,
+                                                                                lineNumber: 1014,
                                                                                 columnNumber: 31
                                                                             }, this),
                                                                             isSelf && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2073,13 +2031,13 @@ function LeaderboardTab({ currentUser }) {
                                                                                 }
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                                lineNumber: 1063,
+                                                                                lineNumber: 1018,
                                                                                 columnNumber: 33
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                        lineNumber: 1058,
+                                                                        lineNumber: 1013,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2097,24 +2055,24 @@ function LeaderboardTab({ currentUser }) {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                        lineNumber: 1066,
+                                                                        lineNumber: 1021,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1057,
+                                                                lineNumber: 1012,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1044,
+                                                        lineNumber: 999,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1043,
+                                                    lineNumber: 998,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2124,7 +2082,7 @@ function LeaderboardTab({ currentUser }) {
                                                             color: "#38bdf8"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                            lineNumber: 1076,
+                                                            lineNumber: 1031,
                                                             columnNumber: 33
                                                         }, this),
                                                         label: std.location || 'Chưa cập nhật',
@@ -2138,12 +2096,12 @@ function LeaderboardTab({ currentUser }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1075,
+                                                        lineNumber: 1030,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1074,
+                                                    lineNumber: 1029,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2153,7 +2111,7 @@ function LeaderboardTab({ currentUser }) {
                                                             color: "#f59e0b"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                            lineNumber: 1092,
+                                                            lineNumber: 1047,
                                                             columnNumber: 33
                                                         }, this),
                                                         label: std.nickname || 'Chưa đặt biệt danh',
@@ -2167,12 +2125,12 @@ function LeaderboardTab({ currentUser }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1091,
+                                                        lineNumber: 1046,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1090,
+                                                    lineNumber: 1045,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2197,7 +2155,7 @@ function LeaderboardTab({ currentUser }) {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                        lineNumber: 1110,
+                                                                        lineNumber: 1065,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2211,13 +2169,13 @@ function LeaderboardTab({ currentUser }) {
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                        lineNumber: 1113,
+                                                                        lineNumber: 1068,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1109,
+                                                                lineNumber: 1064,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$LinearProgress$2f$LinearProgress$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__LinearProgress$3e$__["LinearProgress"], {
@@ -2234,13 +2192,13 @@ function LeaderboardTab({ currentUser }) {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1115,
+                                                                lineNumber: 1070,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1108,
+                                                        lineNumber: 1063,
                                                         columnNumber: 27
                                                     }, this) : activeCategory === 1 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
                                                         direction: "row",
@@ -2252,7 +2210,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 color: "#f43f5e"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1130,
+                                                                lineNumber: 1085,
                                                                 columnNumber: 37
                                                             }, this),
                                                             label: `🔥 Chuỗi: ${std.kahootStreak} trận thắng`,
@@ -2264,12 +2222,12 @@ function LeaderboardTab({ currentUser }) {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                            lineNumber: 1129,
+                                                            lineNumber: 1084,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1128,
+                                                        lineNumber: 1083,
                                                         columnNumber: 27
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
                                                         direction: "row",
@@ -2281,7 +2239,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 color: "#10b981"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1138,
+                                                                lineNumber: 1093,
                                                                 columnNumber: 37
                                                             }, this),
                                                             label: `📅 Đăng nhập: ${std.loginStreak} ngày liên tục`,
@@ -2293,17 +2251,17 @@ function LeaderboardTab({ currentUser }) {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                            lineNumber: 1137,
+                                                            lineNumber: 1092,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1136,
+                                                        lineNumber: 1091,
                                                         columnNumber: 27
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1106,
+                                                    lineNumber: 1061,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2324,7 +2282,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1150,
+                                                                lineNumber: 1105,
                                                                 columnNumber: 29
                                                             }, this),
                                                             activeCategory !== 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2339,7 +2297,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1157,
+                                                                lineNumber: 1112,
                                                                 columnNumber: 29
                                                             }, this),
                                                             activeCategory !== 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2354,7 +2312,7 @@ function LeaderboardTab({ currentUser }) {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1164,
+                                                                lineNumber: 1119,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2375,18 +2333,18 @@ function LeaderboardTab({ currentUser }) {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                                lineNumber: 1170,
+                                                                lineNumber: 1125,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1148,
+                                                        lineNumber: 1103,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1147,
+                                                    lineNumber: 1102,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -2403,47 +2361,47 @@ function LeaderboardTab({ currentUser }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                        lineNumber: 1178,
+                                                        lineNumber: 1133,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                                    lineNumber: 1177,
+                                                    lineNumber: 1132,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, std.id, true, {
                                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                            lineNumber: 962,
+                                            lineNumber: 917,
                                             columnNumber: 21
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                    lineNumber: 933,
+                                    lineNumber: 888,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/LeaderboardTab.tsx",
-                            lineNumber: 919,
+                            lineNumber: 874,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 918,
+                        lineNumber: 873,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 894,
+                lineNumber: 849,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/LeaderboardTab.tsx",
-        lineNumber: 373,
+        lineNumber: 328,
         columnNumber: 5
     }, this);
 }
@@ -2488,7 +2446,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 1240,
+                    lineNumber: 1195,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2498,7 +2456,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                     children: "Chưa xác định"
                 }, void 0, false, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 1256,
+                    lineNumber: 1211,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2507,13 +2465,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                     children: "Chưa có học sinh trong khu vực này"
                 }, void 0, false, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 1259,
+                    lineNumber: 1214,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/LeaderboardTab.tsx",
-            lineNumber: 1225,
+            lineNumber: 1180,
             columnNumber: 7
         }, this);
     }
@@ -2557,12 +2515,12 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                     color: "#f59e0b"
                 }, void 0, false, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 1297,
+                    lineNumber: 1252,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1296,
+                lineNumber: 1251,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2578,7 +2536,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1302,
+                lineNumber: 1257,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2604,7 +2562,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         children: student.fullName.charAt(0).toUpperCase()
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1317,
+                        lineNumber: 1272,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2627,13 +2585,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         children: rank === 1 ? '👑' : rank === 2 ? '🥈' : '🥉'
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1331,
+                        lineNumber: 1286,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1316,
+                lineNumber: 1271,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2647,7 +2605,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 children: student.fullName
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1354,
+                lineNumber: 1309,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2666,7 +2624,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1357,
+                lineNumber: 1312,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2684,7 +2642,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1360,
+                lineNumber: 1315,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2693,7 +2651,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                     color: "#f59e0b"
                 }, void 0, false, {
                     fileName: "[project]/src/components/LeaderboardTab.tsx",
-                    lineNumber: 1366,
+                    lineNumber: 1321,
                     columnNumber: 15
                 }, this),
                 label: student.nickname || 'Chiến Binh Hóa Học',
@@ -2709,7 +2667,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1365,
+                lineNumber: 1320,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Divider$2f$Divider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Divider$3e$__["Divider"], {
@@ -2719,7 +2677,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1380,
+                lineNumber: 1335,
                 columnNumber: 7
             }, this),
             activeCategory === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2732,7 +2690,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         children: "TỔNG KINH NGHIỆM"
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1385,
+                        lineNumber: 1340,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2753,13 +2711,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                                 children: "EXP"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 1389,
+                                lineNumber: 1344,
                                 columnNumber: 52
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1388,
+                        lineNumber: 1343,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2772,13 +2730,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1391,
+                        lineNumber: 1346,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1384,
+                lineNumber: 1339,
                 columnNumber: 9
             }, this) : activeCategory === 1 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                 children: [
@@ -2790,7 +2748,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         children: "CHUỖI KAHOOT BẤT BẠI"
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1395,
+                        lineNumber: 1350,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2811,13 +2769,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                                 children: "trận liên tiếp"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 1399,
+                                lineNumber: 1354,
                                 columnNumber: 39
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1398,
+                        lineNumber: 1353,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2830,13 +2788,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1401,
+                        lineNumber: 1356,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1394,
+                lineNumber: 1349,
                 columnNumber: 9
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                 children: [
@@ -2848,7 +2806,7 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         children: "CHUỖI NGÀY ĐĂNG NHẬP"
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1405,
+                        lineNumber: 1360,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2869,13 +2827,13 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                                 children: "ngày chuyên cần"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                                lineNumber: 1409,
+                                lineNumber: 1364,
                                 columnNumber: 38
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1408,
+                        lineNumber: 1363,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2888,19 +2846,19 @@ function PodiumCard({ student, rank, rankLabel, themeColor, badgeColor, activeCa
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/LeaderboardTab.tsx",
-                        lineNumber: 1411,
+                        lineNumber: 1366,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/LeaderboardTab.tsx",
-                lineNumber: 1404,
+                lineNumber: 1359,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/LeaderboardTab.tsx",
-        lineNumber: 1269,
+        lineNumber: 1224,
         columnNumber: 5
     }, this);
 }

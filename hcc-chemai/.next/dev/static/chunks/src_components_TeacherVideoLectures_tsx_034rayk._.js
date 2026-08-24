@@ -1797,7 +1797,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
                                                 multiline: true,
                                                 rows: 14,
                                                 fullWidth: true,
-                                                placeholder: "Ví dụ:\n- Phút 05:20: Quy tắc Hund và orbital AO.\n- Phút 12:40: Ví dụ viết cấu hình Fe (Z=26) -> 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²\n- Bài tập về nhà: Làm bài 1, 2 trang 35 SGK Cánh Diều...",
+                                                placeholder: "Ví dụ:\r\n\n- Phút 05:20: Quy tắc Hund và orbital AO.\r\n\n- Phút 12:40: Ví dụ viết cấu hình Fe (Z=26) -> 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²\r\n\n- Bài tập về nhà: Làm bài 1, 2 trang 35 SGK Cánh Diều...",
                                                 value: userNote,
                                                 onChange: (e)=>handleSaveNote(e.target.value),
                                                 sx: {
@@ -3089,7 +3089,7 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
                                                 multiline: true,
                                                 rows: 2,
                                                 fullWidth: true,
-                                                placeholder: "Ví dụ:\nFe + 2HCl → FeCl₂ + H₂↑\nΔᵣH°₂₉₈ = ΣΔᵪH°(sp) - ΣΔᵪH°(cđ)",
+                                                placeholder: "Ví dụ:\r\n\nFe + 2HCl → FeCl₂ + H₂↑\r\n\nΔᵣH°₂₉₈ = ΣΔᵪH°(sp) - ΣΔᵪH°(cđ)",
                                                 value: keyReactionsInput,
                                                 onChange: (e)=>setKeyReactionsInput(e.target.value)
                                             }, void 0, false, {

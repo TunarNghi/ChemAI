@@ -420,6 +420,40 @@ const FEATURES = [
             'CSV Exporter'
         ],
         actionLabel: 'Xem Bảng Xếp Hạng Học Sinh'
+    },
+    {
+        id: 'periodic-table',
+        tabIndex: 12,
+        title: 'Bảng Tuần Hoàn Hóa Học 118 Nguyên Tố',
+        subtitle: 'Chuẩn IUPAC, phân loại 3 mảng màu & Tra cứu 9 mục chuyên sâu',
+        category: 'simulation',
+        categoryLabel: 'Tra cứu & Mô phỏng',
+        badge: '118 Nguyên Tố IUPAC',
+        badgeColor: '#06b6d4',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$atom$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Atom$3e$__["Atom"], {
+            size: 28,
+            color: "#06b6d4"
+        }, void 0, false, {
+            fileName: "[project]/src/components/HomeDashboard.tsx",
+            lineNumber: 341,
+            columnNumber: 11
+        }, ("TURBOPACK compile-time value", void 0)),
+        iconBg: 'rgba(6, 182, 212, 0.15)',
+        glowColor: 'rgba(6, 182, 212, 0.25)',
+        description: 'Khám phá toàn bộ 118 nguyên tố hóa học với 3 mảng màu chuẩn (Kim loại, Phi kim, Khí hiếm). Hỗ trợ tìm kiếm nhanh, mô phỏng trạng thái theo nhiệt độ và tra cứu 9 mục thông tin chi tiết kèm tìm kiếm nội bộ.',
+        highlights: [
+            'Đầy đủ 118 nguyên tố hóa học hiển thị trên lưới IUPAC 18 cột chuẩn quốc tế',
+            'Phân chia trực quan 3 mảng màu chính: Kim loại (Metals), Phi kim (Non-metals), Khí hiếm (Noble gases)',
+            '9 Mục thông tin chuyên sâu: Cấu trúc hạt nhân, nhiệt động học, độ âm điện, quang phổ, quặng tự nhiên, ứng dụng, an toàn NFPA 704',
+            'Tìm kiếm nhanh đa tiêu chí & Tìm kiếm thông tin nhỏ tức thì bên trong từng nguyên tố'
+        ],
+        techStack: [
+            'IUPAC Standard 2026',
+            'In-Element Search',
+            'NFPA 704 Diamond',
+            'State Simulation'
+        ],
+        actionLabel: 'Khám Phá Bảng Hóa Học'
     }
 ];
 const SYLLABUS_CHAPTERS = [
@@ -432,7 +466,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#38bdf8"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 339,
+            lineNumber: 362,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#38bdf8'
@@ -446,7 +480,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#10b981"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 346,
+            lineNumber: 369,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#10b981'
@@ -460,7 +494,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#f59e0b"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 353,
+            lineNumber: 376,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#f59e0b'
@@ -474,7 +508,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#ec4899"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 360,
+            lineNumber: 383,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#ec4899'
@@ -488,7 +522,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#a855f7"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 367,
+            lineNumber: 390,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#a855f7'
@@ -502,7 +536,7 @@ const SYLLABUS_CHAPTERS = [
             color: "#06b6d4"
         }, void 0, false, {
             fileName: "[project]/src/components/HomeDashboard.tsx",
-            lineNumber: 374,
+            lineNumber: 397,
             columnNumber: 11
         }, ("TURBOPACK compile-time value", void 0)),
         color: '#06b6d4'
@@ -566,7 +600,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 419,
+                        lineNumber: 442,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -584,7 +618,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         }
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 433,
+                        lineNumber: 456,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -607,7 +641,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             color: "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 452,
+                                            lineNumber: 475,
                                             columnNumber: 21
                                         }, this),
                                         label: "HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC SỐ — GDPT 2018",
@@ -624,7 +658,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 451,
+                                        lineNumber: 474,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -643,13 +677,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 463,
+                                        lineNumber: 486,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 450,
+                                lineNumber: 473,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -674,14 +708,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     "HCC - ChemAI: Khám Phá Hóa Học 10 ",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 492,
+                                        lineNumber: 515,
                                         columnNumber: 47
                                     }, this),
                                     "Bằng Trí Tuệ Nhân Tạo & Mô Phỏng 3D"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 478,
+                                lineNumber: 501,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -703,7 +737,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Google Gemini 2.0 AI"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 507,
+                                        lineNumber: 530,
                                         columnNumber: 41
                                     }, this),
                                     " và ",
@@ -711,14 +745,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Dify AI"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 507,
+                                        lineNumber: 530,
                                         columnNumber: 82
                                     }, this),
                                     ", kết hợp phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm Kahoot cùng trợ lý soạn giáo án 5512 & đề thi chuẩn cấu trúc mới của Bộ Giáo dục & Đào tạo."
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 497,
+                                lineNumber: 520,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -739,20 +773,20 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 518,
+                                            lineNumber: 541,
                                             columnNumber: 26
                                         }, this),
                                         endIcon: !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 519,
+                                            lineNumber: 542,
                                             columnNumber: 39
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
                                             size: 18
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 519,
+                                            lineNumber: 542,
                                             columnNumber: 60
                                         }, this),
                                         sx: {
@@ -775,7 +809,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Vào Thí Nghiệm Ảo Ngay"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 514,
+                                        lineNumber: 537,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -786,14 +820,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 545,
+                                            lineNumber: 568,
                                             columnNumber: 26
                                         }, this),
                                         endIcon: !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 546,
+                                            lineNumber: 569,
                                             columnNumber: 39
                                         }, this) : undefined,
                                         sx: {
@@ -815,7 +849,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Hỏi Gia Sư Hóa Học AI"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 541,
+                                        lineNumber: 564,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -826,14 +860,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 571,
+                                            lineNumber: 594,
                                             columnNumber: 26
                                         }, this),
                                         endIcon: !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 572,
+                                            lineNumber: 595,
                                             columnNumber: 39
                                         }, this) : undefined,
                                         sx: {
@@ -855,25 +889,25 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Đấu Trường Kahoot"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 567,
+                                        lineNumber: 590,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 513,
+                                lineNumber: 536,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 448,
+                        lineNumber: 471,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 406,
+                lineNumber: 429,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -925,18 +959,18 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         size: 28
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 652,
                                         columnNumber: 51
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__["GraduationCap"], {
                                         size: 28
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 652,
                                         columnNumber: 77
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 615,
+                                    lineNumber: 638,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -957,7 +991,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: currentUser.role === 'teacher' ? `👋 Kính chào Thầy/Cô, ${currentUser.fullName}` : `👋 Xin chào bạn, ${currentUser.fullName}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 633,
+                                                    lineNumber: 656,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -966,14 +1000,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         color: "#000"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 637,
+                                                        lineNumber: 660,
                                                         columnNumber: 60
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__["GraduationCap"], {
                                                         size: 13,
                                                         color: "#38bdf8"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 637,
+                                                        lineNumber: 660,
                                                         columnNumber: 99
                                                     }, this),
                                                     label: currentUser.role === 'teacher' ? 'Giáo Viên Hóa Học' : `Học sinh • ${currentUser.className || 'Lớp 10'}`,
@@ -987,7 +1021,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 636,
+                                                    lineNumber: 659,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1002,13 +1036,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 648,
+                                                    lineNumber: 671,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 632,
+                                            lineNumber: 655,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1022,7 +1056,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: currentUser.role === 'teacher' ? `Đơn vị: ${currentUser.school || 'THPT'} • Bộ môn: ${currentUser.subject || 'Hóa Học THPT'} • Toàn quyền theo dõi học sinh, soạn giáo án 5512, ra đề thi & quản lý video.` : `Trường: ${currentUser.school || 'THPT'} • Khám phá bài giảng video, phòng thí nghiệm ảo, gia sư AI 24/7 và thi đấu Kahoot.`
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 660,
+                                            lineNumber: 683,
                                             columnNumber: 17
                                         }, this),
                                         currentUser.role === 'student' && (()=>{
@@ -1063,7 +1097,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     color: "#f59e0b"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 692,
+                                                                    lineNumber: 715,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 label: `Biệt danh: "${nickname}"`,
@@ -1076,7 +1110,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 691,
+                                                                lineNumber: 714,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1085,7 +1119,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     color: "#eab308"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 698,
+                                                                    lineNumber: 721,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 label: `⚡ ${exp.toLocaleString()} EXP (Lv.${level})`,
@@ -1097,7 +1131,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 697,
+                                                                lineNumber: 720,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1106,7 +1140,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     color: "#f43f5e"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 704,
+                                                                    lineNumber: 727,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 label: `🔥 Chuỗi: ${currentUser.kahootStreak || 2} trận`,
@@ -1118,7 +1152,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 703,
+                                                                lineNumber: 726,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1127,7 +1161,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     color: "#10b981"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 710,
+                                                                    lineNumber: 733,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 label: `📅 Đăng nhập: ${currentUser.loginStreak || 3} ngày`,
@@ -1139,7 +1173,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 709,
+                                                                lineNumber: 732,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1153,13 +1187,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 715,
+                                                                lineNumber: 738,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 690,
+                                                        lineNumber: 713,
                                                         columnNumber: 23
                                                     }, this),
                                                     currentUser.teacherEvaluation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1177,26 +1211,26 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 722,
+                                                        lineNumber: 745,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 689,
+                                                lineNumber: 712,
                                                 columnNumber: 21
                                             }, this);
                                         })()
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 631,
+                                    lineNumber: 654,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                            lineNumber: 614,
+                            lineNumber: 637,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1217,7 +1251,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         size: 16
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 737,
+                                        lineNumber: 760,
                                         columnNumber: 28
                                     }, this),
                                     sx: {
@@ -1234,7 +1268,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     children: "Hồ Sơ"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 733,
+                                    lineNumber: 756,
                                     columnNumber: 15
                                 }, this),
                                 onLogout && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1245,7 +1279,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         size: 16
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 754,
+                                        lineNumber: 777,
                                         columnNumber: 30
                                     }, this),
                                     color: "error",
@@ -1261,19 +1295,19 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     children: "Đăng Xuất"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 750,
+                                    lineNumber: 773,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                            lineNumber: 732,
+                            lineNumber: 755,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                    lineNumber: 600,
+                    lineNumber: 623,
                     columnNumber: 11
                 }, this) : /* Khi chưa đăng nhập: Hiển thị 2 Cổng vai trò */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                     children: [
@@ -1307,14 +1341,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 774,
+                                                lineNumber: 797,
                                                 columnNumber: 19
                                             }, this),
                                             " Chọn Cổng Truy Cập & Vai Trò"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 773,
+                                        lineNumber: 796,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1326,18 +1360,18 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Vui lòng đăng nhập Học sinh hoặc Giáo viên để mở khóa toàn bộ tính năng và thao tác với hệ thống"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 776,
+                                        lineNumber: 799,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 772,
+                                lineNumber: 795,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                            lineNumber: 771,
+                            lineNumber: 794,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1394,12 +1428,12 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     size: 26
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 819,
+                                                                    lineNumber: 842,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 806,
+                                                                lineNumber: 829,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1414,13 +1448,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 821,
+                                                                lineNumber: 844,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 805,
+                                                        lineNumber: 828,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1434,7 +1468,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Cổng Tài Khoản Học Sinh"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 834,
+                                                        lineNumber: 857,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1448,13 +1482,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Lưu tiến trình học tập, chuỗi ngày đăng nhập (Streak), tích lũy điểm kinh nghiệm (EXP), mở khóa danh hiệu và thi đấu Kahoot trực tuyến cùng cả lớp."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 837,
+                                                        lineNumber: 860,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 804,
+                                                lineNumber: 827,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1472,7 +1506,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                             size: 16
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                            lineNumber: 846,
+                                                            lineNumber: 869,
                                                             columnNumber: 34
                                                         }, this),
                                                         sx: {
@@ -1489,7 +1523,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Đăng Nhập Học Sinh"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 843,
+                                                        lineNumber: 866,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1499,7 +1533,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                             size: 16
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                            lineNumber: 862,
+                                                            lineNumber: 885,
                                                             columnNumber: 34
                                                         }, this),
                                                         sx: {
@@ -1519,24 +1553,24 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Tạo Tài Khoản"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 859,
+                                                        lineNumber: 882,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 842,
+                                                lineNumber: 865,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 785,
+                                        lineNumber: 808,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 784,
+                                    lineNumber: 807,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1589,12 +1623,12 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                     size: 26
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                    lineNumber: 917,
+                                                                    lineNumber: 940,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 904,
+                                                                lineNumber: 927,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1609,13 +1643,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 919,
+                                                                lineNumber: 942,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 903,
+                                                        lineNumber: 926,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1629,7 +1663,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Cổng Xác Thực Giáo Viên"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 932,
+                                                        lineNumber: 955,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1643,13 +1677,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Dành riêng cho Thầy/Cô. Xác thực bảo mật bằng mật khẩu nội bộ để soạn kế hoạch bài dạy 5512, ma trận đề thi 2026 và kiểm duyệt phòng thi Kahoot."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 935,
+                                                        lineNumber: 958,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 902,
+                                                lineNumber: 925,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1667,7 +1701,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                             size: 16
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                            lineNumber: 944,
+                                                            lineNumber: 967,
                                                             columnNumber: 34
                                                         }, this),
                                                         sx: {
@@ -1686,7 +1720,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Đăng Nhập Giáo Viên"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 941,
+                                                        lineNumber: 964,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1696,7 +1730,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                             size: 16
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                            lineNumber: 962,
+                                                            lineNumber: 985,
                                                             columnNumber: 34
                                                         }, this),
                                                         sx: {
@@ -1716,41 +1750,41 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Đăng Ký Giáo Viên"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 959,
+                                                        lineNumber: 982,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 940,
+                                                lineNumber: 963,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 883,
+                                        lineNumber: 906,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 882,
+                                    lineNumber: 905,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                            lineNumber: 782,
+                            lineNumber: 805,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                    lineNumber: 770,
+                    lineNumber: 793,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 597,
+                lineNumber: 620,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1796,7 +1830,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1003,
+                                lineNumber: 1026,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1804,7 +1838,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     size: 16
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1011,
+                                    lineNumber: 1034,
                                     columnNumber: 19
                                 }, this),
                                 label: "Dành Cho Học Sinh",
@@ -1817,7 +1851,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1010,
+                                lineNumber: 1033,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1825,7 +1859,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     size: 16
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1019,
+                                    lineNumber: 1042,
                                     columnNumber: 19
                                 }, this),
                                 label: "Dành Cho Giáo Viên",
@@ -1838,7 +1872,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1018,
+                                lineNumber: 1041,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1846,7 +1880,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                     size: 16
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1027,
+                                    lineNumber: 1050,
                                     columnNumber: 19
                                 }, this),
                                 label: "Mô Phỏng & 3D",
@@ -1859,13 +1893,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1026,
+                                lineNumber: 1049,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1002,
+                        lineNumber: 1025,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1888,7 +1922,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 color: "#94a3b8"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1049,
+                                lineNumber: 1072,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1907,7 +1941,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1050,
+                                lineNumber: 1073,
                                 columnNumber: 11
                             }, this),
                             searchQuery && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -1920,19 +1954,19 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 children: "×"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1066,
+                                lineNumber: 1089,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1037,
+                        lineNumber: 1060,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 986,
+                lineNumber: 1009,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1961,7 +1995,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: "Tổng Hợp Toàn Bộ Công Dụng Của Nền Tảng ChemAI"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 1077,
+                                        lineNumber: 1100,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1970,13 +2004,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                         children: !currentUser ? 'Biểu tượng & tính năng hệ thống (Đăng nhập vai trò để kích hoạt và thao tác)' : 'Khám phá chi tiết các phân hệ hỗ trợ học tập, thí nghiệm, luyện thi và soạn bài giảng'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 1080,
+                                        lineNumber: 1103,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1076,
+                                lineNumber: 1099,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1989,13 +2023,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1084,
+                                lineNumber: 1107,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1075,
+                        lineNumber: 1098,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2049,7 +2083,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: feat.icon
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 1114,
+                                                        lineNumber: 1137,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -2070,7 +2104,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 1128,
+                                                                lineNumber: 1151,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2082,19 +2116,19 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                 children: feat.categoryLabel
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 1140,
+                                                                lineNumber: 1163,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 1127,
+                                                        lineNumber: 1150,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1113,
+                                                lineNumber: 1136,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2109,7 +2143,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                 children: feat.title
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1147,
+                                                lineNumber: 1170,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2124,7 +2158,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                 children: feat.subtitle
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1160,
+                                                lineNumber: 1183,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2138,7 +2172,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                 children: feat.description
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1174,
+                                                lineNumber: 1197,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2158,7 +2192,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         children: "Điểm nổi bật:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 1188,
+                                                        lineNumber: 1211,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -2177,7 +2211,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                        lineNumber: 1194,
+                                                                        lineNumber: 1217,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2190,24 +2224,24 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                                         children: h
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                        lineNumber: 1195,
+                                                                        lineNumber: 1218,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                                lineNumber: 1193,
+                                                                lineNumber: 1216,
                                                                 columnNumber: 25
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 1191,
+                                                        lineNumber: 1214,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1187,
+                                                lineNumber: 1210,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2227,12 +2261,12 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                         }
                                                     }, i, false, {
                                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                        lineNumber: 1206,
+                                                        lineNumber: 1229,
                                                         columnNumber: 23
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1204,
+                                                lineNumber: 1227,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2243,14 +2277,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     size: 15
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1226,
+                                                    lineNumber: 1249,
                                                     columnNumber: 47
                                                 }, this) : undefined,
                                                 endIcon: currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1227,
+                                                    lineNumber: 1250,
                                                     columnNumber: 44
                                                 }, this) : undefined,
                                                 sx: {
@@ -2271,34 +2305,34 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                 children: !currentUser ? 'Đăng nhập để mở khóa' : feat.actionLabel
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                lineNumber: 1222,
+                                                lineNumber: 1245,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                                        lineNumber: 1111,
+                                        lineNumber: 1134,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1094,
+                                    lineNumber: 1117,
                                     columnNumber: 15
                                 }, this)
                             }, feat.id, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1093,
+                                lineNumber: 1116,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1091,
+                        lineNumber: 1114,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 1074,
+                lineNumber: 1097,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2325,7 +2359,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 color: "#38bdf8"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1264,
+                                lineNumber: 1287,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2341,13 +2375,13 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                 children: "Khung Chương Trình Hóa Học Lớp 10 THPT (Chuẩn GDPT 2018)"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1265,
+                                lineNumber: 1288,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1263,
+                        lineNumber: 1286,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2359,7 +2393,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         children: "Toàn bộ công cụ thí nghiệm, bài tập, câu hỏi Kahoot và giáo án trên ChemAI được thiết kế bám sát 6 chuyên đề chính của 3 bộ SGK hiện hành (Kết Nối Tri Thức, Cánh Diều, Chân Trời Sáng Tạo)."
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1269,
+                        lineNumber: 1292,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2405,14 +2439,14 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1295,
+                                                    lineNumber: 1318,
                                                     columnNumber: 19
                                                 }, this),
                                                 ch.icon
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1294,
+                                            lineNumber: 1317,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2425,7 +2459,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: ch.title
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1309,
+                                            lineNumber: 1332,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2438,29 +2472,29 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: ch.desc
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1312,
+                                            lineNumber: 1335,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1277,
+                                    lineNumber: 1300,
                                     columnNumber: 15
                                 }, this)
                             }, idx, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1276,
+                                lineNumber: 1299,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1274,
+                        lineNumber: 1297,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 1254,
+                lineNumber: 1277,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2491,7 +2525,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         children: "Quy Trình Khai Thác ChemAI Tối Ưu Cho Giáo Viên & Học Sinh"
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1331,
+                        lineNumber: 1354,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2506,7 +2540,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         children: "3 bước đơn giản giúp bạn biến kiến thức hóa học trừu tượng thành trải nghiệm trực quan và đạt kết quả học tập vượt trội."
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1334,
+                        lineNumber: 1357,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2545,7 +2579,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "1"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1350,
+                                            lineNumber: 1373,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2558,7 +2592,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "Khám Phá & Mô Phỏng"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1368,
+                                            lineNumber: 1391,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2574,7 +2608,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "Thí Nghiệm Ảo"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1372,
+                                                    lineNumber: 1395,
                                                     columnNumber: 21
                                                 }, this),
                                                 " trộn phản ứng và xoay ",
@@ -2582,25 +2616,25 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "Mô Hình 3D"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1372,
+                                                    lineNumber: 1395,
                                                     columnNumber: 74
                                                 }, this),
                                                 " để hiểu bản chất phân tử trước khi học lý thuyết."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1371,
+                                            lineNumber: 1394,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1340,
+                                    lineNumber: 1363,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1339,
+                                lineNumber: 1362,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2635,7 +2669,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "2"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1389,
+                                            lineNumber: 1412,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2648,7 +2682,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "Thảo Luận Với Gia Sư AI"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1407,
+                                            lineNumber: 1430,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2664,25 +2698,25 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "ChemAI Buddy"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1411,
+                                                    lineNumber: 1434,
                                                     columnNumber: 69
                                                 }, this),
                                                 " để nhận giải thích chi tiết từng bước."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1410,
+                                            lineNumber: 1433,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1379,
+                                    lineNumber: 1402,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1378,
+                                lineNumber: 1401,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2717,7 +2751,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "3"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1428,
+                                            lineNumber: 1451,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2730,7 +2764,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                             children: "Luyện Tập & Soạn Bài"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1446,
+                                            lineNumber: 1469,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2746,7 +2780,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "Đấu Trường Kahoot"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1450,
+                                                    lineNumber: 1473,
                                                     columnNumber: 35
                                                 }, this),
                                                 "; Giáo viên tạo ",
@@ -2754,7 +2788,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "Giáo Án 5512"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1450,
+                                                    lineNumber: 1473,
                                                     columnNumber: 85
                                                 }, this),
                                                 " và",
@@ -2763,37 +2797,37 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                                                     children: "Đề Thi Mới 2026"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                                    lineNumber: 1451,
+                                                    lineNumber: 1474,
                                                     columnNumber: 17
                                                 }, this),
                                                 " trong nháy mắt."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/HomeDashboard.tsx",
-                                            lineNumber: 1449,
+                                            lineNumber: 1472,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/HomeDashboard.tsx",
-                                    lineNumber: 1418,
+                                    lineNumber: 1441,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                                lineNumber: 1417,
+                                lineNumber: 1440,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1338,
+                        lineNumber: 1361,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 1322,
+                lineNumber: 1345,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2812,7 +2846,7 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         children: "HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Mô Phỏng Hóa Học Lớp 10 THPT"
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1466,
+                        lineNumber: 1489,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2825,19 +2859,19 @@ function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }
                         children: "Phát triển trên nền tảng Next.js, Material UI, Three.js, Supabase, Google Gemini API và Dify AI Platform."
                     }, void 0, false, {
                         fileName: "[project]/src/components/HomeDashboard.tsx",
-                        lineNumber: 1469,
+                        lineNumber: 1492,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/HomeDashboard.tsx",
-                lineNumber: 1459,
+                lineNumber: 1482,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/HomeDashboard.tsx",
-        lineNumber: 404,
+        lineNumber: 427,
         columnNumber: 5
     }, this);
 }

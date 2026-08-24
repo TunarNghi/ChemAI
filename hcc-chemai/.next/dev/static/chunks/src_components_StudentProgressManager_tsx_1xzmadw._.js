@@ -60,9 +60,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/x.js [app-client] (ecmascript) <export default as X>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/api.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UserAuthModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/UserAuthModal.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/userDatabase.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 ;
 ;
@@ -99,7 +101,7 @@ function calculateCompetencyRank(exp = 0, totalQuestions = 0, correctQuestions =
                 color: "#38bdf8"
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 112,
+                lineNumber: 113,
                 columnNumber: 13
             }, this),
             level,
@@ -120,7 +122,7 @@ function calculateCompetencyRank(exp = 0, totalQuestions = 0, correctQuestions =
                 color: "#eab308"
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 126,
+                lineNumber: 127,
                 columnNumber: 13
             }, this),
             level,
@@ -141,7 +143,7 @@ function calculateCompetencyRank(exp = 0, totalQuestions = 0, correctQuestions =
                 color: "#a855f7"
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 140,
+                lineNumber: 141,
                 columnNumber: 13
             }, this),
             level,
@@ -162,7 +164,7 @@ function calculateCompetencyRank(exp = 0, totalQuestions = 0, correctQuestions =
                 color: "#f97316"
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 154,
+                lineNumber: 155,
                 columnNumber: 13
             }, this),
             level,
@@ -207,50 +209,8 @@ function StudentProgressManager({ currentUser }) {
     }["StudentProgressManager.useEffect"], []);
     const loadStudents = async ()=>{
         try {
-            const rawRegistered = localStorage.getItem('chemai_registered_users');
-            let registeredUsers = rawRegistered ? JSON.parse(rawRegistered) : [];
-            // Purge any legacy seed accounts (std_seed_*) from previous runs
-            const purgedUsers = registeredUsers.filter((u)=>!u.id?.startsWith('std_seed_'));
-            if (purgedUsers.length !== registeredUsers.length) {
-                localStorage.setItem('chemai_registered_users', JSON.stringify(purgedUsers));
-                registeredUsers = purgedUsers;
-            }
-            let studentOnly = registeredUsers.filter((u)=>!u.id?.startsWith('std_seed_') && (u.role === 'student' || !u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')));
-            // Sync with Supabase user_profiles if connected
-            try {
-                const { data: remoteUsers } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('*').eq('role', 'student');
-                if (remoteUsers && remoteUsers.length > 0) {
-                    const map = new Map();
-                    studentOnly.forEach((u)=>map.set(u.id, u));
-                    remoteUsers.forEach((r)=>{
-                        const uid = r.user_id || r.id;
-                        if (!map.has(uid)) {
-                            map.set(uid, {
-                                id: uid,
-                                fullName: r.full_name,
-                                authType: r.auth_type || 'email',
-                                emailOrPhone: r.email_or_phone,
-                                role: 'student',
-                                className: r.class_name || '10A1',
-                                school: r.school || '',
-                                location: r.location || '',
-                                createdAt: r.created_at || new Date().toISOString(),
-                                kahootExp: r.kahoot_exp || 0,
-                                kahootStreak: r.kahoot_streak || 0,
-                                loginStreak: r.login_streak || 1,
-                                nickname: r.nickname || '',
-                                totalKahootQuestions: r.total_questions || 0,
-                                correctKahootQuestions: r.correct_questions || 0,
-                                teacherEvaluation: r.teacher_evaluation || '',
-                                lastActiveDate: r.last_active_date || r.created_at?.split('T')[0] || new Date().toISOString().split('T')[0]
-                            });
-                        }
-                    });
-                    studentOnly = Array.from(map.values());
-                }
-            } catch (err) {
-                console.warn('Supabase fetch error:', err);
-            }
+            const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
+            const studentOnly = allUsers.filter((u)=>!u.id?.startsWith('std_seed_') && (u.role === 'student' || !u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')));
             const mappedList = studentOnly.map((u)=>{
                 const exp = u.kahootExp !== undefined ? u.kahootExp : 0;
                 const totalQ = u.totalKahootQuestions !== undefined ? u.totalKahootQuestions : 0;
@@ -277,20 +237,9 @@ function StudentProgressManager({ currentUser }) {
     const persistStudentsList = (updatedList)=>{
         setStudents(updatedList);
         try {
-            const rawRegistered = localStorage.getItem('chemai_registered_users');
-            let registeredUsers = rawRegistered ? JSON.parse(rawRegistered) : [];
             updatedList.forEach((std)=>{
-                const idx = registeredUsers.findIndex((u)=>u.id === std.id);
-                if (idx !== -1) {
-                    registeredUsers[idx] = {
-                        ...registeredUsers[idx],
-                        ...std
-                    };
-                } else {
-                    registeredUsers.push(std);
-                }
+                (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveUserToDatabase"])(std).catch(()=>{});
             });
-            localStorage.setItem('chemai_registered_users', JSON.stringify(registeredUsers));
             // If current logged-in user is one of updated students, update current_user
             const currentStored = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UserAuthModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getStoredCurrentUser"])();
             if (currentStored) {
@@ -532,7 +481,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                 children: notification.message
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 499,
+                lineNumber: 445,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -579,12 +528,12 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 size: 28
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 535,
+                                                lineNumber: 481,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 523,
+                                            lineNumber: 469,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -602,7 +551,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: "Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 538,
+                                                    lineNumber: 484,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -611,19 +560,19 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: "Dành riêng cho Giáo viên • Quản lý EXP Kahoot, Chuỗi thi đấu, Biệt danh & Đánh giá năng lực GDPT 2018"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 541,
+                                                    lineNumber: 487,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 537,
+                                            lineNumber: 483,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 522,
+                                    lineNumber: 468,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -640,20 +589,20 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             children: "Biệt danh danh dự"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 549,
+                                            lineNumber: 495,
                                             columnNumber: 34
                                         }, this),
                                         ", trao điểm thưởng EXP và ghi nhận xét năng lực để học sinh thấy trên trang cá nhân."
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 547,
+                                    lineNumber: 493,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 521,
+                            lineNumber: 467,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -682,7 +631,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 557,
+                                            lineNumber: 503,
                                             columnNumber: 28
                                         }, this),
                                         onClick: ()=>{
@@ -707,7 +656,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Đồng Bộ CSDL"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 555,
+                                        lineNumber: 501,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -716,7 +665,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 577,
+                                            lineNumber: 523,
                                             columnNumber: 28
                                         }, this),
                                         onClick: handleExportCSV,
@@ -732,29 +681,29 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Xuất CSV"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 575,
+                                        lineNumber: 521,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 554,
+                                lineNumber: 500,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 553,
+                            lineNumber: 499,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                    lineNumber: 520,
+                    lineNumber: 466,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 509,
+                lineNumber: 455,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -789,7 +738,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             children: "TỔNG SỐ HỌC SINH"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 607,
+                                            lineNumber: 553,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__["GraduationCap"], {
@@ -797,13 +746,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             color: "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 610,
+                                            lineNumber: 556,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 606,
+                                    lineNumber: 552,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -814,7 +763,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: analytics.total
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 612,
+                                    lineNumber: 558,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -823,18 +772,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: "Đang học Hóa học 10 GDPT"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 615,
+                                    lineNumber: 561,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 597,
+                            lineNumber: 543,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 596,
+                        lineNumber: 542,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -862,7 +811,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             children: "EXP TRUNG BÌNH"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 633,
+                                            lineNumber: 579,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$zap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Zap$3e$__["Zap"], {
@@ -870,13 +819,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             color: "#eab308"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 636,
+                                            lineNumber: 582,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 632,
+                                    lineNumber: 578,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -887,7 +836,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: analytics.avgExp.toLocaleString()
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 638,
+                                    lineNumber: 584,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -899,18 +848,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 641,
+                                    lineNumber: 587,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 623,
+                            lineNumber: 569,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 622,
+                        lineNumber: 568,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -938,7 +887,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             children: "QUÁN QUÂN KAHOOT (TOP 1)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 659,
+                                            lineNumber: 605,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trophy$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Trophy$3e$__["Trophy"], {
@@ -946,13 +895,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             color: "#f43f5e"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 662,
+                                            lineNumber: 608,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 658,
+                                    lineNumber: 604,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -967,7 +916,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 664,
+                                    lineNumber: 610,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -978,18 +927,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: analytics.topStudent ? `${analytics.topStudent.kahootExp} EXP • Chuỗi 🔥 ${analytics.topStudent.kahootStreak}` : ''
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 667,
+                                    lineNumber: 613,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 649,
+                            lineNumber: 595,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 648,
+                        lineNumber: 594,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1014,7 +963,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: "PHÂN BỐ NĂNG LỰC"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 684,
+                                    lineNumber: 630,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1035,7 +984,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 688,
+                                            lineNumber: 634,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1050,7 +999,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 689,
+                                            lineNumber: 635,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1065,30 +1014,30 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 690,
+                                            lineNumber: 636,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 687,
+                                    lineNumber: 633,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 675,
+                            lineNumber: 621,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 674,
+                        lineNumber: 620,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 594,
+                lineNumber: 540,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1124,7 +1073,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 717,
+                                        lineNumber: 663,
                                         columnNumber: 33
                                     }, this),
                                     endAdornment: searchQuery ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -1134,23 +1083,23 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             size: 15
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 720,
+                                            lineNumber: 666,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 719,
+                                        lineNumber: 665,
                                         columnNumber: 19
                                     }, this) : null
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 710,
+                                lineNumber: 656,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 709,
+                            lineNumber: 655,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1166,7 +1115,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Lọc theo Lớp"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 730,
+                                        lineNumber: 676,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1178,23 +1127,23 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: cls
                                             }, cls, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 737,
+                                                lineNumber: 683,
                                                 columnNumber: 19
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 731,
+                                        lineNumber: 677,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 729,
+                                lineNumber: 675,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 728,
+                            lineNumber: 674,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1210,7 +1159,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Xếp Loại Năng Lực"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 746,
+                                        lineNumber: 692,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1223,7 +1172,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Tất cả xếp loại"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 752,
+                                                lineNumber: 698,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1231,7 +1180,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "💎 Xuất Sắc (Kim Cương)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 753,
+                                                lineNumber: 699,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1239,7 +1188,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🥇 Giỏi (Vàng)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 754,
+                                                lineNumber: 700,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1247,7 +1196,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🥈 Khá (Bạc)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 755,
+                                                lineNumber: 701,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1255,24 +1204,24 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🥉 Đang Cố Gắng (Đồng)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 756,
+                                                lineNumber: 702,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 747,
+                                        lineNumber: 693,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 745,
+                                lineNumber: 691,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 744,
+                            lineNumber: 690,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1288,7 +1237,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Sắp xếp theo"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 764,
+                                        lineNumber: 710,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1301,7 +1250,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "⚡ EXP cao nhất"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 770,
+                                                lineNumber: 716,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1309,7 +1258,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🔥 Chuỗi Kahoot dài nhất"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 771,
+                                                lineNumber: 717,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1317,7 +1266,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "📅 Chuỗi đăng nhập cao nhất"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 772,
+                                                lineNumber: 718,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1325,7 +1274,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🎯 Số câu làm nhiều nhất"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 773,
+                                                lineNumber: 719,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1333,35 +1282,35 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "🔤 Tên học sinh A - Z"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 774,
+                                                lineNumber: 720,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 765,
+                                        lineNumber: 711,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 763,
+                                lineNumber: 709,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 762,
+                            lineNumber: 708,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                    lineNumber: 707,
+                    lineNumber: 653,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 697,
+                lineNumber: 643,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1390,7 +1339,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         color: "#38bdf8"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 793,
+                                        lineNumber: 739,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1404,13 +1353,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 794,
+                                        lineNumber: 740,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 792,
+                                lineNumber: 738,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tooltip$2f$Tooltip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tooltip$3e$__["Tooltip"], {
@@ -1428,7 +1377,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         size: 14
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 805,
+                                        lineNumber: 751,
                                         columnNumber: 26
                                     }, this),
                                     sx: {
@@ -1441,18 +1390,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     children: "Làm mới CSDL"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 799,
+                                    lineNumber: 745,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 798,
+                                lineNumber: 744,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 791,
+                        lineNumber: 737,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableContainer$2f$TableContainer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableContainer$3e$__["TableContainer"], {
@@ -1475,7 +1424,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Học Sinh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 817,
+                                                lineNumber: 763,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1487,7 +1436,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Biệt Danh Sư Phạm"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 818,
+                                                lineNumber: 764,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1499,7 +1448,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Kinh Nghiệm (EXP)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 819,
+                                                lineNumber: 765,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1511,7 +1460,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Chuỗi Kahoot / Đăng Nhập"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 820,
+                                                lineNumber: 766,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1523,7 +1472,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Số Câu Kahoot"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 821,
+                                                lineNumber: 767,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1535,7 +1484,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Đánh Giá Năng Lực"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 822,
+                                                lineNumber: 768,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1548,18 +1497,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                 children: "Thao Tác"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 823,
+                                                lineNumber: 769,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 816,
+                                        lineNumber: 762,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 815,
+                                    lineNumber: 761,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableBody$2f$TableBody$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableBody$3e$__["TableBody"], {
@@ -1584,7 +1533,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         color: "#64748b"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 831,
+                                                        lineNumber: 777,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1594,7 +1543,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         children: students.length === 0 ? 'Chưa có tài khoản học sinh nào đăng ký trên hệ thống' : 'Không tìm thấy học sinh nào phù hợp với bộ lọc tìm kiếm!'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 832,
+                                                        lineNumber: 778,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1606,23 +1555,23 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         children: students.length === 0 ? 'Hệ thống chỉ ghi nhận dữ liệu từ các tài khoản học sinh thực tế sau khi đăng ký hoặc tham gia học tập trên web.' : 'Hãy thử thay đổi từ khóa tìm kiếm hoặc chọn "Tất cả lớp".'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 837,
+                                                        lineNumber: 783,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 830,
+                                                lineNumber: 776,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 829,
+                                            lineNumber: 775,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 828,
+                                        lineNumber: 774,
                                         columnNumber: 17
                                     }, this) : filteredAndSortedStudents.map((std)=>{
                                         const comp = calculateCompetencyRank(std.kahootExp, std.totalKahootQuestions, std.correctKahootQuestions);
@@ -1653,7 +1602,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                 children: std.fullName.charAt(0).toUpperCase()
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 860,
+                                                                lineNumber: 806,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1669,7 +1618,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         children: std.fullName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 873,
+                                                                        lineNumber: 819,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1687,24 +1636,24 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 876,
+                                                                        lineNumber: 822,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 872,
+                                                                lineNumber: 818,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 859,
+                                                        lineNumber: 805,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 858,
+                                                    lineNumber: 804,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1714,7 +1663,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             color: "#f59e0b"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 886,
+                                                            lineNumber: 832,
                                                             columnNumber: 33
                                                         }, this),
                                                         label: std.nickname || 'Chưa đặt',
@@ -1733,12 +1682,12 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 885,
+                                                        lineNumber: 831,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 884,
+                                                    lineNumber: 830,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1763,7 +1712,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 906,
+                                                                        lineNumber: 852,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1777,13 +1726,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 909,
+                                                                        lineNumber: 855,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 905,
+                                                                lineNumber: 851,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$LinearProgress$2f$LinearProgress$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__LinearProgress$3e$__["LinearProgress"], {
@@ -1800,18 +1749,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 911,
+                                                                lineNumber: 857,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 904,
+                                                        lineNumber: 850,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 903,
+                                                    lineNumber: 849,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1827,7 +1776,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         color: "#f43f5e"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 930,
+                                                                        lineNumber: 876,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     label: `${std.kahootStreak}`,
@@ -1840,12 +1789,12 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                    lineNumber: 929,
+                                                                    lineNumber: 875,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 928,
+                                                                lineNumber: 874,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tooltip$2f$Tooltip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tooltip$3e$__["Tooltip"], {
@@ -1856,7 +1805,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         color: "#10b981"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 938,
+                                                                        lineNumber: 884,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     label: `${std.loginStreak}d`,
@@ -1869,23 +1818,23 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                    lineNumber: 937,
+                                                                    lineNumber: 883,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 936,
+                                                                lineNumber: 882,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 927,
+                                                        lineNumber: 873,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 926,
+                                                    lineNumber: 872,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1902,7 +1851,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 949,
+                                                            lineNumber: 895,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1915,13 +1864,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 952,
+                                                            lineNumber: 898,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 948,
+                                                    lineNumber: 894,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1943,7 +1892,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 959,
+                                                            lineNumber: 905,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1960,13 +1909,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             children: std.teacherEvaluation || comp.defaultEvaluation
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 972,
+                                                            lineNumber: 918,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 958,
+                                                    lineNumber: 904,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TableCell$2f$TableCell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TableCell$3e$__["TableCell"], {
@@ -1993,17 +1942,17 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         size: 16
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 997,
+                                                                        lineNumber: 943,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                    lineNumber: 992,
+                                                                    lineNumber: 938,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 991,
+                                                                lineNumber: 937,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tooltip$2f$Tooltip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tooltip$3e$__["Tooltip"], {
@@ -2021,57 +1970,57 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                         size: 16
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                        lineNumber: 1006,
+                                                                        lineNumber: 952,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                    lineNumber: 1001,
+                                                                    lineNumber: 947,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 1000,
+                                                                lineNumber: 946,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 990,
+                                                        lineNumber: 936,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 989,
+                                                    lineNumber: 935,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, std.id, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 849,
+                                            lineNumber: 795,
                                             columnNumber: 21
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 826,
+                                    lineNumber: 772,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 814,
+                            lineNumber: 760,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 813,
+                        lineNumber: 759,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 782,
+                lineNumber: 728,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Dialog$2f$Dialog$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Dialog$3e$__["Dialog"], {
@@ -2106,7 +2055,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         color: "#f59e0b"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 1037,
+                                        lineNumber: 983,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2115,13 +2064,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                         children: "Đánh Giá Năng Lực & Đặt Biệt Danh Sư Phạm"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 1038,
+                                        lineNumber: 984,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 1036,
+                                lineNumber: 982,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -2131,18 +2080,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     size: 18
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1043,
+                                    lineNumber: 989,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 1042,
+                                lineNumber: 988,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 1035,
+                        lineNumber: 981,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogContent$2f$DialogContent$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogContent$3e$__["DialogContent"], {
@@ -2178,7 +2127,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         children: activeStudent.fullName
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 1061,
+                                                        lineNumber: 1007,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2190,7 +2139,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                                 children: activeStudent.className
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                                lineNumber: 1065,
+                                                                lineNumber: 1011,
                                                                 columnNumber: 28
                                                             }, this),
                                                             " • Trường: ",
@@ -2198,13 +2147,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 1064,
+                                                        lineNumber: 1010,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 1060,
+                                                lineNumber: 1006,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2227,7 +2176,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 1070,
+                                                            lineNumber: 1016,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2240,7 +2189,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 1071,
+                                                            lineNumber: 1017,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2253,29 +2202,29 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 1072,
+                                                            lineNumber: 1018,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1069,
+                                                    lineNumber: 1015,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                lineNumber: 1068,
+                                                lineNumber: 1014,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                        lineNumber: 1059,
+                                        lineNumber: 1005,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1051,
+                                    lineNumber: 997,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2293,14 +2242,14 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1081,
+                                                    lineNumber: 1027,
                                                     columnNumber: 19
                                                 }, this),
                                                 " Biệt Danh Danh Dự Do Giáo Viên Phong Tặng:"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1080,
+                                            lineNumber: 1026,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -2314,7 +2263,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1083,
+                                            lineNumber: 1029,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2325,7 +2274,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             children: "Gợi ý biệt danh phong tặng nhanh:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1091,
+                                            lineNumber: 1037,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -2349,18 +2298,18 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     }
                                                 }, preset, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1096,
+                                                    lineNumber: 1042,
                                                     columnNumber: 21
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1094,
+                                            lineNumber: 1040,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1079,
+                                    lineNumber: 1025,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Divider$2f$Divider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Divider$3e$__["Divider"], {
@@ -2369,7 +2318,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1114,
+                                    lineNumber: 1060,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2387,14 +2336,14 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1119,
+                                                    lineNumber: 1065,
                                                     columnNumber: 19
                                                 }, this),
                                                 " Thưởng Điểm Kinh Nghiệm (Bonus EXP):"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1118,
+                                            lineNumber: 1064,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -2409,7 +2358,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: "+50 EXP (Chuyên cần)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1122,
+                                                    lineNumber: 1068,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2419,7 +2368,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: "+100 EXP (Phát biểu hay)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1123,
+                                                    lineNumber: 1069,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2429,7 +2378,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: "+200 EXP (Dự án xuất sắc)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1124,
+                                                    lineNumber: 1070,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -2443,19 +2392,19 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1125,
+                                                    lineNumber: 1071,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1121,
+                                            lineNumber: 1067,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1117,
+                                    lineNumber: 1063,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Divider$2f$Divider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Divider$3e$__["Divider"], {
@@ -2464,7 +2413,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1136,
+                                    lineNumber: 1082,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2487,14 +2436,14 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                             size: 16
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                            lineNumber: 1142,
+                                                            lineNumber: 1088,
                                                             columnNumber: 21
                                                         }, this),
                                                         " Nhận Xét Năng Lực & Dặn Dò Sư Phạm:"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1141,
+                                                    lineNumber: 1087,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2505,7 +2454,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                         color: "#a855f7"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                        lineNumber: 1147,
+                                                        lineNumber: 1093,
                                                         columnNumber: 32
                                                     }, this),
                                                     onClick: handleGenerateAiEvaluation,
@@ -2523,13 +2472,13 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                                     children: isAiGenerating ? 'AI Đang viết...' : 'AI Viết Nhận Xét Năng Lực'
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                                    lineNumber: 1144,
+                                                    lineNumber: 1090,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1140,
+                                            lineNumber: 1086,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -2541,24 +2490,24 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                             onChange: (e)=>setEditEvaluation(e.target.value)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                            lineNumber: 1162,
+                                            lineNumber: 1108,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                    lineNumber: 1139,
+                                    lineNumber: 1085,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/StudentProgressManager.tsx",
-                            lineNumber: 1049,
+                            lineNumber: 995,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 1047,
+                        lineNumber: 993,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogActions$2f$DialogActions$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogActions$3e$__["DialogActions"], {
@@ -2573,7 +2522,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                 children: "Hủy"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 1176,
+                                lineNumber: 1122,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2590,25 +2539,25 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                                 children: "Lưu Đánh Giá & Biệt Danh"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                                lineNumber: 1179,
+                                lineNumber: 1125,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/StudentProgressManager.tsx",
-                        lineNumber: 1175,
+                        lineNumber: 1121,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/StudentProgressManager.tsx",
-                lineNumber: 1021,
+                lineNumber: 967,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/StudentProgressManager.tsx",
-        lineNumber: 496,
+        lineNumber: 442,
         columnNumber: 5
     }, this);
 }

@@ -64,7 +64,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$star$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Star$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/star.js [app-client] (ecmascript) <export default as Star>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$zap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Zap$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/zap.js [app-client] (ecmascript) <export default as Zap>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$tag$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tag$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/tag.js [app-client] (ecmascript) <export default as Tag>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/api.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/userDatabase.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
@@ -206,6 +206,10 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                 }
             }
             setAlertInfo(null);
+            // Background sync all registered users from database
+            (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])().catch({
+                "UserAuthModal.useEffect": ()=>{}
+            }["UserAuthModal.useEffect"]);
         }
     }["UserAuthModal.useEffect"], [
         currentUser,
@@ -214,26 +218,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
     ]);
     // Load existing registered users
     const getRegisteredUsers = ()=>{
-        try {
-            const data = localStorage.getItem(LOCAL_USERS_KEY);
-            if (data) {
-                let parsed = JSON.parse(data);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    // Purge any legacy demo seed students
-                    parsed = parsed.filter((u)=>!u.id?.startsWith('std_seed_'));
-                    // Ensure default teacher exists
-                    if (!parsed.some((u)=>u.role === 'teacher')) {
-                        parsed.push(DEFAULT_TEACHER_ACCOUNT);
-                    }
-                    localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(parsed));
-                    return parsed;
-                }
-            }
-            localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(DEFAULT_SEEDED_USERS));
-            return DEFAULT_SEEDED_USERS;
-        } catch  {
-            return DEFAULT_SEEDED_USERS;
-        }
+        return (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getLocalRegisteredUsers"])();
     };
     const saveRegisteredUsers = (users)=>{
         try {
@@ -295,13 +280,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
         }
         const finalClassName = regRole === 'teacher' ? regSubject.trim() || 'Giáo viên Hóa học' : regClassSelect === "Khác (Tự điền)" ? regCustomClass.trim() || "Lớp 10" : regClassSelect;
         const finalLocation = regLocation.trim() || "Việt Nam";
-        const allUsers = getRegisteredUsers();
+        const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
         // Check duplication
-        const isExisted = allUsers.some((u)=>u.emailOrPhone.toLowerCase() === regEmailOrPhone.trim().toLowerCase() || u.fullName.toLowerCase() === regFullName.trim().toLowerCase());
+        const isExisted = allUsers.some((u)=>u.emailOrPhone && u.emailOrPhone.toLowerCase() === regEmailOrPhone.trim().toLowerCase() || u.fullName && u.fullName.toLowerCase() === regFullName.trim().toLowerCase());
         if (isExisted) {
             setAlertInfo({
                 type: 'error',
-                message: 'Tài khoản hoặc Email/SĐT này đã được đăng ký. Hãy chuyển qua Đăng nhập!'
+                message: 'Tài khoản hoặc Email/SĐT này đã được đăng ký trên hệ thống. Hãy chuyển qua Đăng nhập!'
             });
             return;
         }
@@ -318,33 +303,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             password: regPassword,
             createdAt: new Date().toISOString()
         };
-        allUsers.push(newUser);
-        saveRegisteredUsers(allUsers);
+        // Save to Database and Local storage
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveUserToDatabase"])(newUser);
         saveStoredCurrentUser(newUser);
-        // Background sync to Supabase (if available)
-        try {
-            __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').upsert({
-                user_id: newUser.id,
-                full_name: newUser.fullName,
-                auth_type: newUser.authType,
-                email_or_phone: newUser.emailOrPhone,
-                role: newUser.role,
-                class_name: newUser.className,
-                school: newUser.school,
-                location: newUser.location,
-                created_at: newUser.createdAt
-            }).then();
-        } catch  {}
         setAlertInfo({
             type: 'success',
-            message: `Đăng ký tài khoản ${newUser.role === 'teacher' ? 'Giáo viên' : 'Học sinh'} thành công! Đang đăng nhập...`
+            message: `Đăng ký tài khoản ${newUser.role === 'teacher' ? 'Giáo viên' : 'Học sinh'} thành công & đã lưu vào Database! Đang đăng nhập...`
         });
         setTimeout(()=>{
             onLoginSuccess(newUser);
             onClose();
         }, 800);
     };
-    const handleLogin = (e)=>{
+    const handleLogin = async (e)=>{
         e.preventDefault();
         setAlertInfo(null);
         if (!loginIdentifier.trim() || !loginPassword) {
@@ -354,11 +325,11 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             });
             return;
         }
-        const allUsers = getRegisteredUsers();
         const cleanId = loginIdentifier.trim().toLowerCase();
         const cleanPass = loginPassword.trim();
         // 1. Direct Master Teacher Passkey match
         if ((cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com' || cleanId === 'thầy hiệp' || cleanId === 'nguyễn văn hiệp') && (cleanPass === 'chemai2026' || cleanPass === '123456')) {
+            const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
             const teacher = allUsers.find((u)=>u.id === DEFAULT_TEACHER_ACCOUNT.id || u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
             saveStoredCurrentUser(teacher);
             setAlertInfo({
@@ -371,8 +342,12 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             }, 500);
             return;
         }
-        // 2. Normal matching by email/phone/name and password
-        const matchedUser = allUsers.find((u)=>(u.fullName.toLowerCase() === cleanId || u.emailOrPhone.toLowerCase() === cleanId) && (u.password === loginPassword || cleanPass === 'chemai2026'));
+        // 2. Fetch user from Database (Cloud & Local)
+        let matchedUser = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchUserByIdentifierFromDatabase"])(cleanId);
+        if (!matchedUser) {
+            const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
+            matchedUser = allUsers.find((u)=>u.fullName && u.fullName.toLowerCase() === cleanId || u.emailOrPhone && u.emailOrPhone.toLowerCase() === cleanId) || null;
+        }
         if (!matchedUser) {
             // If logging in as teacher and entered password chemai2026
             if (loginRole === 'teacher' && cleanPass === 'chemai2026') {
@@ -381,6 +356,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                     fullName: loginIdentifier.includes('@') ? 'Giáo Viên Hóa Học' : loginIdentifier.trim(),
                     emailOrPhone: loginIdentifier.trim()
                 };
+                await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveUserToDatabase"])(teacherAcc);
                 saveStoredCurrentUser(teacherAcc);
                 setAlertInfo({
                     type: 'success',
@@ -394,7 +370,15 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             }
             setAlertInfo({
                 type: 'error',
-                message: 'Tên đăng nhập hoặc mật khẩu không chính xác.'
+                message: 'Tài khoản không tồn tại trên hệ thống database.'
+            });
+            return;
+        }
+        // Check password
+        if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'chemai2026') {
+            setAlertInfo({
+                type: 'error',
+                message: 'Mật khẩu không chính xác.'
             });
             return;
         }
@@ -411,9 +395,9 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             onClose();
         }, 500);
     };
-    const handleQuickLogin = (role)=>{
+    const handleQuickLogin = async (role)=>{
+        const allUsers = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["fetchAllUsersFromDatabase"])();
         if (role === 'teacher') {
-            const allUsers = getRegisteredUsers();
             const teacher = allUsers.find((u)=>u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
             saveStoredCurrentUser(teacher);
             setAlertInfo({
@@ -425,7 +409,6 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                 onClose();
             }, 400);
         } else {
-            const allUsers = getRegisteredUsers();
             const student = allUsers.find((u)=>u.role === 'student') || DEFAULT_STUDENT_ACCOUNT;
             saveStoredCurrentUser(student);
             setAlertInfo({
@@ -438,9 +421,8 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             }, 400);
         }
     };
-    const handleUpdateProfile = ()=>{
+    const handleUpdateProfile = async ()=>{
         if (!currentUser) return;
-        const allUsers = getRegisteredUsers();
         const updatedUser = {
             ...currentUser,
             fullName: editFullName.trim() || currentUser.fullName,
@@ -450,17 +432,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
             school: editSchool.trim() || currentUser.school,
             location: editLocation.trim() || currentUser.location
         };
-        const userIndex = allUsers.findIndex((u)=>u.id === currentUser.id);
-        if (userIndex !== -1) {
-            allUsers[userIndex] = updatedUser;
-            saveRegisteredUsers(allUsers);
-        }
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$userDatabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveUserToDatabase"])(updatedUser);
         saveStoredCurrentUser(updatedUser);
         onLoginSuccess(updatedUser);
         setIsEditing(false);
         setAlertInfo({
             type: 'success',
-            message: 'Cập nhật thông tin hồ sơ thành công!'
+            message: 'Cập nhật và đồng bộ thông tin hồ sơ lên Database thành công!'
         });
     };
     const handleDoLogout = ()=>{
@@ -513,18 +491,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                     size: 20
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 518,
+                                    lineNumber: 497,
                                     columnNumber: 95
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__["GraduationCap"], {
                                     size: 20
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 518,
+                                    lineNumber: 497,
                                     columnNumber: 121
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 510,
+                                lineNumber: 489,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -539,7 +517,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: currentUser ? currentUser.role === 'teacher' ? 'Hồ Sơ Giáo Viên ChemAI' : 'Hồ Sơ Học Sinh ChemAI' : tabIndex === 0 ? loginRole === 'teacher' ? 'Đăng Nhập Tài Khoản Giáo Viên' : 'Đăng Nhập Tài Khoản Học Sinh' : regRole === 'teacher' ? 'Đăng Ký Tài Khoản Giáo Viên' : 'Đăng Ký Tài Khoản Học Sinh'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 521,
+                                        lineNumber: 500,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -551,19 +529,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "Chương trình Hóa Học THPT 2018"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 507,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 520,
+                                lineNumber: 499,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 509,
+                        lineNumber: 488,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -579,18 +557,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                             size: 18
                         }, void 0, false, {
                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                            lineNumber: 534,
+                            lineNumber: 513,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 533,
+                        lineNumber: 512,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                lineNumber: 508,
+                lineNumber: 487,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$DialogContent$2f$DialogContent$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__DialogContent$3e$__["DialogContent"], {
@@ -633,14 +611,14 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                     size: 15
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 565,
+                                    lineNumber: 544,
                                     columnNumber: 24
                                 }, this),
                                 iconPosition: "start",
                                 label: "Đăng Nhập"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 565,
+                                lineNumber: 544,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tab$2f$Tab$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tab$3e$__["Tab"], {
@@ -648,20 +626,20 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                     size: 15
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 566,
+                                    lineNumber: 545,
                                     columnNumber: 24
                                 }, this),
                                 iconPosition: "start",
                                 label: "Đăng Ký Tài Khoản"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 566,
+                                lineNumber: 545,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 541,
+                        lineNumber: 520,
                         columnNumber: 11
                     }, this),
                     alertInfo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Alert$2f$Alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
@@ -675,7 +653,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                         children: alertInfo.message
                     }, void 0, false, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 572,
+                        lineNumber: 551,
                         columnNumber: 11
                     }, this),
                     !currentUser && tabIndex === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -707,7 +685,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 599,
+                                            lineNumber: 578,
                                             columnNumber: 28
                                         }, this),
                                         sx: {
@@ -724,7 +702,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "Học Sinh Đăng Nhập"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 592,
+                                        lineNumber: 571,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -738,7 +716,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 619,
+                                            lineNumber: 598,
                                             columnNumber: 28
                                         }, this),
                                         sx: {
@@ -755,13 +733,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "Giáo Viên Đăng Nhập"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 612,
+                                        lineNumber: 591,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 581,
+                                lineNumber: 560,
                                 columnNumber: 13
                             }, this),
                             loginRole === 'teacher' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -786,7 +764,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#f59e0b"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 649,
+                                                lineNumber: 628,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -799,7 +777,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Cổng Dành Riêng Cho Giáo Viên"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 651,
+                                                        lineNumber: 630,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -811,19 +789,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Toàn quyền: Giáo án 5512, Đề thi, STEM, Sổ học sinh & Video"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 654,
+                                                        lineNumber: 633,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 650,
+                                                lineNumber: 629,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 648,
+                                        lineNumber: 627,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -846,13 +824,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "⚡ Điền mẫu GV"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 659,
+                                        lineNumber: 638,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 636,
+                                lineNumber: 615,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                                 sx: {
@@ -870,7 +848,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         color: "#38bdf8"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 690,
+                                        lineNumber: 669,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -883,7 +861,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Cổng Dành Cho Học Sinh"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 692,
+                                                lineNumber: 671,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -895,19 +873,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Đăng nhập bằng Email, SĐT hoặc Tên tài khoản đã đăng ký để lưu tiến trình & EXP Kahoot"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 695,
+                                                lineNumber: 674,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 691,
+                                        lineNumber: 670,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 679,
+                                lineNumber: 658,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -926,18 +904,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: loginRole === 'teacher' ? '#f59e0b' : '#38bdf8'
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 713,
+                                            lineNumber: 692,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 712,
+                                        lineNumber: 691,
                                         columnNumber: 19
                                     }, this)
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 702,
+                                lineNumber: 681,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -957,12 +935,12 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: loginRole === 'teacher' ? '#f59e0b' : '#38bdf8'
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 731,
+                                            lineNumber: 710,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 730,
+                                        lineNumber: 709,
                                         columnNumber: 19
                                     }, this),
                                     endAdornment: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$InputAdornment$2f$InputAdornment$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__InputAdornment$3e$__["InputAdornment"], {
@@ -975,29 +953,29 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 737,
+                                                lineNumber: 716,
                                                 columnNumber: 39
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Eye$3e$__["Eye"], {
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 737,
+                                                lineNumber: 716,
                                                 columnNumber: 62
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 736,
+                                            lineNumber: 715,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 735,
+                                        lineNumber: 714,
                                         columnNumber: 19
                                     }, this)
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 719,
+                                lineNumber: 698,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1019,7 +997,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                 children: loginRole === 'teacher' ? 'Đăng Nhập Quyền Giáo Viên' : 'Đăng Nhập Học Sinh'
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 744,
+                                lineNumber: 723,
                                 columnNumber: 13
                             }, this),
                             loginRole === 'teacher' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1031,7 +1009,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                     color: "#f59e0b"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 770,
+                                    lineNumber: 749,
                                     columnNumber: 28
                                 }, this),
                                 sx: {
@@ -1049,7 +1027,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                 children: "⚡ 1-Chạm: Đăng Nhập Thầy Nguyễn Văn Hiệp (Demo GV)"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 766,
+                                lineNumber: 745,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1076,24 +1054,24 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             children: "Đăng ký miễn phí tại đây"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 791,
+                                            lineNumber: 770,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                    lineNumber: 789,
+                                    lineNumber: 768,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 788,
+                                lineNumber: 767,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 579,
+                        lineNumber: 558,
                         columnNumber: 11
                     }, this),
                     !currentUser && tabIndex === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1123,7 +1101,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "Chọn vai trò tài khoản đăng ký:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 818,
+                                        lineNumber: 797,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1140,7 +1118,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         size: 16
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 826,
+                                                        lineNumber: 805,
                                                         columnNumber: 32
                                                     }, this),
                                                     onClick: ()=>setRegRole('student'),
@@ -1159,12 +1137,12 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     children: "Học Sinh"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 823,
+                                                    lineNumber: 802,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 822,
+                                                lineNumber: 801,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -1177,7 +1155,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         size: 16
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 848,
+                                                        lineNumber: 827,
                                                         columnNumber: 32
                                                     }, this),
                                                     onClick: ()=>setRegRole('teacher'),
@@ -1196,24 +1174,24 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     children: "Giáo Viên"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 845,
+                                                    lineNumber: 824,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 844,
+                                                lineNumber: 823,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 821,
+                                        lineNumber: 800,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 809,
+                                lineNumber: 788,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1230,7 +1208,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: "Đăng ký bằng:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 871,
+                                        lineNumber: 850,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1238,7 +1216,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             size: 13
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 875,
+                                            lineNumber: 854,
                                             columnNumber: 23
                                         }, this),
                                         label: "Email",
@@ -1255,7 +1233,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 874,
+                                        lineNumber: 853,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1263,7 +1241,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             size: 13
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 884,
+                                            lineNumber: 863,
                                             columnNumber: 23
                                         }, this),
                                         label: "Số Điện Thoại",
@@ -1280,13 +1258,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 883,
+                                        lineNumber: 862,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 870,
+                                lineNumber: 849,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1305,18 +1283,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: regRole === 'teacher' ? "#f59e0b" : "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 906,
+                                            lineNumber: 885,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 905,
+                                        lineNumber: 884,
                                         columnNumber: 19
                                     }, this)
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 895,
+                                lineNumber: 874,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1336,25 +1314,25 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 925,
+                                            lineNumber: 904,
                                             columnNumber: 47
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$phone$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Phone$3e$__["Phone"], {
                                             size: 17,
                                             color: "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 925,
+                                            lineNumber: 904,
                                             columnNumber: 84
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 924,
+                                        lineNumber: 903,
                                         columnNumber: 19
                                     }, this)
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 913,
+                                lineNumber: 892,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1378,18 +1356,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     color: "#38bdf8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 945,
+                                                    lineNumber: 924,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 944,
+                                                lineNumber: 923,
                                                 columnNumber: 21
                                             }, this)
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 933,
+                                        lineNumber: 912,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1403,13 +1381,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         required: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 950,
+                                        lineNumber: 929,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 932,
+                                lineNumber: 911,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Divider$2f$Divider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Divider$3e$__["Divider"], {
@@ -1419,7 +1397,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 962,
+                                lineNumber: 941,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1436,7 +1414,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         size: 14
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 964,
+                                        lineNumber: 943,
                                         columnNumber: 15
                                     }, this),
                                     " ",
@@ -1444,7 +1422,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 963,
+                                lineNumber: 942,
                                 columnNumber: 13
                             }, this),
                             regRole === 'teacher' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1463,7 +1441,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         required: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 970,
+                                        lineNumber: 949,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1484,24 +1462,24 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     color: "#f59e0b"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 990,
+                                                    lineNumber: 969,
                                                     columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 989,
+                                                lineNumber: 968,
                                                 columnNumber: 23
                                             }, this)
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 979,
+                                        lineNumber: 958,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 969,
+                                lineNumber: 948,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                 children: [
@@ -1519,7 +1497,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Lớp học"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1001,
+                                                        lineNumber: 980,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1531,18 +1509,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                 children: cls
                                                             }, cls, false, {
                                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                lineNumber: 1008,
+                                                                lineNumber: 987,
                                                                 columnNumber: 25
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1002,
+                                                        lineNumber: 981,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1000,
+                                                lineNumber: 979,
                                                 columnNumber: 19
                                             }, this),
                                             regClassSelect === "Khác (Tự điền)" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1557,7 +1535,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 required: true
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1014,
+                                                lineNumber: 993,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
                                                 label: "Trường THPT",
@@ -1577,24 +1555,24 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             color: "#94a3b8"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1035,
+                                                            lineNumber: 1014,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1034,
+                                                        lineNumber: 1013,
                                                         columnNumber: 27
                                                     }, this)
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1024,
+                                                lineNumber: 1003,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 999,
+                                        lineNumber: 978,
                                         columnNumber: 17
                                     }, this),
                                     regClassSelect === "Khác (Tự điền)" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1613,24 +1591,24 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     color: "#94a3b8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1055,
+                                                    lineNumber: 1034,
                                                     columnNumber: 27
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1054,
+                                                lineNumber: 1033,
                                                 columnNumber: 25
                                             }, this)
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1044,
+                                        lineNumber: 1023,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 997,
+                                lineNumber: 976,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1648,18 +1626,18 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: "#38bdf8"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 1075,
+                                            lineNumber: 1054,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1074,
+                                        lineNumber: 1053,
                                         columnNumber: 19
                                     }, this)
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 1065,
+                                lineNumber: 1044,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1681,13 +1659,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 1081,
+                                lineNumber: 1060,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 807,
+                        lineNumber: 786,
                         columnNumber: 11
                     }, this),
                     currentUser && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1719,7 +1697,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         children: currentUser.role === 'teacher' ? 'GV' : 'HS'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1116,
+                                        lineNumber: 1095,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1745,7 +1723,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: currentUser.fullName
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1131,
+                                                        lineNumber: 1110,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1754,14 +1732,14 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             color: "#000"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1135,
+                                                            lineNumber: 1114,
                                                             columnNumber: 60
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__["GraduationCap"], {
                                                             size: 12,
                                                             color: "#38bdf8"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1135,
+                                                            lineNumber: 1114,
                                                             columnNumber: 99
                                                         }, this),
                                                         label: currentUser.role === 'teacher' ? 'Giáo Viên Hóa Học' : 'Học Sinh',
@@ -1775,7 +1753,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1134,
+                                                        lineNumber: 1113,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1784,7 +1762,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             color: "#10b981"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1147,
+                                                            lineNumber: 1126,
                                                             columnNumber: 27
                                                         }, this),
                                                         label: "Đã xác thực",
@@ -1797,13 +1775,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1146,
+                                                        lineNumber: 1125,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1130,
+                                                lineNumber: 1109,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1821,7 +1799,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1153,
+                                                lineNumber: 1132,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1841,7 +1819,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1157,
+                                                        lineNumber: 1136,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1854,25 +1832,25 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1162,
+                                                        lineNumber: 1141,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1156,
+                                                lineNumber: 1135,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1129,
+                                        lineNumber: 1108,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 1105,
+                                lineNumber: 1084,
                                 columnNumber: 13
                             }, this),
                             isEditing ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1888,7 +1866,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Vai trò"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1171,
+                                                lineNumber: 1150,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Select$2f$Select$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Select$3e$__["Select"], {
@@ -1901,7 +1879,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Học Sinh"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1177,
+                                                        lineNumber: 1156,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$MenuItem$2f$MenuItem$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MenuItem$3e$__["MenuItem"], {
@@ -1909,19 +1887,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Giáo Viên"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1178,
+                                                        lineNumber: 1157,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1172,
+                                                lineNumber: 1151,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1170,
+                                        lineNumber: 1149,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1932,7 +1910,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         fullWidth: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1182,
+                                        lineNumber: 1161,
                                         columnNumber: 17
                                     }, this),
                                     editRole === 'teacher' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1943,7 +1921,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         fullWidth: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1191,
+                                        lineNumber: 1170,
                                         columnNumber: 19
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
                                         label: "Lớp học",
@@ -1953,7 +1931,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         fullWidth: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1199,
+                                        lineNumber: 1178,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1965,7 +1943,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         fullWidth: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1208,
+                                        lineNumber: 1187,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$TextField$2f$TextField$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TextField$3e$__["TextField"], {
@@ -1977,7 +1955,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                         fullWidth: true
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1216,
+                                        lineNumber: 1195,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -1993,7 +1971,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Lưu Thay Đổi"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1225,
+                                                lineNumber: 1204,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2003,19 +1981,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Hủy"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1228,
+                                                lineNumber: 1207,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1224,
+                                        lineNumber: 1203,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 1169,
+                                lineNumber: 1148,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
                                 display: "flex",
@@ -2037,7 +2015,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                             color: "#f97316"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 1247,
+                                            lineNumber: 1226,
                                             columnNumber: 34
                                         }, this);
                                         if (exp >= 2000 || accuracy >= 85 && totalQ >= 20) {
@@ -2048,7 +2026,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1251,
+                                                lineNumber: 1230,
                                                 columnNumber: 32
                                             }, this);
                                         } else if (exp >= 1200 || accuracy >= 70 && totalQ >= 15) {
@@ -2059,7 +2037,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#eab308"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1255,
+                                                lineNumber: 1234,
                                                 columnNumber: 32
                                             }, this);
                                         } else if (exp >= 600 || accuracy >= 50 && totalQ >= 10) {
@@ -2070,7 +2048,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#a855f7"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1259,
+                                                lineNumber: 1238,
                                                 columnNumber: 32
                                             }, this);
                                         }
@@ -2099,7 +2077,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     color: "#f59e0b"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1275,
+                                                                    lineNumber: 1254,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2108,7 +2086,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     children: "Biệt danh:"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1276,
+                                                                    lineNumber: 1255,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2122,13 +2100,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1277,
+                                                                    lineNumber: 1256,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1274,
+                                                            lineNumber: 1253,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -2143,13 +2121,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1281,
+                                                            lineNumber: 1260,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1273,
+                                                    lineNumber: 1252,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2173,7 +2151,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                             size: 13
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                            lineNumber: 1292,
+                                                                            lineNumber: 1271,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         " ",
@@ -2182,7 +2160,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1291,
+                                                                    lineNumber: 1270,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2195,13 +2173,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1294,
+                                                                    lineNumber: 1273,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1290,
+                                                            lineNumber: 1269,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$LinearProgress$2f$LinearProgress$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__LinearProgress$3e$__["LinearProgress"], {
@@ -2217,13 +2195,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1298,
+                                                            lineNumber: 1277,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1289,
+                                                    lineNumber: 1268,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2255,7 +2233,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                             size: 13
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                            lineNumber: 1317,
+                                                                            lineNumber: 1296,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         " Chuỗi Kahoot: ",
@@ -2264,17 +2242,17 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1316,
+                                                                    lineNumber: 1295,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                lineNumber: 1315,
+                                                                lineNumber: 1294,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1314,
+                                                            lineNumber: 1293,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Grid$2f$Grid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Grid$3e$__["Grid"], {
@@ -2301,7 +2279,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                             size: 13
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                            lineNumber: 1324,
+                                                                            lineNumber: 1303,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         " Đăng nhập: ",
@@ -2310,23 +2288,23 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1323,
+                                                                    lineNumber: 1302,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                lineNumber: 1322,
+                                                                lineNumber: 1301,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1321,
+                                                            lineNumber: 1300,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1313,
+                                                    lineNumber: 1292,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2355,7 +2333,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                             children: "Năng lực:"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                            lineNumber: 1335,
+                                                                            lineNumber: 1314,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2365,13 +2343,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                             children: rankLabel
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                            lineNumber: 1336,
+                                                                            lineNumber: 1315,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1333,
+                                                                    lineNumber: 1312,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2389,13 +2367,13 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                                    lineNumber: 1340,
+                                                                    lineNumber: 1319,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1332,
+                                                            lineNumber: 1311,
                                                             columnNumber: 25
                                                         }, this),
                                                         currentUser.teacherEvaluation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2416,19 +2394,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                            lineNumber: 1345,
+                                                            lineNumber: 1324,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1331,
+                                                    lineNumber: 1310,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/UserAuthModal.tsx",
-                                            lineNumber: 1263,
+                                            lineNumber: 1242,
                                             columnNumber: 21
                                         }, this);
                                     })(),
@@ -2445,7 +2423,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1356,
+                                                lineNumber: 1335,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2456,7 +2434,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: currentUser.role === 'teacher' ? 'Đơn vị công tác & Bộ môn:' : 'Trường & Lớp học:'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1358,
+                                                        lineNumber: 1337,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2469,19 +2447,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1361,
+                                                        lineNumber: 1340,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1357,
+                                                lineNumber: 1336,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1355,
+                                        lineNumber: 1334,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2497,7 +2475,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1367,
+                                                lineNumber: 1346,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2508,7 +2486,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Nơi sinh sống:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1369,
+                                                        lineNumber: 1348,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2517,19 +2495,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: currentUser.location || 'Chưa cập nhật'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1370,
+                                                        lineNumber: 1349,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1368,
+                                                lineNumber: 1347,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1366,
+                                        lineNumber: 1345,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2545,7 +2523,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1374,
+                                                lineNumber: 1353,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2556,7 +2534,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: "Quyền hạn hệ thống:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1376,
+                                                        lineNumber: 1355,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -2566,19 +2544,19 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                         children: currentUser.role === 'teacher' ? 'Giáo viên: Toàn quyền theo dõi học sinh, soạn giáo án, ra đề thi & quản lý video' : 'Học sinh: Xem bài giảng, thực hành thí nghiệm, gia sư AI 24/7 & thi đấu Kahoot'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                        lineNumber: 1377,
+                                                        lineNumber: 1356,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1375,
+                                                lineNumber: 1354,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1373,
+                                        lineNumber: 1352,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -2594,7 +2572,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Chỉnh Sửa Hồ Sơ"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1386,
+                                                lineNumber: 1365,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -2604,7 +2582,7 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                    lineNumber: 1392,
+                                                    lineNumber: 1371,
                                                     columnNumber: 32
                                                 }, this),
                                                 onClick: handleDoLogout,
@@ -2614,37 +2592,37 @@ function UserAuthModal({ open, onClose, currentUser, onLoginSuccess, onLogout, i
                                                 children: "Đăng Xuất"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                                lineNumber: 1389,
+                                                lineNumber: 1368,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                                        lineNumber: 1385,
+                                        lineNumber: 1364,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                                lineNumber: 1234,
+                                lineNumber: 1213,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/UserAuthModal.tsx",
-                        lineNumber: 1104,
+                        lineNumber: 1083,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/UserAuthModal.tsx",
-                lineNumber: 538,
+                lineNumber: 517,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/UserAuthModal.tsx",
-        lineNumber: 491,
+        lineNumber: 470,
         columnNumber: 5
     }, this);
 }

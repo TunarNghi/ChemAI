@@ -49,6 +49,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$video$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Video$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/video.js [app-client] (ecmascript) <export default as Video>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/graduation-cap.js [app-client] (ecmascript) <export default as GraduationCap>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$award$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Award$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/award.js [app-client] (ecmascript) <export default as Award>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$atom$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Atom$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/atom.js [app-client] (ecmascript) <export default as Atom>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$theme$2f$theme$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/theme/theme.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$HomeDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/HomeDashboard.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$VirtualLab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/VirtualLab.tsx [app-client] (ecmascript)");
@@ -62,10 +63,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StemPro
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$TeacherVideoLectures$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/TeacherVideoLectures.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StudentProgressManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/StudentProgressManager.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$LeaderboardTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/LeaderboardTab.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PeriodicTableTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/PeriodicTableTab.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UserAuthModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/UserAuthModal.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 ;
 ;
@@ -92,7 +95,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 75,
+            lineNumber: 77,
             columnNumber: 66
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -104,7 +107,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 76,
+            lineNumber: 78,
             columnNumber: 71
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -116,7 +119,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 77,
+            lineNumber: 79,
             columnNumber: 66
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -128,7 +131,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 78,
+            lineNumber: 80,
             columnNumber: 75
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -140,7 +143,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 79,
+            lineNumber: 81,
             columnNumber: 81
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -152,7 +155,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 80,
+            lineNumber: 82,
             columnNumber: 79
         }, ("TURBOPACK compile-time value", void 0)),
         teacherOnly: true
@@ -165,7 +168,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 81,
+            lineNumber: 83,
             columnNumber: 73
         }, ("TURBOPACK compile-time value", void 0)),
         teacherOnly: true
@@ -178,7 +181,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 82,
+            lineNumber: 84,
             columnNumber: 62
         }, ("TURBOPACK compile-time value", void 0)),
         teacherOnly: true
@@ -191,7 +194,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 83,
+            lineNumber: 85,
             columnNumber: 76
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -203,7 +206,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 84,
+            lineNumber: 86,
             columnNumber: 70
         }, ("TURBOPACK compile-time value", void 0)),
         teacherOnly: true
@@ -216,7 +219,7 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 85,
+            lineNumber: 87,
             columnNumber: 69
         }, ("TURBOPACK compile-time value", void 0)),
         isAudit: true,
@@ -230,8 +233,20 @@ const NAV_ITEMS = [
             size: 20
         }, void 0, false, {
             fileName: "[project]/src/components/AppContainer.tsx",
-            lineNumber: 86,
+            lineNumber: 88,
             columnNumber: 70
+        }, ("TURBOPACK compile-time value", void 0))
+    },
+    {
+        index: 12,
+        label: "Bảng Hóa Học",
+        shortLabel: "Bảng tuần hoàn",
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$atom$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Atom$3e$__["Atom"], {
+            size: 20
+        }, void 0, false, {
+            fileName: "[project]/src/components/AppContainer.tsx",
+            lineNumber: 89,
+            columnNumber: 75
         }, ("TURBOPACK compile-time value", void 0))
     }
 ];
@@ -285,7 +300,7 @@ function AppContainer() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$CssBaseline$2f$CssBaseline$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CssBaseline$3e$__["CssBaseline"], {}, void 0, false, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 136,
+                lineNumber: 139,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -361,12 +376,12 @@ function AppContainer() {
                                                     color: "#38bdf8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 164,
+                                                    lineNumber: 167,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 153,
+                                                lineNumber: 156,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -399,7 +414,7 @@ function AppContainer() {
                                                                 children: "HCC - ChemAI"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                                lineNumber: 168,
+                                                                lineNumber: 171,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -419,13 +434,13 @@ function AppContainer() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                                lineNumber: 182,
+                                                                lineNumber: 185,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                                        lineNumber: 167,
+                                                        lineNumber: 170,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -443,19 +458,19 @@ function AppContainer() {
                                                         children: "Hệ Thống Trợ Lý & Mô Phỏng Hóa Học Lớp 10 (GDPT 2018)"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                                        lineNumber: 196,
+                                                        lineNumber: 199,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 166,
+                                                lineNumber: 169,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 152,
+                                        lineNumber: 155,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Tabs$2f$Tabs$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Tabs$3e$__["Tabs"], {
@@ -502,12 +517,12 @@ function AppContainer() {
                                                 label: item.label
                                             }, item.index, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 252,
+                                                lineNumber: 255,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 212,
+                                        lineNumber: 215,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -528,7 +543,7 @@ function AppContainer() {
                                                     children: isTeacher ? 'GV' : 'HS'
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 262,
+                                                    lineNumber: 265,
                                                     columnNumber: 23
                                                 }, this),
                                                 label: isTeacher ? `[GV] ${currentUser.fullName}` : `[HS] ${currentUser.fullName} (${currentUser.className || 'Lớp 10'})`,
@@ -551,7 +566,7 @@ function AppContainer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 260,
+                                                lineNumber: 263,
                                                 columnNumber: 19
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
                                                 icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$user$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__User$3e$__["User"], {
@@ -559,7 +574,7 @@ function AppContainer() {
                                                     color: "#38bdf8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 291,
+                                                    lineNumber: 294,
                                                     columnNumber: 27
                                                 }, this),
                                                 label: "Đăng nhập / Đăng ký",
@@ -582,7 +597,7 @@ function AppContainer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 290,
+                                                lineNumber: 293,
                                                 columnNumber: 19
                                             }, this),
                                             isTeacher && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -590,7 +605,7 @@ function AppContainer() {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 311,
+                                                    lineNumber: 314,
                                                     columnNumber: 27
                                                 }, this),
                                                 label: "Giáo viên Audit",
@@ -613,7 +628,7 @@ function AppContainer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 310,
+                                                lineNumber: 313,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -635,34 +650,34 @@ function AppContainer() {
                                                     color: "#38bdf8"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 341,
+                                                    lineNumber: 344,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 329,
+                                                lineNumber: 332,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 257,
+                                        lineNumber: 260,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 150,
+                                lineNumber: 153,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/AppContainer.tsx",
-                            lineNumber: 149,
+                            lineNumber: 152,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 139,
+                        lineNumber: 142,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Drawer$2f$Drawer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Drawer$3e$__["Drawer"], {
@@ -697,7 +712,7 @@ function AppContainer() {
                                                 color: "#38bdf8"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 368,
+                                                lineNumber: 371,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -709,13 +724,13 @@ function AppContainer() {
                                                 children: "HCC - ChemAI"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                                lineNumber: 369,
+                                                lineNumber: 372,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 367,
+                                        lineNumber: 370,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__["IconButton"], {
@@ -728,18 +743,18 @@ function AppContainer() {
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AppContainer.tsx",
-                                            lineNumber: 374,
+                                            lineNumber: 377,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 373,
+                                        lineNumber: 376,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 366,
+                                lineNumber: 369,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Divider$2f$Divider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Divider$3e$__["Divider"], {
@@ -749,7 +764,7 @@ function AppContainer() {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 378,
+                                lineNumber: 381,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -776,7 +791,7 @@ function AppContainer() {
                                             children: currentUser.fullName
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/AppContainer.tsx",
-                                            lineNumber: 396,
+                                            lineNumber: 399,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -789,13 +804,13 @@ function AppContainer() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AppContainer.tsx",
-                                            lineNumber: 399,
+                                            lineNumber: 402,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                    lineNumber: 383,
+                                    lineNumber: 386,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
                                     icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$user$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__User$3e$__["User"], {
@@ -803,7 +818,7 @@ function AppContainer() {
                                         color: "#38bdf8"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 405,
+                                        lineNumber: 408,
                                         columnNumber: 23
                                     }, this),
                                     label: "Đăng nhập / Đăng ký",
@@ -827,12 +842,12 @@ function AppContainer() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                    lineNumber: 404,
+                                    lineNumber: 407,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 381,
+                                lineNumber: 384,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$List$2f$List$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__List$3e$__["List"], {
@@ -869,7 +884,7 @@ function AppContainer() {
                                                     children: item.icon
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 452,
+                                                    lineNumber: 455,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$ListItemText$2f$ListItemText$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ListItemText$3e$__["ListItemText"], {
@@ -881,7 +896,7 @@ function AppContainer() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 462,
+                                                    lineNumber: 465,
                                                     columnNumber: 21
                                                 }, this),
                                                 isLocked && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
@@ -892,7 +907,7 @@ function AppContainer() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 473,
+                                                    lineNumber: 476,
                                                     columnNumber: 23
                                                 }, this),
                                                 item.isAudit && !isLocked && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -906,24 +921,24 @@ function AppContainer() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/AppContainer.tsx",
-                                                    lineNumber: 476,
+                                                    lineNumber: 479,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/AppContainer.tsx",
-                                            lineNumber: 434,
+                                            lineNumber: 437,
                                             columnNumber: 19
                                         }, this)
                                     }, item.index, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 433,
+                                        lineNumber: 436,
                                         columnNumber: 17
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 428,
+                                lineNumber: 431,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Box$2f$Box$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Box$3e$__["Box"], {
@@ -937,7 +952,7 @@ function AppContainer() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 490,
+                                        lineNumber: 493,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -948,19 +963,19 @@ function AppContainer() {
                                         children: "HCC - ChemAI © 2026 | GDPT 2018"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 491,
+                                        lineNumber: 494,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 489,
+                                lineNumber: 492,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 349,
+                        lineNumber: 352,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Container$2f$Container$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
@@ -993,32 +1008,32 @@ function AppContainer() {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 507,
+                                lineNumber: 510,
                                 columnNumber: 13
                             }, this),
                             currentUser && currentTab === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$VirtualLab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 521,
+                                lineNumber: 524,
                                 columnNumber: 47
                             }, this),
                             currentUser && currentTab === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$DifyChatTutor$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 522,
+                                lineNumber: 525,
                                 columnNumber: 47
                             }, this),
                             currentUser && currentTab === 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$QuizKahootTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 523,
+                                lineNumber: 526,
                                 columnNumber: 47
                             }, this),
                             currentUser && currentTab === 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$SafetyTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 524,
+                                lineNumber: 527,
                                 columnNumber: 47
                             }, this),
                             currentUser && currentTab === 5 && (isTeacher ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$LessonPlanner$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 525,
+                                lineNumber: 528,
                                 columnNumber: 60
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TeacherAccessGuard, {
                                 onBack: ()=>setCurrentTab(0),
@@ -1029,12 +1044,12 @@ function AppContainer() {
                                 title: "Soạn Giáo Án (5512)"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 525,
+                                lineNumber: 528,
                                 columnNumber: 80
                             }, this)),
                             currentUser && currentTab === 6 && (isTeacher ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ExamManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 526,
+                                lineNumber: 529,
                                 columnNumber: 60
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TeacherAccessGuard, {
                                 onBack: ()=>setCurrentTab(0),
@@ -1045,12 +1060,12 @@ function AppContainer() {
                                 title: "Soạn - Chấm Bài Thi"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 526,
+                                lineNumber: 529,
                                 columnNumber: 78
                             }, this)),
                             currentUser && currentTab === 7 && (isTeacher ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StemProjects$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 527,
+                                lineNumber: 530,
                                 columnNumber: 60
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TeacherAccessGuard, {
                                 onBack: ()=>setCurrentTab(0),
@@ -1061,21 +1076,21 @@ function AppContainer() {
                                 title: "Dự Án Học Tập STEM"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 527,
+                                lineNumber: 530,
                                 columnNumber: 79
                             }, this)),
                             currentUser && currentTab === 8 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$TeacherVideoLectures$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                 currentUser: currentUser
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 528,
+                                lineNumber: 531,
                                 columnNumber: 47
                             }, this),
                             currentUser && currentTab === 9 && (isTeacher ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$StudentProgressManager$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                 currentUser: currentUser
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 529,
+                                lineNumber: 532,
                                 columnNumber: 60
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TeacherAccessGuard, {
                                 onBack: ()=>setCurrentTab(0),
@@ -1086,12 +1101,12 @@ function AppContainer() {
                                 title: "Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 529,
+                                lineNumber: 532,
                                 columnNumber: 115
                             }, this)),
                             currentUser && currentTab === 10 && (isTeacher ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$AuditTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 530,
+                                lineNumber: 533,
                                 columnNumber: 61
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TeacherAccessGuard, {
                                 onBack: ()=>setCurrentTab(0),
@@ -1102,7 +1117,7 @@ function AppContainer() {
                                 title: "Cổng Quản Trị Audit"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 530,
+                                lineNumber: 533,
                                 columnNumber: 76
                             }, this)),
                             currentUser && currentTab === 11 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$LeaderboardTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1110,13 +1125,18 @@ function AppContainer() {
                                 onNavigateTab: (idx)=>handleSelectTab(idx)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/AppContainer.tsx",
-                                lineNumber: 531,
+                                lineNumber: 534,
+                                columnNumber: 48
+                            }, this),
+                            currentUser && currentTab === 12 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PeriodicTableTab$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                                fileName: "[project]/src/components/AppContainer.tsx",
+                                lineNumber: 535,
                                 columnNumber: 48
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 498,
+                        lineNumber: 501,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Paper$2f$Paper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Paper$3e$__["Paper"], {
@@ -1174,20 +1194,6 @@ function AppContainer() {
                                         size: 19
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
-                                        lineNumber: 584,
-                                        columnNumber: 21
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/AppContainer.tsx",
-                                    lineNumber: 582,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$BottomNavigationAction$2f$BottomNavigationAction$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BottomNavigationAction$3e$__["BottomNavigationAction"], {
-                                    label: "Thí nghiệm",
-                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$flask$2d$conical$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FlaskConical$3e$__["FlaskConical"], {
-                                        size: 19
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/AppContainer.tsx",
                                         lineNumber: 588,
                                         columnNumber: 21
                                     }, this)
@@ -1197,8 +1203,8 @@ function AppContainer() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$BottomNavigationAction$2f$BottomNavigationAction$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BottomNavigationAction$3e$__["BottomNavigationAction"], {
-                                    label: "Gia Sư AI",
-                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$bot$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Bot$3e$__["Bot"], {
+                                    label: "Thí nghiệm",
+                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$flask$2d$conical$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FlaskConical$3e$__["FlaskConical"], {
                                         size: 19
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
@@ -1211,8 +1217,8 @@ function AppContainer() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$BottomNavigationAction$2f$BottomNavigationAction$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BottomNavigationAction$3e$__["BottomNavigationAction"], {
-                                    label: "Kahoot",
-                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trophy$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Trophy$3e$__["Trophy"], {
+                                    label: "Gia Sư AI",
+                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$bot$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Bot$3e$__["Bot"], {
                                         size: 19
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
@@ -1225,8 +1231,8 @@ function AppContainer() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$BottomNavigationAction$2f$BottomNavigationAction$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BottomNavigationAction$3e$__["BottomNavigationAction"], {
-                                    label: currentTab >= 4 ? NAV_ITEMS[currentTab]?.shortLabel || "Thêm" : "Thêm",
-                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__["Layers"], {
+                                    label: "Kahoot",
+                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trophy$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Trophy$3e$__["Trophy"], {
                                         size: 19
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/AppContainer.tsx",
@@ -1237,16 +1243,30 @@ function AppContainer() {
                                     fileName: "[project]/src/components/AppContainer.tsx",
                                     lineNumber: 598,
                                     columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$BottomNavigationAction$2f$BottomNavigationAction$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BottomNavigationAction$3e$__["BottomNavigationAction"], {
+                                    label: currentTab >= 4 ? NAV_ITEMS[currentTab]?.shortLabel || "Thêm" : "Thêm",
+                                    icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__["Layers"], {
+                                        size: 19
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/AppContainer.tsx",
+                                        lineNumber: 604,
+                                        columnNumber: 21
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/AppContainer.tsx",
+                                    lineNumber: 602,
+                                    columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/AppContainer.tsx",
-                            lineNumber: 550,
+                            lineNumber: 554,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 535,
+                        lineNumber: 539,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UserAuthModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1258,19 +1278,19 @@ function AppContainer() {
                         initialRole: authInitialRole
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 606,
+                        lineNumber: 610,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 137,
+                lineNumber: 140,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/AppContainer.tsx",
-        lineNumber: 135,
+        lineNumber: 138,
         columnNumber: 5
     }, this);
 }
@@ -1316,12 +1336,12 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                     color: "#f59e0b"
                 }, void 0, false, {
                     fileName: "[project]/src/components/AppContainer.tsx",
-                    lineNumber: 658,
+                    lineNumber: 662,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 643,
+                lineNumber: 647,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1332,7 +1352,7 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                 children: "Chức Năng Dành Riêng Cho Giáo Viên"
             }, void 0, false, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 661,
+                lineNumber: 665,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
@@ -1346,7 +1366,7 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 665,
+                lineNumber: 669,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Typography$2f$Typography$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Typography$3e$__["Typography"], {
@@ -1364,7 +1384,7 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                         children: "Học Sinh"
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 673,
+                        lineNumber: 677,
                         columnNumber: 52
                     }, this),
                     ". Chức năng ",
@@ -1372,14 +1392,14 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 673,
+                        lineNumber: 677,
                         columnNumber: 79
                     }, this),
                     " chỉ dành riêng cho Thầy/Cô để soạn giáo án, ra đề thi, thiết kế dự án STEM và quản trị chuyên môn."
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 672,
+                lineNumber: 676,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Stack$2f$Stack$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Stack$3e$__["Stack"], {
@@ -1406,7 +1426,7 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                         children: "Quay Lại Trang Chủ"
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 677,
+                        lineNumber: 681,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Button$2f$Button$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1416,7 +1436,7 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                             size: 18
                         }, void 0, false, {
                             fileName: "[project]/src/components/AppContainer.tsx",
-                            lineNumber: 693,
+                            lineNumber: 697,
                             columnNumber: 22
                         }, this),
                         sx: {
@@ -1433,19 +1453,19 @@ function TeacherAccessGuard({ title, onBack, onOpenAuth }) {
                         children: "Đăng Ký / Đổi Vai Trò Giáo Viên"
                     }, void 0, false, {
                         fileName: "[project]/src/components/AppContainer.tsx",
-                        lineNumber: 690,
+                        lineNumber: 694,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/AppContainer.tsx",
-                lineNumber: 676,
+                lineNumber: 680,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/AppContainer.tsx",
-        lineNumber: 629,
+        lineNumber: 633,
         columnNumber: 5
     }, this);
 }
