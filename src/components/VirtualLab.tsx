@@ -40,7 +40,7 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, ChartTooltip, Legend, Filler);
 
-interface PresetReaction {
+export interface PresetReaction {
   id: number;
   grade: "10" | "11" | "12" | string;
   name: string;
@@ -54,7 +54,7 @@ interface PresetReaction {
   indicator: string;
 }
 
-const PRESETS: PresetReaction[] = [
+export const PRESETS: PresetReaction[] = [
   { id: 1, grade: "10", name: "1. NaOH + HCl (+ Quỳ tím - Trung hòa)", subA: "NaOH", volA: 100, concA: 1.0, subB: "HCl", volB: 100, concB: 1.0, temp: 25, indicator: "litmus" },
   { id: 2, grade: "10", name: "2. Na + H₂O (Kim loại kiềm chạy nhảy + Lóe sáng + Hồng)", subA: "Na", volA: 20, concA: 1.0, subB: "H2O", volB: 100, concB: 1.0, temp: 25, indicator: "phenolphthalein" },
   { id: 3, grade: "10", name: "3. Zn + H₂SO₄ loãng (Thanh Zn tan dần + Sủi bọt H₂)", subA: "Zn", volA: 10, concA: 1.0, subB: "H2SO4", volB: 60, concB: 1.0, temp: 25, indicator: "none" },
@@ -138,7 +138,7 @@ export interface SimulationResult {
   hazard: string;
 }
 
-const PRESET_SIMULATION_DATA: Record<number, SimulationResult> = {
+export const PRESET_SIMULATION_DATA: Record<number, SimulationResult> = {
   1: {
     eq: "NaOH + HCl → NaCl + H₂O",
     phenomenon: "Phản ứng trung hòa hoàn toàn giữa axit mạnh và bazơ mạnh. Quỳ tím chuyển từ xanh (môi trường bazơ ban đầu) sang tím trung tính (pH ~ 7.0). Tỏa nhiệt nhẹ.",

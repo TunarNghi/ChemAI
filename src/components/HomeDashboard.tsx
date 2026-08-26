@@ -49,6 +49,7 @@ import {
   Tag,
 } from 'lucide-react';
 import { UserProfile } from '@/components/UserAuthModal';
+import HomeMiniDemoWidget from '@/components/HomeMiniDemoWidget';
 
 interface HomeDashboardProps {
   onNavigateTab: (tabIndex: number) => void;
@@ -469,150 +470,187 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         />
 
         <Box sx={{ position: 'relative', zIndex: 2 }}>
-          {/* Top Badge */}
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-            <Chip
-              icon={<Sparkles size={14} color="#38bdf8" />}
-              label="HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC SỐ — GDPT 2018"
-              sx={{
-                bgcolor: 'rgba(56, 189, 248, 0.12)',
-                color: '#38bdf8',
-                border: '1px solid rgba(56, 189, 248, 0.35)',
-                fontWeight: 'bold',
-                fontSize: { xs: '11px', sm: '12px' },
-                py: 0.5,
-              }}
-            />
-            <Chip
-              label="Phiên bản 2026"
-              size="small"
-              sx={{
-                bgcolor: 'rgba(16, 185, 129, 0.15)',
-                color: '#34d399',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                fontWeight: 'bold',
-                fontSize: '11px',
-                display: { xs: 'none', sm: 'inline-flex' },
-              }}
-            />
-          </Stack>
+          <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
+            {/* LEFT COLUMN: HERO HEADLINE & CTA */}
+            <Grid item xs={12} lg={6.5} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              {/* Top Badge */}
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                <Chip
+                  icon={<Sparkles size={14} color="#38bdf8" />}
+                  label="HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC SỐ — GDPT 2018"
+                  sx={{
+                    bgcolor: 'rgba(56, 189, 248, 0.12)',
+                    color: '#38bdf8',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                    fontWeight: 'bold',
+                    fontSize: { xs: '11px', sm: '12px' },
+                    py: 0.5,
+                  }}
+                />
+                <Chip
+                  label="Phiên bản 2026"
+                  size="small"
+                  sx={{
+                    bgcolor: 'rgba(16, 185, 129, 0.15)',
+                    color: '#34d399',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    fontWeight: 'bold',
+                    fontSize: '11px',
+                    display: { xs: 'none', sm: 'inline-flex' },
+                  }}
+                />
+              </Stack>
 
-          {/* Main Hero Title */}
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              fontWeight: 800,
-              fontSize: { xs: '26px', sm: '36px', md: '44px', lg: '48px' },
-              lineHeight: 1.15,
-              letterSpacing: '-0.03em',
-              mb: 2,
-              background: 'linear-gradient(135deg, #ffffff 0%, #bae6fd 50%, #38bdf8 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            HCC - ChemAI: Khám Phá Hóa Học THPT <br />
-            Bằng Trí Tuệ Nhân Tạo & Mô Phỏng 3D
-          </Typography>
+              {/* Main Hero Title */}
+              <Typography
+                variant="h3"
+                component="h1"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '24px', sm: '32px', md: '38px', lg: '42px' },
+                  lineHeight: 1.18,
+                  letterSpacing: '-0.03em',
+                  mb: 2,
+                  background: 'linear-gradient(135deg, #ffffff 0%, #bae6fd 50%, #38bdf8 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                HCC - ChemAI: Khám Phá Hóa Học THPT <br />
+                Bằng Trí Tuệ Nhân Tạo & Mô Phỏng 3D
+              </Typography>
 
-          {/* Slogan & Intro */}
-          <Typography
-            variant="body1"
-            sx={{
-              color: '#94a3b8',
-              fontSize: { xs: '14px', sm: '16px', md: '17px' },
-              maxWidth: 820,
-              lineHeight: 1.65,
-              mb: 3.5,
-            }}
-          >
-            Nền tảng toàn diện tích hợp <strong>Google Gemini 2.0 AI</strong> và <strong>Dify AI</strong>, kết hợp
-            phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm Kahoot cùng trợ lý
-            soạn giáo án 5512 & đề thi chuẩn cấu trúc mới của Bộ Giáo dục & Đào tạo.
-          </Typography>
+              {/* Slogan & Intro */}
+              <Typography
+                variant="body1"
+                sx={{
+                  color: '#94a3b8',
+                  fontSize: { xs: '13.5px', sm: '15px', md: '15.5px' },
+                  lineHeight: 1.6,
+                  mb: 3,
+                }}
+              >
+                Nền tảng toàn diện tích hợp <strong>Google Gemini 2.0 AI</strong> và <strong>Dify AI</strong>, kết hợp
+                phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm Kahoot cùng trợ lý
+                soạn giáo án 5512 & đề thi chuẩn cấu trúc mới của Bộ Giáo dục & Đào tạo.
+              </Typography>
 
-          {/* Hero Action CTA Buttons */}
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 0 }}>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => handleFeatureClick(1)}
-              startIcon={<FlaskConical size={20} />}
-              endIcon={!currentUser ? <Lock size={16} /> : <ArrowRight size={18} />}
-              sx={{
-                bgcolor: '#0284c7',
-                backgroundImage: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '15px',
-                px: 3,
-                py: 1.3,
-                borderRadius: 2.5,
-                boxShadow: '0 8px 24px rgba(2, 132, 199, 0.4)',
-                '&:hover': {
-                  bgcolor: '#0369a1',
-                  boxShadow: '0 12px 28px rgba(2, 132, 199, 0.6)',
-                  transform: 'translateY(-1px)',
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Vào Thí Nghiệm Ảo Ngay
-            </Button>
+              {/* Hero Action CTA Buttons */}
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 2.5 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => handleFeatureClick(1)}
+                  startIcon={<FlaskConical size={18} />}
+                  endIcon={!currentUser ? <Lock size={15} /> : <ArrowRight size={16} />}
+                  sx={{
+                    bgcolor: '#0284c7',
+                    backgroundImage: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                    color: '#ffffff',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    px: 2.5,
+                    py: 1.2,
+                    borderRadius: 2.5,
+                    boxShadow: '0 8px 24px rgba(2, 132, 199, 0.4)',
+                    '&:hover': {
+                      bgcolor: '#0369a1',
+                      boxShadow: '0 12px 28px rgba(2, 132, 199, 0.6)',
+                      transform: 'translateY(-1px)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  Vào Thí Nghiệm Ảo
+                </Button>
 
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => handleFeatureClick(2)}
-              startIcon={<Bot size={20} />}
-              endIcon={!currentUser ? <Lock size={16} /> : undefined}
-              sx={{
-                borderColor: 'rgba(56, 189, 248, 0.4)',
-                color: '#38bdf8',
-                bgcolor: 'rgba(56, 189, 248, 0.06)',
-                fontWeight: 'bold',
-                fontSize: '15px',
-                px: 2.8,
-                py: 1.3,
-                borderRadius: 2.5,
-                '&:hover': {
-                  bgcolor: 'rgba(56, 189, 248, 0.15)',
-                  borderColor: '#38bdf8',
-                  transform: 'translateY(-1px)',
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Hỏi Gia Sư Hóa Học AI
-            </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => handleFeatureClick(2)}
+                  startIcon={<Bot size={18} />}
+                  endIcon={!currentUser ? <Lock size={15} /> : undefined}
+                  sx={{
+                    borderColor: 'rgba(56, 189, 248, 0.4)',
+                    color: '#38bdf8',
+                    bgcolor: 'rgba(56, 189, 248, 0.06)',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    px: 2.2,
+                    py: 1.2,
+                    borderRadius: 2.5,
+                    '&:hover': {
+                      bgcolor: 'rgba(56, 189, 248, 0.15)',
+                      borderColor: '#38bdf8',
+                      transform: 'translateY(-1px)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  Gia Sư AI
+                </Button>
 
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => handleFeatureClick(3)}
-              startIcon={<Trophy size={20} />}
-              endIcon={!currentUser ? <Lock size={16} /> : undefined}
-              sx={{
-                borderColor: 'rgba(245, 158, 11, 0.4)',
-                color: '#f59e0b',
-                bgcolor: 'rgba(245, 158, 11, 0.06)',
-                fontWeight: 'bold',
-                fontSize: '15px',
-                px: 2.5,
-                py: 1.3,
-                borderRadius: 2.5,
-                '&:hover': {
-                  bgcolor: 'rgba(245, 158, 11, 0.15)',
-                  borderColor: '#f59e0b',
-                  transform: 'translateY(-1px)',
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Đấu Trường Kahoot
-            </Button>
-          </Stack>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => handleFeatureClick(3)}
+                  startIcon={<Trophy size={18} />}
+                  endIcon={!currentUser ? <Lock size={15} /> : undefined}
+                  sx={{
+                    borderColor: 'rgba(245, 158, 11, 0.4)',
+                    color: '#f59e0b',
+                    bgcolor: 'rgba(245, 158, 11, 0.06)',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    px: 2.2,
+                    py: 1.2,
+                    borderRadius: 2.5,
+                    '&:hover': {
+                      bgcolor: 'rgba(245, 158, 11, 0.15)',
+                      borderColor: '#f59e0b',
+                      transform: 'translateY(-1px)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  Đấu Trường
+                </Button>
+              </Stack>
+
+              {/* Quick Feature Badges */}
+              <Box display="flex" flexWrap="wrap" gap={1}>
+                <Chip
+                  icon={<FlaskConical size={13} color="#38bdf8" />}
+                  label="11+ Thí nghiệm THPT"
+                  size="small"
+                  sx={{ bgcolor: 'rgba(56, 189, 248, 0.08)', color: '#94a3b8', border: '1px solid rgba(56, 189, 248, 0.2)', fontSize: '11px' }}
+                />
+                <Chip
+                  icon={<Atom size={13} color="#06b6d4" />}
+                  label="118 Nguyên tố IUPAC"
+                  size="small"
+                  sx={{ bgcolor: 'rgba(6, 182, 212, 0.08)', color: '#94a3b8', border: '1px solid rgba(6, 182, 212, 0.2)', fontSize: '11px' }}
+                />
+                <Chip
+                  icon={<ShieldCheck size={13} color="#10b981" />}
+                  label="Mô phỏng 3D WebGL"
+                  size="small"
+                  sx={{ bgcolor: 'rgba(16, 185, 129, 0.08)', color: '#94a3b8', border: '1px solid rgba(16, 185, 129, 0.2)', fontSize: '11px' }}
+                />
+                <Chip
+                  icon={<Trophy size={13} color="#f59e0b" />}
+                  label="Live Kahoot Realtime"
+                  size="small"
+                  sx={{ bgcolor: 'rgba(245, 158, 11, 0.08)', color: '#94a3b8', border: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '11px' }}
+                />
+              </Box>
+            </Grid>
+
+            {/* RIGHT COLUMN: KHUNG ĐA CHỨC NĂNG MINI (INTERACTIVE DEMO WIDGET) */}
+            <Grid item xs={12} lg={5.5}>
+              <HomeMiniDemoWidget onNavigateTab={handleFeatureClick} />
+            </Grid>
+          </Grid>
         </Box>
       </Box>
 
