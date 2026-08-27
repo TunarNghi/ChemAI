@@ -815,7 +815,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                       }}
                     >
                       {/* 1. Student Name & Class */}
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 200 }}>
                         <Box display="flex" alignItems="center" gap={1.2}>
                           <Avatar
                             sx={{
@@ -825,15 +825,16 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                               fontWeight: 'bold',
                               bgcolor: comp.badgeColor,
                               color: '#000',
+                              flexShrink: 0,
                             }}
                           >
                             {std.fullName.charAt(0).toUpperCase()}
                           </Avatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight="bold" color="white" noWrap sx={{ maxWidth: 160 }}>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography variant="body2" fontWeight="bold" color="white" sx={{ wordBreak: 'break-word', lineHeight: 1.3 }}>
                               {std.fullName}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block', fontSize: 11 }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: 11, mt: 0.2 }}>
                               {std.className} • {std.school}
                             </Typography>
                           </Box>

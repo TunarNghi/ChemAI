@@ -1008,7 +1008,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
                       </TableCell>
 
                       {/* 2. Student Name & Class */}
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 200 }}>
                         <Box display="flex" alignItems="center" gap={1.2}>
                           <Avatar
                             sx={{
@@ -1018,20 +1018,21 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
                               fontWeight: 'bold',
                               bgcolor: isTop1 ? '#f59e0b' : isTop2 ? '#94a3b8' : isTop3 ? '#f97316' : comp.badgeColor,
                               color: '#000',
+                              flexShrink: 0,
                             }}
                           >
                             {std.fullName.charAt(0).toUpperCase()}
                           </Avatar>
-                          <Box>
-                            <Stack direction="row" spacing={0.8} alignItems="center">
-                              <Typography variant="body2" fontWeight="bold" color="white" noWrap sx={{ maxWidth: 170 }}>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Stack direction="row" spacing={0.8} alignItems="center" flexWrap="wrap">
+                              <Typography variant="body2" fontWeight="bold" color="white" sx={{ wordBreak: 'break-word', lineHeight: 1.3 }}>
                                 {std.fullName}
                               </Typography>
                               {isSelf && (
                                 <Chip label="Bạn" size="small" sx={{ bgcolor: '#0284c7', color: '#fff', fontWeight: 'bold', height: 17, fontSize: 9.5 }} />
                               )}
                             </Stack>
-                            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block', fontSize: 11 }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: 11, mt: 0.2 }}>
                               {std.className} • {std.school}
                             </Typography>
                           </Box>
