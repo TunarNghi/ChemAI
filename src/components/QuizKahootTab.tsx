@@ -1,14 +1,14 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Typography, Card, CardContent, Grid, Button, Paper, Stack,
   Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert
 } from '@mui/material';
-import { Trophy, Flame, Play, Users, Lock, ShieldCheck, RefreshCw, CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { Trophy, Flame, Play, Users, Lock, ShieldCheck, RefreshCw, CheckCircle2, XCircle, Zap, Sparkles } from 'lucide-react';
 import { supabase, callGeminiAPI } from '@/lib/api';
 import { cleanChemicalLatex } from '@/components/AuditTab';
 import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
+import { saveUserToDatabase } from '@/lib/userDatabase';
+import { PRESET_HIGH_SCHOOL_QUIZ_BANK, getPresetQuizQuestion } from '@/lib/quizBank';
 
 interface QuizQuestion {
   question: string;
@@ -17,14 +17,65 @@ interface QuizQuestion {
   explanation: string;
 }
 
+const HIGH_SCHOOL_CHEMISTRY_TOPICS = [
+  // LỚP 10 GDPT 2018
+  "Lớp 10: Cấu hình electron nguyên tử, quy tắc Hund, cấu trúc ô orbital (s, p, d) của các ion kim loại chuyển tiếp Fe²⁺, Fe³⁺, Cu²⁺, Cr³⁺",
+  "Lớp 10: Bảng tuần hoàn, quy luật biến đổi bán kính nguyên tử/ion, độ âm điện, năng lượng ion hóa và tính phi kim - kim loại",
+  "Lớp 10: Liên kết ion, liên kết cộng hóa trị (liên kết sigma và pi), trạng thái lai hóa sp, sp², sp³ của nguyên tử trung tâm (CH₄, C₂H₄, C₂H₂, H₂O, NH₃)",
+  "Lớp 10: Liên kết hydrogen liên phân tử và tương tác van der Waals giải thích nhiệt độ sôi, độ tan bất thường của H₂O, HF, NH₃, C₂H₅OH",
+  "Lớp 10: Phản ứng Oxi hóa - Khử nâng cao, cân bằng phản ứng tự oxi hóa - khử, phản ứng trong môi trường acid/base và quá trình thăng bằng electron",
+  "Lớp 10: Năng lượng hóa học, tính biến thiên enthalpy chuẩn (ΔᵣH°₂₉₈) dựa trên năng lượng liên kết E_b và enthalpy tạo thành chuẩn Δ_fH°₂₉₈",
+  "Lớp 10: Tốc độ phản ứng hóa học, định luật tác dụng khối lượng, biểu thức tốc độ v = k.[A]^a.[B]^b và hệ số nhiệt độ Van't Hoff",
+  "Lớp 10: Nhóm Halogen (F, Cl, Br, I), tính khử của hydrohalic acid (HF, HCl, HBr, HI), phản ứng nhận biết ion halide (Cl⁻, Br⁻, I⁻)",
+
+  // LỚP 11 GDPT 2018
+  "Lớp 11: Cân bằng hóa học, tính hằng số cân bằng Kc và nguyên lý chuyển dịch cân bằng Le Chatelier (ảnh hưởng của nhiệt độ, nồng độ, áp suất)",
+  "Lớp 11: Cân bằng trong dung dịch nước, thuyết Bronsted - Lowry, tính pH của dung dịch acid/base mạnh và yếu theo hằng số Ka, Kb",
+  "Lớp 11: Nitrogen & Sulfur: Phản ứng oxi hóa của HNO₃ đặc/loãng và H₂SO₄ đặc nóng với kim loại/phi kim, mưa acid và chu trình nitrogen",
+  "Lớp 11: Đại cương Hóa hữu cơ, phân tích phổ hồng ngoại (IR) nhận biết nhóm chức C=O, O-H, C=C và phổ khối lượng (MS) xác định ion phân tử [M⁺]",
+  "Lớp 11: Hydrocarbon: Quy tắc cộng Markovnikov vào Alkene/Alkyne, phản ứng thế ion bạc của alk-1-yne với AgNO₃/NH₃, quy tắc thế vào nhân thơm của Arene",
+  "Lớp 11: Dẫn xuất Halogen - Alcohol - Phenol: Bậc alcohol, phản ứng oxi hóa alcohol bằng CuO/KMnO₄, tính acid và phản ứng thế ở nhân thơm của Phenol",
+  "Lớp 11: Hợp chất Carbonyl (Aldehyde - Ketone) & Carboxylic Acid: Phản ứng tráng bạc với thuốc thử Tollens, phản ứng Cu(OH)₂/NaOH, phản ứng tạo iodoform",
+
+  // LỚP 12 GDPT 2018
+  "Lớp 12: Ester - Lipid: Cấu tạo ester, phản ứng xà phòng hóa triglyceride, tính chỉ số acid, xà phòng và chất giặt rửa tổng hợp",
+  "Lớp 12: Carbohydrate: Cấu trúc mạch hở/mạch vòng của Glucose, Fructose, Saccharose, Maltose, Tinh bột (amylose, amylopectin), Cellulose",
+  "Lớp 12: Amine - Amino Acid - Peptide - Protein: Bậc của amine, tính base, cấu trúc ion lưỡng cực amino acid, điểm đẳng điện pI, phản ứng màu biuret",
+  "Lớp 12: Polymer & Vật liệu polymer: Phản ứng trùng hợp, trùng ngưng (tơ nilon-6,6, tơ lapsan, cao su buna-S, buna-N, keo dán epoxi)",
+  "Lớp 12: Pin điện hóa & Thế điện cực chuẩn: Suất điện động chuẩn E°pin, chiều phản ứng oxi hóa - khử tự phát theo thế điện cực chuẩn E°",
+  "Lớp 12: Điện phân dung dịch và điện phân nóng chảy: Thứ tự phóng điện ở catot/anot, định luật Faraday tính khối lượng chất giải phóng",
+  "Lớp 12: Kim loại chuyển tiếp dãy thứ nhất & Phức chất: Cấu hình electron ion chuyển tiếp (Fe, Cu, Cr, Mn, Ni), nguyên tử trung tâm, phối tử, số phối trí"
+];
+
 export default function QuizKahootTab() {
   const [mode, setMode] = useState<'single' | 'kahoot'>('single');
-  const [score, setScore] = useState<number>(0);
-  const [streak, setStreak] = useState<number>(0);
+  
+  // Persistent Score & Streak across tab switches and reloads
+  const [score, setScore] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('chemai_quiz_score');
+      if (saved) return parseInt(saved, 10) || 0;
+    }
+    return 0;
+  });
+
+  const [streak, setStreak] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const user = getStoredCurrentUser();
+      if (user?.kahootStreak !== undefined && user.kahootStreak > 0) return user.kahootStreak;
+      const saved = localStorage.getItem('chemai_quiz_streak');
+      if (saved) return parseInt(saved, 10) || 0;
+    }
+    return 0;
+  });
+
   const [currentQuiz, setCurrentQuiz] = useState<QuizQuestion | null>(null);
   const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Anti-duplication tracking
+  const askedQuestionsRef = useRef<Set<string>>(new Set());
 
   // Kahoot State
   const [pin, setPin] = useState<string>('');
@@ -39,6 +90,16 @@ export default function QuizKahootTab() {
     if (user && !nickname) {
       setNickname(user.nickname || user.fullName);
     }
+    // Load asked question history from session storage
+    if (typeof window !== 'undefined') {
+      try {
+        const historyRaw = sessionStorage.getItem('chemai_quiz_asked_history');
+        if (historyRaw) {
+          const parsed: string[] = JSON.parse(historyRaw);
+          parsed.forEach(q => askedQuestionsRef.current.add(q));
+        }
+      } catch {}
+    }
   }, []);
 
   useEffect(() => {
@@ -52,54 +113,127 @@ export default function QuizKahootTab() {
     setIsAnswered(false);
     setSelectedOpt(null);
 
-    // 1. Try fetching from Supabase DB
+    // 1. Check local preset 50 High-School questions bank first (Instant, zero AI latency & quota)
+    const unaskedPreset = PRESET_HIGH_SCHOOL_QUIZ_BANK.filter(
+      q => !askedQuestionsRef.current.has(q.question?.trim().toLowerCase())
+    );
+
+    if (unaskedPreset.length > 0) {
+      const selected = unaskedPreset[Math.floor(Math.random() * unaskedPreset.length)];
+      const qText = selected.question.trim().toLowerCase();
+      askedQuestionsRef.current.add(qText);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+      }
+
+      setCurrentQuiz(selected);
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. Try fetching unasked question from Supabase DB
     try {
       const { data } = await supabase.from("quiz_questions").select("*");
       if (data && data.length > 0) {
-        const rand = data[Math.floor(Math.random() * data.length)];
-        setCurrentQuiz({
-          question: rand.question,
-          options: rand.options,
-          correctIndex: rand.correct_index !== undefined ? rand.correct_index : rand.correctIndex,
-          explanation: rand.explanation
-        });
-        setIsLoading(false);
-        return;
+        const unaskedDB = data.filter(q => !askedQuestionsRef.current.has(q.question?.trim().toLowerCase()));
+        if (unaskedDB.length > 0) {
+          const rand = unaskedDB[Math.floor(Math.random() * unaskedDB.length)];
+          if (rand && rand.question) {
+            const qText = rand.question.trim().toLowerCase();
+            askedQuestionsRef.current.add(qText);
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+            }
+
+            setCurrentQuiz({
+              question: rand.question,
+              options: rand.options,
+              correctIndex: rand.correct_index !== undefined ? rand.correct_index : rand.correctIndex,
+              explanation: rand.explanation
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
       }
     } catch (e) {
       console.warn("Quiz DB fetch skip:", e);
     }
 
-    // 2. Fallback to Gemini AI
-    const prompt = `Bạn là Chuyên gia tạo đề trắc nghiệm Hóa học THPT chương trình mới (GDPT 2018). Dùng công thức dạng H2SO4, ion dạng Fe^3+ hoặc SO4^2-, trạng thái (aq)/(s)/(l)/(g) và mũi tên ->.
-Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài toán hóa học THPT. Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown codeblock):
+    // 3. Fallback to Gemini AI if all 50+ preset and DB questions have been answered in this session
+    const randomTopic = HIGH_SCHOOL_CHEMISTRY_TOPICS[Math.floor(Math.random() * HIGH_SCHOOL_CHEMISTRY_TOPICS.length)];
+    const uniqueSeed = Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 6);
+
+    const prompt = `Bạn là Chuyên gia Khảo thí và Biên soạn Đề thi Hóa học THPT Quốc gia (Chương trình GDPT 2018).
+
+YÊU CẦU BẮT BUỘC VỀ ĐỘ KHÓ VÀ CHUYÊN MÔN:
+1. Chủ đề bài học: "${randomTopic}". (Mã đề ngẫu nhiên: ${uniqueSeed})
+2. ĐỘ KHÓ: NÂNG CAO (Mức độ Thông hiểu - Vận dụng - Vận dụng cao của THPT Lớp 10, 11, 12).
+3. TUYỆT ĐỐI NGHIÊM CẤM ra các câu hỏi cấp 2 (THCS) đơn giản, cơ bản (như thành phần của nước, không khí, tính chất chung đơn giản...).
+4. Câu hỏi phải yêu cầu tư duy hóa học thực thụ: tính toán năng lượng enthalpy ΔᵣH°, hằng số cân bằng Kc, pH, thế điện cực E°, cơ chế hữu cơ, phổ IR/MS, thăng bằng electron hoặc hiện tượng phức chất.
+5. Danh pháp: BẮT BUỘC dùng danh pháp IUPAC tiếng Anh (hydrogen, oxygen, chlorine, nitrogen, iron, copper, nitric acid, sulfuric acid, ester, aldehyde...).
+6. Ký hiệu hóa học chuẩn: công thức như H2SO4, Fe(NO3)3, ion như Fe^3+, SO4^2-, mũi tên phản ứng ->, điều kiện nhiệt độ t°, xúc tác.
+
+Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (không dùng markdown codeblock, không thêm chữ ngoài JSON):
 {
-  "question": "Nội dung câu hỏi...",
-  "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+  "question": "Nội dung câu hỏi trắc nghiệm THPT...",
+  "options": ["Phương án A", "Phương án B", "Phương án C", "Phương án D"],
   "correctIndex": 0,
-  "explanation": "Giải thích chi tiết..."
+  "explanation": "Giải thích chi tiết bản chất hóa học..."
 }`;
 
     try {
       const response = await callGeminiAPI(prompt);
       const match = response.match(/\{[\s\S]*\}/);
       if (match) {
-        const parsed = JSON.parse(match[0]);
-        setCurrentQuiz(parsed);
+        const parsed: QuizQuestion = JSON.parse(match[0]);
+        if (parsed.question && Array.isArray(parsed.options) && parsed.options.length === 4) {
+          const qText = parsed.question.trim().toLowerCase();
+          askedQuestionsRef.current.add(qText);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+          }
+          setCurrentQuiz(parsed);
+        }
       }
     } catch (e) {
       console.error("AI Quiz Error:", e);
+      // Ultimate safety: pick any random question from the 50-question bank
+      const fallback = getPresetQuizQuestion();
+      setCurrentQuiz(fallback);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateUserStatsOnAnswer = (isCorrect: boolean) => {
-    const user = getStoredCurrentUser();
-    if (!user) return;
+  const updateUserStatsOnAnswer = async (isCorrect: boolean) => {
+    let user = getStoredCurrentUser();
 
-    const currentExp = user.kahootExp || 350;
-    const currentStreak = user.kahootStreak || 0;
+    // If student is not logged in, generate a stable guest session user
+    if (!user) {
+      const guestId = typeof window !== 'undefined' ? (localStorage.getItem('chemai_guest_id') || ('guest_' + Math.random().toString(36).substring(2, 9))) : ('guest_' + Date.now());
+      if (typeof window !== 'undefined' && !localStorage.getItem('chemai_guest_id')) {
+        localStorage.setItem('chemai_guest_id', guestId);
+      }
+      user = {
+        id: guestId,
+        fullName: nickname || 'Học sinh ChemAI',
+        authType: 'email',
+        emailOrPhone: '',
+        role: 'student',
+        className: '10A1',
+        school: 'THPT',
+        location: 'Việt Nam',
+        createdAt: new Date().toISOString(),
+        kahootExp: 0,
+        kahootStreak: 0,
+        totalKahootQuestions: 0,
+        correctKahootQuestions: 0,
+      };
+    }
+
+    const currentExp = user.kahootExp !== undefined ? user.kahootExp : 0;
+    const currentStreak = user.kahootStreak !== undefined ? user.kahootStreak : 0;
     const totalQ = (user.totalKahootQuestions || 0) + 1;
     const correctQ = (user.correctKahootQuestions || 0) + (isCorrect ? 1 : 0);
     const newExp = currentExp + (isCorrect ? 50 : 10);
@@ -114,19 +248,24 @@ Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài to�
       lastActiveDate: new Date().toISOString().split('T')[0],
     };
 
+    // 1. Update local storage immediately
     saveStoredCurrentUser(updatedUser);
 
+    // 2. Persist streak & score locally so switching tabs / reload won't lose it
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('chemai_quiz_streak', newStreak.toString());
+      localStorage.setItem('chemai_quiz_score', ((score || 0) + (isCorrect ? 10 : 0)).toString());
+    }
+
+    // 3. Persist to central Supabase DB immediately
     try {
-      const raw = localStorage.getItem('chemai_registered_users');
-      if (raw) {
-        const users: UserProfile[] = JSON.parse(raw);
-        const idx = users.findIndex((u) => u.id === user.id);
-        if (idx !== -1) {
-          users[idx] = { ...users[idx], ...updatedUser };
-          localStorage.setItem('chemai_registered_users', JSON.stringify(users));
-        }
+      await saveUserToDatabase(updatedUser);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('chemai_user_updated'));
       }
-    } catch {}
+    } catch (err) {
+      console.warn('Sync user stats to Supabase error:', err);
+    }
   };
 
   const handleSelectAnswer = (index: number) => {
@@ -136,10 +275,19 @@ Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài to�
 
     const isCorrect = index === currentQuiz.correctIndex;
     if (isCorrect) {
-      setScore(prev => prev + 10);
-      setStreak(prev => prev + 1);
+      const nextScore = score + 10;
+      const nextStreak = streak + 1;
+      setScore(nextScore);
+      setStreak(nextStreak);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('chemai_quiz_score', nextScore.toString());
+        localStorage.setItem('chemai_quiz_streak', nextStreak.toString());
+      }
     } else {
       setStreak(0);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('chemai_quiz_streak', '0');
+      }
     }
 
     updateUserStatsOnAnswer(isCorrect);
@@ -228,13 +376,15 @@ Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài to�
       }, 1000);
     } else if (timeLeft === 0 && !showResult) {
       setShowResult(true);
-      if (kahootSelectedOpt !== null && kahootQuiz && kahootSelectedOpt === kahootQuiz.correctIndex) {
+      const isCorrect = (kahootSelectedOpt !== null && kahootQuiz && kahootSelectedOpt === kahootQuiz.correctIndex);
+      if (isCorrect) {
         const newScore = kahootScore + 10;
         setKahootScore(newScore);
         if (participantId) {
           supabase.from("room_participants").update({ score: newScore }).eq("id", participantId).then();
         }
       }
+      updateUserStatsOnAnswer(Boolean(isCorrect));
     }
     return () => {
       if (timer) clearTimeout(timer);
@@ -273,7 +423,7 @@ Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài to�
   const fetchKahootQuestion = async () => {
     try {
       const { data } = await supabase.from("quiz_questions").select("*").limit(10);
-      if (data && data.length > 0) {
+      if (data && data.length >= 5) {
         const mapped = data.map(q => ({
           question: q.question,
           options: q.options,
@@ -283,17 +433,16 @@ Tạo 1 câu hỏi trắc nghiệm hiện tượng thí nghiệm hoặc bài to�
         setAllQuestions(mapped);
         setKahootQuiz(mapped[0]);
       } else {
-        const defaultQ: QuizQuestion = {
-          question: "Phương pháp nào sau đây dùng để tách các chất lỏng có nhiệt độ sôi khác nhau?",
-          options: ["Chưng cất", "Chiết", "Kết tinh", "Lọc"],
-          correctIndex: 0,
-          explanation: "Phương pháp chưng cất dùng để tách các chất lỏng dựa trên sự khác nhau về nhiệt độ sôi."
-        };
-        setAllQuestions([defaultQ]);
-        setKahootQuiz(defaultQ);
+        // Sample 10 diverse questions from 50 High School preset questions
+        const shuffled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
+        setAllQuestions(shuffled);
+        setKahootQuiz(shuffled[0]);
       }
     } catch (e) {
       console.warn("Fetch Kahoot question error:", e);
+      const shuffled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
+      setAllQuestions(shuffled);
+      setKahootQuiz(shuffled[0]);
     }
   };
 

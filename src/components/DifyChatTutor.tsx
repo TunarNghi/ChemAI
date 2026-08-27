@@ -105,6 +105,76 @@ $$\\overset{0}{\\text{Fe}} \\text{ (s)} + 4\\text{H}\\overset{+5}{\\text{N}}\\te
 | **Ví dụ điển hình** | $\\text{NaCl}, \\text{MgCl}_2, \\text{CaO}, \\text{KF}$ | $\\text{Cl}_2, \\text{O}_2, \\text{H}_2\\text{O}, \\text{HCl}, \\text{CH}_4$ |
 | **Trạng thái & Nhiệt độ nóng chảy** | Thường là chất rắn tinh thể, $t^\\circ$ nóng chảy & $t^\\circ$ sôi rất cao, dẫn điện khi nóng chảy hoặc hòa tan trong nước. | Chất khí, lỏng hoặc rắn có liên kết phân tử; $t^\\circ$ nóng chảy & $t^\\circ$ sôi thấp hơn; không dẫn điện ở trạng thái tinh khiết. |`
   },
+  {
+    keywords: ["na + h2o", "sodium + nuoc", "sodium + nước", "natri + nuoc", "natri + nước"],
+    response: `### PHẢN ỨNG CỦA SODIUM (Na) VỚI NƯỚC (H₂O)
+
+**I. Phương trình phản ứng phân tử:**
+$$2\\text{Na (s)} + 2\\text{H}_2\\text{O (l)} \\rightarrow 2\\text{NaOH (aq)} + \\text{H}_2 \\uparrow \\text{ (g)}$$
+
+**II. Bản chất phản ứng & Số oxi hóa:**
+- $\\text{Na}$ là **chất khử** (số oxi hóa tăng từ $0$ lên $+1$).
+- $\\text{H}_2\\text{O}$ là **chất oxi hóa** (số oxi hóa của hydrogen giảm từ $+1$ xuống $0$ trong $\\text{H}_2$).
+
+**III. Phương trình ion thu gọn:**
+$$2\\text{Na (s)} + 2\\text{H}_2\\text{O (l)} \\rightarrow 2\\text{Na}^+\\text{ (aq)} + 2\\text{OH}^-\\text{ (aq)} + \\text{H}_2 \\uparrow \\text{ (g)}$$
+
+**IV. Hiện tượng:**
+- Mẩu sodium nóng chảy thành viên tròn chạy lăn tăn trên mặt nước, sủi bọt khí không màu ($\\text{H}_2$), tỏa nhiều nhiệt.
+- Dung dịch tạo thành làm phenolphthalein đổi sang màu hồng rực rỡ.`
+  },
+  {
+    keywords: ["al + hcl", "aluminium + hydrochloric acid", "nhom + hcl", "nhôm + hcl"],
+    response: `### PHẢN ỨNG CỦA ALUMINIUM (Al) VỚI HYDROCHLORIC ACID (HCl)
+
+**I. Phương trình phản ứng phân tử:**
+$$2\\text{Al (s)} + 6\\text{HCl (aq)} \\rightarrow 2\\text{AlCl}_3\\text{ (aq)} + 3\\text{H}_2 \\uparrow \\text{ (g)}$$
+
+**II. Xác định vai trò & Số oxi hóa:**
+- $\\text{Al}$ là **chất khử** ($\\overset{0}{\\text{Al}} \\rightarrow \\overset{+3}{\\text{Al}} + 3e$).
+- $\\text{HCl}$ là **chất oxi hóa** ($2\\overset{+1}{\\text{H}} + 2e \\rightarrow \\overset{0}{\\text{H}}_2$).
+
+**III. Phương trình ion thu gọn:**
+$$2\\text{Al (s)} + 6\\text{H}^+\\text{ (aq)} \\rightarrow 2\\text{Al}^{3+}\\text{ (aq)} + 3\\text{H}_2 \\uparrow \\text{ (g)}$$`
+  },
+  {
+    keywords: ["bacl2 + h2so4", "barium chloride + sulfuric acid"],
+    response: `### PHẢN ỨNG TRAO ĐỔI ION: BaCl₂ + H₂SO₄
+
+**I. Phương trình phản ứng phân tử:**
+$$\\text{BaCl}_2\\text{ (aq)} + \\text{H}_2\\text{SO}_4\\text{ (aq)} \\rightarrow \\text{BaSO}_4 \\downarrow \\text{ (s)} + 2\\text{HCl (aq)}$$
+
+**II. Phương trình ion thu gọn:**
+$$\\text{Ba}^{2+}\\text{ (aq)} + \\text{SO}_4^{2-}\\text{ (aq)} \\rightarrow \\text{BaSO}_4 \\downarrow \\text{ (trắng)}$$
+
+**III. Hiện tượng & Ứng dụng:**
+- Xuất hiện kết tủa trắng $\\text{BaSO}_4$ không tan trong acid mạnh.
+- Dùng để nhận biết ion sulfate ($\\text{SO}_4^{2-}$).`
+  },
+  {
+    keywords: ["caco3 + hcl", "calcium carbonate + hydrochloric acid", "da voi + hcl"],
+    response: `### PHẢN ỨNG CỦA CALCIUM CARBONATE (CaCO₃) VỚI HCl
+
+**I. Phương trình phản ứng phân tử:**
+$$\\text{CaCO}_3\\text{ (s)} + 2\\text{HCl (aq)} \\rightarrow \\text{CaCl}_2\\text{ (aq)} + \\text{CO}_2 \\uparrow \\text{ (g)} + \\text{H}_2\\text{O (l)}$$
+
+**II. Phương trình ion thu gọn:**
+$$\\text{CaCO}_3\\text{ (s)} + 2\\text{H}^+\\text{ (aq)} \\rightarrow \\text{Ca}^{2+}\\text{ (aq)} + \\text{CO}_2 \\uparrow \\text{ (g)} + \\text{H}_2\\text{O (l)}$$`
+  },
+  {
+    keywords: ["cu + hno3", "copper + nitric acid", "dong + hno3", "đồng + hno3"],
+    response: `### PHẢN ỨNG CỦA COPPER (Cu) VỚI NITRIC ACID (HNO₃ LOÃNG)
+
+**I. Phương trình phản ứng phân tử:**
+$$3\\text{Cu (s)} + 8\\text{HNO}_3\\text{ (loãng)} \\rightarrow 3\\text{Cu(NO}_3)_2\\text{ (aq)} + 2\\text{NO} \\uparrow \\text{ (g)} + 4\\text{H}_2\\text{O (l)}$$
+
+**II. Phương trình ion thu gọn:**
+$$3\\text{Cu (s)} + 8\\text{H}^+\\text{ (aq)} + 2\\text{NO}_3^-\\text{ (aq)} \\rightarrow 3\\text{Cu}^{2+}\\text{ (aq)} + 2\\text{NO} \\uparrow \\text{ (g)} + 4\\text{H}_2\\text{O (l)}$$
+
+**III. Hiện tượng:**
+- Kim loại đồng tan dần, dung dịch chuyển sang màu xanh lam của ion $\\text{Cu}^{2+}$.
+- Sinh ra khí không màu $\\text{NO}$, khi tiếp xúc với không khí chuyển thành khí màu nâu đỏ $\\text{NO}_2$.`
+  }
 ];
 
 function checkLocalChemistryDB(query: string): string | null {
@@ -113,13 +183,23 @@ function checkLocalChemistryDB(query: string): string | null {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 
-  // Check in-memory database
+  if (!norm || norm.length < 3) return null;
+
+  // Check in-memory database with strict matching
   for (const entry of CHEMISTRY_KNOWLEDGE_DB) {
     const matched = entry.keywords.some((k) => {
-      const normK = k.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-      return norm.includes(normK) || normK.includes(norm);
+      const normK = k
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!normK || normK.length < 3) return false;
+      return norm === normK || norm.includes(normK);
     });
     if (matched) return entry.response;
   }
@@ -259,14 +339,19 @@ QUY ĐỊNH BẮT BUỘC VỀ DANH PHÁP (IUPAC TIẾNG ANH THEO CHƯƠNG TRÌNH
   + Ví dụ tên hợp chất/đơn chất: nitric acid, sulfuric acid, hydrochloric acid, iron(III) nitrate, nitrogen monoxide, nitrogen dioxide, sulfur dioxide, sodium hydroxide,...
   + TUYỆT ĐỐI KHÔNG dùng tên tiếng Việt cũ như sắt, đồng, nhôm, kẽm, clo, oxi, nitơ, photpho, lưu huỳnh, axit nitric,... (có thể mở ngoặc giải thích thêm nếu cần, nhưng tên chính luôn là tiếng Anh).
 
-YÊU CẦU TRÌNH BÀY VÀ GIẢI THÍCH RÕ RÀNG:
-1. Trình bày khoa học, chia thành các phần rõ ràng với tiêu đề chuẩn:
-   - **I. Phương trình phản ứng phân tử:** (ghi rõ trạng thái chất s, l, g, aq và nhiệt độ t°)
-   - **II. Xác định chất khử, chất oxi hóa & Số oxi hóa:** (nêu rõ vai trò từng chất)
-   - **III. Quá trình thăng bằng electron:** (trình bày rõ Quá trình oxi hóa & Quá trình khử)
-   - **IV. Phương trình ion đầy đủ & Phương trình ion thu gọn:** (nếu phản ứng xảy ra trong dung dịch, BẮT BUỘC viết đầy đủ: 1) Phương trình ion đầy đủ, 2) Phương trình ion rút gọn; ghi rõ điện tích ion như Fe³⁺, H⁺, NO₃⁻, SO₄²⁻, Cl⁻, OH⁻...)
-2. Sử dụng ký hiệu chỉ số (HNO₃, H₂O, Fe(NO₃)₃), số oxi hóa (Fe⁰, N⁺⁵, Fe⁺³, N⁺²) và điện tích ion (Fe³⁺, NO₃⁻, H⁺) rõ ràng.
-3. Không viết mã LaTeX thô như \\overset hay Hoverset.
+YÊU CẦU TRÌNH BÀY VÀ ĐỊNH DẠNG PHƯƠNG TRÌNH HÓA HỌC (CHUẨN SÁCH GIÁO KHOA):
+1. Phương trình phản ứng phải thể hiện rõ điều kiện trên mũi tên:
+   - Điều kiện ánh sáng: dùng \`\\xrightarrow{as}\` (hoặc \`--as-->\`)
+   - Điều kiện nhiệt độ: dùng \`\\xrightarrow{t^o}\` hoặc \`\\xrightarrow{Cu, t^o}\`, \`\\xrightarrow{Mn^{2+}, t^o}\`, \`\\xrightarrow{H_2SO_4 \\text{ đặc}, t^o}\`
+   - Phản ứng thuận nghịch: dùng \`\\rightleftharpoons\` hoặc \`\\xrightleftharpoons{...}\` (hoặc \`⇌\`)
+   - Khí bay lên dùng \`↑\` hoặc \`\\uparrow\`, kết tủa dùng \`↓\` hoặc \`\\downarrow\`
+   - Phân số hệ số cân bằng (như 1/2 O₂) dùng \`\\frac{1}{2}\\text{O}_2\` hoặc \`1/2 O2\`
+2. Cấu trúc bài giải:
+   - **I. Phương trình phản ứng phân tử:** (ghi rõ điều kiện xúc tác/nhiệt độ và trạng thái)
+   - **II. Xác định chất khử, chất oxi hóa & Số oxi hóa:** (nếu là phản ứng oxi hóa - khử)
+   - **III. Quá trình thăng bằng electron:** (nếu là phản ứng oxi hóa - khử)
+   - **IV. Phương trình ion đầy đủ & Phương trình ion thu gọn:** (nếu phản ứng trong dung dịch)
+3. Sử dụng công thức hóa học rõ ràng (CH₄, C₂H₅OH, HCOOH, CH₃Cl, Fe(NO₃)₃, H₂O).
 
 Lịch sử hội thoại gần đây:
 ${recentHistory}
@@ -300,47 +385,20 @@ Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
         })
         .then();
     } catch (err: any) {
-      let fallbackText = "";
-      if (/Fe|HNO3/i.test(textToSend)) {
-        const oxSet = (num: string, elem: string) => num === "0" ? elem : `<span style="display:inline-block;text-align:center;margin:0;vertical-align:middle;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">${num}</span>${elem}</span>`;
-        const arrowT = `<span style="display:inline-block;text-align:center;vertical-align:middle;margin:0 3px;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.2em;">t°</span><span style="font-size:1.1em;line-height:1;">➔</span></span>`;
-        const eqLine = `${oxSet("0","Fe")} (s) + 4H${oxSet("+5","N")}O<sub>3</sub> (loãng) ${arrowT} ${oxSet("+3","Fe")}(NO<sub>3</sub>)<sub>3</sub> (aq) + ${oxSet("+2","N")}O ↑ (g) + 2H<sub>2</sub>O (l)`;
-        fallbackText = `<div><strong>• I. Phương trình phản ứng phân tử:</strong></div><div style="font-size:14px;margin:8px 0;padding:4px 0;">${eqLine}</div>
+      console.error("Gia Sư AI Error:", err);
+      // Check if there is an offline match in local knowledge base
+      const offlineHit = checkLocalChemistryDB(textToSend);
+      const fallbackText = offlineHit || `### ⚠️ THÔNG BÁO TẠM THỜI TỪ GIA SƯ CHEMAI
 
-<div style="margin:10px 0;">
-  <strong>• II. Quá trình thăng bằng electron:</strong><br/>
-  <div style="padding:2px 0;">- Quá trình oxi hóa (Chất khử Fe): Fe ➔ <span style="display:inline-block;text-align:center;margin:0;vertical-align:middle;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">+3</span>Fe</span> + 3e &nbsp;&nbsp;(x 1)</div>
-  <div style="padding:2px 0;">- Quá trình khử (Chất oxi hóa HNO₃): <span style="display:inline-block;text-align:center;margin:0;vertical-align:middle;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">+5</span>N</span> + 3e ➔ <span style="display:inline-block;text-align:center;margin:0;vertical-align:middle;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">+2</span>N</span> &nbsp;&nbsp;(x 1)</div>
-</div>
+Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || "Lỗi mạng hoặc hạn ngạch API"}).
 
-<div style="margin:10px 0;">
-  <strong>• III. Phương trình ion đầy đủ:</strong><br/>
-  <div style="padding:4px 0;font-size:13.5px;">Fe (s) + 4H<sup>+</sup> (aq) + 4NO<sub>3</sub><sup>-</sup> (aq) ➔ Fe<sup>3+</sup> (aq) + 3NO<sub>3</sub><sup>-</sup> (aq) + NO ↑ (g) + 2H<sub>2</sub>O (l)</div>
-</div>
+💡 **Gợi ý tra cứu nhanh từ Database có sẵn:**
+- **Kim loại tác dụng nước:** \`Na + H2O\`, \`K + H2O\`, \`Ba + H2O\`
+- **Kim loại tác dụng acid:** \`Fe + HNO3\`, \`Al + HCl\`, \`Cu + HNO3\`
+- **Phản ứng trao đổi ion:** \`BaCl2 + H2SO4\`, \`CaCO3 + HCl\`, \`AgNO3 + NaCl\`
+- **Cấu tạo & Liên kết:** \`Cấu hình electron Cl (Z=17)\`, \`Lai hóa sp3 Methane\`, \`Phân biệt liên kết Ion và Cộng hóa trị\`
 
-<div style="margin:10px 0;">
-  <strong>• IV. Phương trình ion thu gọn (Net Ionic Equation):</strong><br/>
-  <div style="padding:4px 0;font-size:14px;font-weight:bold;color:#38bdf8;">Fe (s) + 4H<sup>+</sup> (aq) + NO<sub>3</sub><sup>-</sup> (aq) ➔ Fe<sup>3+</sup> (aq) + NO ↑ (g) + 2H<sub>2</sub>O (l)</div>
-</div>
-
-<div style="margin:10px 0;">
-  <strong>• V. Các bước cân bằng chi tiết:</strong><br/>
-  1. Đặt hệ số <strong>1</strong> vào Fe(NO<sub>3</sub>)<sub>3</sub> (iron(III) nitrate) và <strong>1</strong> vào khí NO (nitrogen monoxide).<br/>
-  2. Đặt hệ số <strong>1</strong> vào Fe (iron) ở vế trái.<br/>
-  3. Đếm số nguyên tử nitrogen (N) ở vế phải: 3 (trong Fe(NO<sub>3</sub>)<sub>3</sub>) + 1 (trong NO) = 4 ➔ Điền hệ số <strong>4</strong> trước HNO<sub>3</sub> (nitric acid).<br/>
-  4. Cân bằng hydrogen (H) và oxygen (O): Vế trái có 4 nguyên tử H ➔ Điền <strong>2</strong> trước H<sub>2</sub>O.<br/>
-  5. Kiểm tra O: Vế trái 4 × 3 = 12 nguyên tử oxygen, vế phải (3 × 3) + 1 + 2 = 12 nguyên tử oxygen (Đã khớp!).
-</div>`;
-      } else {
-        fallbackText = `<div style="font-size:15px;margin:8px 0;">
-  Fe + 4HNO<sub>3</sub> 
-  <span style="display:inline-block;text-align:center;vertical-align:middle;margin:0 6px;"><span style="display:block;font-size:0.7em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.2em;">t°</span><span style="font-size:1.1em;line-height:1;">➔</span></span> 
-  Fe(NO<sub>3</sub>)<sub>3</sub> + NO ↑ + 2H<sub>2</sub>O
-</div>
-<div style="margin-top:8px;font-size:14px;color:#38bdf8;font-weight:600;">
-  Phương trình ion thu gọn: Fe + 4H<sup>+</sup> + NO<sub>3</sub><sup>-</sup> ➔ Fe<sup>3+</sup> + NO ↑ + 2H<sub>2</sub>O
-</div>`;
-      }
+*Bạn có thể bấm vào các gợi ý phía trên hoặc thử gửi lại câu hỏi sau ít giây nhé!*`;
 
       setMessages((prev) => [
         ...prev,
@@ -348,7 +406,7 @@ Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
           id: (Date.now() + 1).toString(),
           sender: "bot",
           text: fallbackText,
-          source: "database"
+          source: offlineHit ? "database" : "gemini"
         },
       ]);
     } finally {

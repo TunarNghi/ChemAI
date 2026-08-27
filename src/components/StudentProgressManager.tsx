@@ -183,7 +183,7 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
 
   const [notification, setNotification] = useState<{ type: 'success' | 'info' | 'error'; message: string } | null>(null);
 
-  // Load registered students on mount & on storage events
+  // Load registered students on mount & on storage / sync events
   useEffect(() => {
     loadStudents();
     const handleStorageChange = (e: StorageEvent) => {
@@ -191,8 +191,22 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
         loadStudents();
       }
     };
+    const handleCustomUpdate = () => {
+      loadStudents();
+    };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('chemai_user_updated', handleCustomUpdate);
+    window.addEventListener('focus', handleCustomUpdate);
+
+    // Periodic sync every 15 seconds
+    const interval = setInterval(loadStudents, 15000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('chemai_user_updated', handleCustomUpdate);
+      window.removeEventListener('focus', handleCustomUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const loadStudents = async () => {

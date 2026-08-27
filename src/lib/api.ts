@@ -98,8 +98,7 @@ export async function sendDifyMessage({ query, user, conversation_id, inputs = {
 }
 
 const DEFAULT_GEMINI_KEYS_ENCODED = [
-  "QVEuQWI4Uk42SWdTLUd4VUNVTlZWaGRTUUJzRE1RWHQwN2FWUDFsN0VvOWt0bUtHZGRiNWc=",
-  "QVEuQWI4Uk42TDdQSUoyMHlPaDFmdjM1OGV5bVd3ajg5TzFDVFdYaklWUy1MRGdFZVpaeg==",
+  "QVEuQWI4Uk42THZ3cURiMnY3b2xZUjZINlFoaldWVkJWREZpdWdBSVJoNEZSZEpxcFJqcmc=",
   "QVEuQWI4Uk42Sjh4N1RCTFV1N0s3TTlyRkZ4NXJ2VTBmNHJ0UkszeUhuSDQ4M25LQ0ZyalE=",
   "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync="
 ];
@@ -118,11 +117,15 @@ const ENV_GEMINI_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
 
 const GEMINI_API_KEYS = ENV_GEMINI_KEYS.map(decodeApiKey);
 const GEMINI_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro"
+  "gemini-3.6-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-flash-latest",
+  "gemini-3.7-flash",
+  "gemini-3.5-flash",
+  "gemma-4-31b-it",
+  "gemini-3.1-pro-preview",
+  "gemini-pro-latest"
 ];
 
 export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_KEYS): Promise<string> {

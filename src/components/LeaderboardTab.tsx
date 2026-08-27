@@ -136,8 +136,21 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
         loadLeaderboardData();
       }
     };
+    const handleCustomUpdate = () => {
+      loadLeaderboardData();
+    };
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    window.addEventListener('chemai_user_updated', handleCustomUpdate);
+    window.addEventListener('focus', handleCustomUpdate);
+
+    const interval = setInterval(loadLeaderboardData, 15000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('chemai_user_updated', handleCustomUpdate);
+      window.removeEventListener('focus', handleCustomUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const loadLeaderboardData = async () => {

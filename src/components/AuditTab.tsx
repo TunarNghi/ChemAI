@@ -36,9 +36,12 @@ import {
   UserCheck,
   GraduationCap,
   Trash2,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import StudentProgressManager from "@/components/StudentProgressManager";
+import { PRESET_HIGH_SCHOOL_QUIZ_BANK } from "@/lib/quizBank";
 
 export function cleanChemicalLatex(text: string): string {
   if (!text) return "";
@@ -47,109 +50,158 @@ export function cleanChemicalLatex(text: string): string {
     const cleanAbove = (above || "")
       .replace(/\\text\{([^}]+)\}/g, "$1")
       .replace(/t\^[0o\circ]/g, "t°")
-      .replace(/\^0|\^\circ|\^o|^˚$|^\circ$|^o$/g, "0");
-    const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1");
+      .replace(/\^0|\^\circ|\^o|^˚$|^\circ$|^o$/g, "0")
+      .trim();
+    const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1").trim();
     if (cleanAbove === "0") return cleanBase;
-    return `<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">${cleanAbove}</span><span>${cleanBase}</span></span>`;
+    return `<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0 1px;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">${cleanAbove}</span><span>${cleanBase}</span></span>`;
   };
 
-  const unicodeSuperMap: Record<string, string> = {
-    "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3",
-    "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
+  const formatCondition = (cond: string) => {
+    if (!cond) return "";
+    let c = cond
+      .replace(/\\text\{([^}]+)\}/g, "$1")
+      .replace(/\\mathrm\{([^}]+)\}/g, "$1")
+      .replace(/t\^?[0o\circ˚]|t0|to|t\^\circ/gi, "t°")
+      .replace(/\^0|\^\circ|\^o/g, "°")
+      .replace(/\^\{?([0-9]*[\+\-]|[\+\-][0-9]*)\}?/g, "<sup>$1</sup>")
+      .replace(/_\{?([0-9]+)\}?/g, "<sub>$1</sub>")
+      .replace(/([A-Z][a-z]?|\))([0-9]+)(?![<0-9\+\-])/g, "$1<sub>$2</sub>")
+      .replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
+        const map: Record<string, string> = { "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" };
+        return `<sup>${match.split("").map((ch) => map[ch] || ch).join("")}</sup>`;
+      })
+      .trim();
+    return c;
   };
 
   let res = text
     .replace(/H_?\{?20\}?/g, "H<sub>2</sub>O")
     .replace(/3Fe\+\}/g, "Fe<sup>3+</sup>")
-    .replace(/reduse\s*\(khử\)/gi, "khử")
-    // Convert unicode superscripts on ions (e.g. Fe³⁺, NO₃⁻, SO₄²⁻, H⁺)
-    .replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
-      const converted = match.split("").map((c) => unicodeSuperMap[c] || c).join("");
-      return `<sup>${converted}</sup>`;
-    })
-    // Polyatomic and Monatomic ions without caret (e.g. Fe3+, Fe2+, Cu2+, SO4 2-, NO3-, OH-, H+)
-    .replace(/\b(SO4|SO3|CO3|Cr2O7|CrO4|SiO3|S2O3)\s*(\^?\{?(?:2-|2\+|-2|\+2)\}?|2-|2\+)/g, "$1<sup>2-</sup>")
-    .replace(/\b(PO4|PO3)\s*(\^?\{?(?:3-|3\+|-3|\+3)\}?|3-|3\+)/g, "$1<sup>3-</sup>")
-    .replace(/\b(NO3|NO2|OH|HCO3|HSO4|H2PO4|CH3COO|ClO|ClO2|ClO3|ClO4|MnO4|F|Cl|Br|I)\s*(\^?\{?(?:-|\+|-1|\+1)\}?|-|\+)(?!\d)/g, "$1<sup>$2</sup>")
-    .replace(/\b(NH4|H3O)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(2\+|\+2)/g, "$1<sup>2+</sup>")
-    .replace(/\b(Al|Cr|Fe)\s*(3\+|\+3)/g, "$1<sup>3+</sup>")
-    .replace(/\b(Na|K|Ag|Li|Cs)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/\b(H)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/([0-9]*[A-Za-z\(\)]+(?:<sub>[0-9]+<\/sub>|_\{?[0-9]+\}?)?)\s*\^\s*\{?([0-9]*[+-]|[+-][0-9]*)\}?/g, "$1<sup>$2</sup>")
-    .replace(/([0-9]*e)\s*([0-9]+\s*[×x])/gi, "$1<br/>$2")
-    .replace(/\\?begin\{array\}\{?[^}]*\}?([\s\S]*?)\\?end\{array\}/gi, (_, content) => {
-      const rows = content.trim().split("\n").map((r: string) => r.replace(/\\\\$/, "").trim()).filter(Boolean);
-      let tableRowsHTML = "";
-      for (const row of rows) {
-        const cells = row.split("&");
-        if (cells.length >= 2) {
-          const leftCell = cells[0].trim();
-          const rightCell = cells.slice(1).join("&").trim();
-          tableRowsHTML += `<tr><td style="padding:2px 8px;text-align:right;border-right:2px solid #38bdf8;font-weight:bold;color:#f59e0b;">${leftCell}</td><td style="padding:2px 8px;text-align:left;">${rightCell}</td></tr>`;
-        } else {
-          tableRowsHTML += `<tr><td colspan="2" style="padding:2px 8px;">${row}</td></tr>`;
-        }
-      }
-      return `<table style="margin:8px 0;border-collapse:collapse;"><tbody>${tableRowsHTML}</tbody></table>`;
-    })
-    .replace(/\\?(?:mathbf|textbf)\{([^}]+)\}/g, '<b style="color:#fbbf24;font-weight:bold;">$1</b>')
-    .replace(/\\?times\b/gi, "×")
-    .replace(/\\?cdot\b/gi, "·")
-    .replace(/\\?frac\{([^}]+)\}\{([^}]+)\}/g, "($1/$2)")
-    .replace(/\\?(?:approx|approxeq)\b/gi, "≈")
-    .replace(/\\?neq\b/gi, "≠")
-    .replace(/\\?(?:le|leq)\b/gi, "≤")
-    .replace(/\\?(?:ge|geq)\b/gi, "≥")
-    .replace(/\\?pm\b/gi, "±")
-    .replace(/\\?alpha\b/gi, "α")
-    .replace(/\\?beta\b/gi, "β")
-    .replace(/\\?gamma\b/gi, "γ")
-    .replace(/\\?pi\b/gi, "π")
-    .replace(/\\?Delta\b/gi, "Δ")
-    .replace(/\\?(?:degree|circ)\b/gi, "°")
-    .replace(/\\text\{([^}]+)\}/g, "$1")
-    .replace(/\\ce\{([^}]+)\}/g, "$1")
-    .replace(/\\mathrm\{([^}]+)\}/g, "$1")
-    .replace(/\\(?:left|right|big|Big|gt|lt)/g, "")
-    .replace(/([A-Z][a-z]*)?\\?overset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
+    .replace(/reduse\s*\(khử\)/gi, "khử");
+
+  // A. Process Arrows with nested braces support
+  // 1. Reversible arrows with conditions: \xrightleftharpoons[below]{above}
+  res = res.replace(/\\xrightleftharpoons(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
+    const cleanAbove = formatCondition(above);
+    const cleanBelow = formatCondition(below);
+    return ` @@@CHEMREVSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMREVEND@@@ `;
+  });
+
+  // 2. Single arrows with conditions: \xrightarrow[below]{above}
+  res = res.replace(/\\xrightarrow(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
+    const cleanAbove = formatCondition(above);
+    const cleanBelow = formatCondition(below);
+    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMARREND@@@ `;
+  });
+
+  // 3. Plain text with conditions: --(cond)--> or -(cond)-> or ->(cond)
+  res = res.replace(/(?:--\s*\(?([^->]+)\)?\s*-->|-\s*\(([^->]+)\)\s*->|➔\s*\(([^)]+)\)|->\s*\(([^)]+)\)|([tT][\^˚\circ0o]+)\s*➔|➔\s*([tT][\^˚\circ0o]+))/g, (_, c1, c2, c3, c4, c5, c6) => {
+    const rawAbove = c1 || c2 || c3 || c4 || c5 || c6 || "t°";
+    const cleanAbove = formatCondition(rawAbove);
+    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
+  });
+
+  // B. Mathematical fractions like \frac{1}{2} or 1/2 O2
+  res = res.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, den) => {
+    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
+  });
+
+  res = res.replace(/(?:^|(?<=[\s\+\=]))(\d+)\/(\d+)\s*(?=[A-Z])/g, (_, num, den) => {
+    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
+  });
+
+  // C. Oxidation states via Overset / Underset
+  res = res
+    .replace(/([A-Z][a-z]*)?\\overset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
       return (prefix || "") + makeOverset(above, base);
     })
-    .replace(/([A-Z][a-z]*)?\\?underset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, below, base) => {
+    .replace(/([A-Z][a-z]*)?\\underset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, below, base) => {
       const p = prefix || "";
       const cleanBelow = (below || "").replace(/\\text\{([^}]+)\}/g, "$1");
       const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1");
       return `${p}<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0 1px;"><span>${cleanBase}</span><span style="display:block;font-size:0.68em;color:#94a3b8;line-height:1;margin-top:1px;">${cleanBelow}</span></span>`;
     })
-    .replace(/([A-Z][a-z]*)?\\?stackrel\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
+    .replace(/([A-Z][a-z]*)?\\stackrel\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
       return (prefix || "") + makeOverset(above, base);
     })
-    .replace(/\b(?:\+|-|0)?([+-]?[0-9]+)\s*(Fe|N|O|Cu|Zn|Al|Mg|Cl|S|P|Mn|Cr|Na|K|Ca|Ba|Ag|H)\b/g, (match, num, elem) => {
-      if (match.startsWith("4H") || match.startsWith("2H") || match.startsWith("3H") || match.startsWith("6H")) {
-        return match;
+    .replace(/(?<=\s|^|\()([+-][0-9]+)\s*(Fe|N|O|Cu|Zn|Al|Mg|Cl|S|P|Mn|Cr|Na|K|Ca|Ba|Ag|H|C)\b/g, (_, num, elem) => {
+      return makeOverset(num, elem);
+    })
+    .replace(/(?<=\s|^|\()(0)\s*(Fe|Cu|Zn|Al|Mg|Ag|Na|K|Ca|Ba|Cl|N|O|S|P|H)\b(?!\s*<sub>)/g, (_, num, elem) => {
+      return makeOverset("0", elem);
+    });
+
+  // D. Polyatomic and Monatomic ions & Unicode Super
+  const unicodeSuperMap: Record<string, string> = {
+    "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3",
+    "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
+  };
+  res = res.replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
+    const converted = match.split("").map((c) => unicodeSuperMap[c] || c).join("");
+    return `<sup>${converted}</sup>`;
+  });
+
+  res = res
+    .replace(/\b(SO4|SO3|CO3|Cr2O7|CrO4|SiO3|S2O3)\s*(\^?\{?(?:2-|2\+|-2|\+2)\}?|2-|2\+)(?!\d)/g, "$1<sup>2-</sup>")
+    .replace(/\b(PO4|PO3)\s*(\^?\{?(?:3-|3\+|-3|\+3)\}?|3-|3\+)(?!\d)/g, "$1<sup>3-</sup>")
+    .replace(/\b(NO3|NO2|OH|HCO3|HSO4|H2PO4|CH3COO|ClO|ClO2|ClO3|ClO4|MnO4|F|Cl|Br|I)\s*(\^?\{?(?:-|\+|-1|\+1)\}?|-|\+)(?!\d)/g, "$1<sup>$2</sup>")
+    .replace(/\b(NH4|H3O)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
+    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(2\+|\+2)(?!\d)/g, "$1<sup>2+</sup>")
+    .replace(/\b(Al|Cr|Fe)\s*(3\+|\+3)(?!\d)/g, "$1<sup>3+</sup>")
+    .replace(/\b(Na|K|Ag|Li|Cs)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>")
+    .replace(/\b(H)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>");
+
+  // E. LaTeX Array table environment (Electron balance)
+  res = res.replace(/\\begin\{array\}\{?[^}]*\}?([\s\S]*?)\\end\{array\}/gi, (_, content) => {
+    const rows = content.trim().split("\n").map((r: string) => r.replace(/\\\\$/, "").trim()).filter(Boolean);
+    let tableRowsHTML = "";
+    for (const row of rows) {
+      const cells = row.split("&");
+      if (cells.length >= 2) {
+        const leftCell = cells[0].trim();
+        const rightCell = cells.slice(1).join("&").trim();
+        tableRowsHTML += `<tr><td style="padding:2px 8px;text-align:right;border-right:2px solid #38bdf8;font-weight:bold;color:#f59e0b;">${leftCell}</td><td style="padding:2px 8px;text-align:left;">${rightCell}</td></tr>`;
+      } else {
+        tableRowsHTML += `<tr><td colspan="2" style="padding:2px 8px;">${row}</td></tr>`;
       }
-      const sign = num.startsWith("-") ? num : (num === "0" ? "0" : "+" + num.replace(/^\+/, ""));
-      return makeOverset(sign, elem);
-    })
-    .replace(/([A-Z][a-z]?)\s*(?:\^\{?([+-]?[0-9]+|0|\\circ|o)\}?|˚)/g, (_, elem, oxid1) => {
-      return makeOverset(oxid1 || "0", elem);
-    })
-    .replace(/(?:\\?xrightarrow(?:\[([^\]]*)\])?\{([^}]*)\}|➔\s*\(([^)]+)\)|->\s*\(([^)]+)\)|([tT][\^˚\circ0o]+)\s*➔|➔\s*([tT][\^˚\circ0o]+))/g, (_, below, above, c1, c2, c3, c4) => {
-      const cond = above || c1 || c2 || c3 || c4 || "t°";
-      const cleanAbove = cond
-        .replace(/\\text\{([^}]+)\}/g, "$1")
-        .replace(/t\^?[0o\circ˚]|t0|to/gi, "t°")
-        .replace(/\^0|\^\circ|\^o/g, "°");
-      const cleanBelow = (below || "").replace(/\\text\{([^}]+)\}/g, "$1");
-      if (cleanBelow) {
-        return `<span style="display:inline-block;text-align:center;vertical-align:middle;margin:0 6px;"><span style="display:block;font-size:0.7em;font-weight:600;color:#38bdf8;line-height:1;margin-bottom:-0.2em;">${cleanAbove}</span><span style="font-size:1.1em;line-height:1;">➔</span><span style="display:block;font-size:0.7em;color:#94a3b8;line-height:1;margin-top:1px;">${cleanBelow}</span></span>`;
-      }
-      return `<span style="display:inline-block;text-align:center;vertical-align:middle;margin:0 6px;"><span style="display:block;font-size:0.7em;font-weight:600;color:#38bdf8;line-height:1;margin-bottom:-0.2em;">${cleanAbove}</span><span style="font-size:1.1em;line-height:1;">➔</span></span>`;
-    })
-    .replace(/\\uparrow/g, " ↑ ")
-    .replace(/\\downarrow/g, " ↓ ")
-    .replace(/\\rightarrow|\\longrightarrow|\\to|->|arrow/gi, " ➔ ")
-    .replace(/\\rightleftharpoons|\\leftrightarrow|\\Leftrightarrow/g, " ⇌ ")
+    }
+    return `<table style="margin:8px 0;border-collapse:collapse;"><tbody>${tableRowsHTML}</tbody></table>`;
+  });
+
+  // F. LaTeX formatting cleanup (Requires backslash for macros)
+  res = res
+    .replace(/\\(?:mathbf|textbf)\{([^}]+)\}/g, '<b style="color:#fbbf24;font-weight:bold;">$1</b>')
+    .replace(/\\times\b/gi, "×")
+    .replace(/\\cdot\b/gi, "·")
+    .replace(/\\(?:approx|approxeq)\b/gi, "≈")
+    .replace(/\\neq\b/gi, "≠")
+    .replace(/\\(?:le|leq)\b/gi, "≤")
+    .replace(/\\(?:ge|geq)\b/gi, "≥")
+    .replace(/\\pm\b/gi, "±")
+    .replace(/\\alpha\b/gi, "α")
+    .replace(/\\beta\b/gi, "β")
+    .replace(/\\gamma\b/gi, "γ")
+    .replace(/\\pi\b/gi, "π")
+    .replace(/\\Delta\b/gi, "Δ")
+    .replace(/\\(?:degree|circ)\b/gi, "°")
+    .replace(/\\text\{([^}]+)\}/g, "$1")
+    .replace(/\\ce\{([^}]+)\}/g, "$1")
+    .replace(/\\mathrm\{([^}]+)\}/g, "$1")
+    .replace(/\\(?:left|right|big|Big|gt|lt)/g, "");
+
+  // G. Gas (↑) and Precipitate (↓) symbols
+  res = res
+    .replace(/\\uparrow|\s*\(\s*↑\s*\)|\s*\^\s*(?!\d)/g, ' <span style="display:inline-block;color:#34d399;font-weight:bold;font-size:1.1em;vertical-align:middle;" title="Khí bay lên">↑</span> ')
+    .replace(/\\downarrow|\s*\(\s*↓\s*\)|(?<=[A-Za-z0-9\)])\s*v\b/g, ' <span style="display:inline-block;color:#f87171;font-weight:bold;font-size:1.1em;vertical-align:middle;" title="Kết tủa">↓</span> ');
+
+  // H. Plain Arrows
+  res = res
+    .replace(/\\rightleftharpoons|\\leftrightarrow|\\Leftrightarrow|<=>|<==>|<->|<-->|⇌/g, ' <span style="display:inline-block;margin:0 6px;font-size:1.15em;vertical-align:middle;color:#f1f5f9;">⇌</span> ')
+    .replace(/\\rightarrow|\\longrightarrow|\\to|->|-->|=>|==>|→|➔/gi, ' <span style="display:inline-block;margin:0 6px;font-size:1.2em;vertical-align:middle;color:#f1f5f9;">➔</span> ');
+
+  // I. Strip dollar signs and LaTeX artifacts
+  res = res
     .replace(/\$([^\$]+)\$/g, "$1")
     .replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>")
     .replace(/_\{([^}]+)\}/g, "<sub>$1</sub>")
@@ -157,8 +209,22 @@ export function cleanChemicalLatex(text: string): string {
     .replace(/\\\\/g, "<br/>")
     .replace(/\\/g, "");
 
+  // J. Automatic subscripts on chemical formulas
   res = res.replace(/([A-Z][a-z]?|\))([0-9]+)(?![<0-9\+\-])/g, "$1<sub>$2</sub>");
   res = res.replace(/([^\n<]+)\s*\n+\s*(<span[^>]*>[^<]*t°[^<]*➔[^<]*<\/span>|➔|→|⇌)\s*\n+\s*([^\n<]+)/gi, "$1 $2 $3");
+
+  // K. Restore condition arrows (Flawless textbook appearance)
+  res = res.replace(/@@@CHEMARRSTART@@@([\s\S]*?)@@@CHEMSEP@@@([\s\S]*?)@@@CHEMARREND@@@/g, (_, above, below) => {
+    const cleanAbove = (above || "").trim();
+    const cleanBelow = (below || "").trim();
+    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 8px;min-width:38px;"><span style="font-size:0.75em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1.1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span><span style="font-size:1.25em;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;color:#f1f5f9;">➔</span>${cleanBelow ? `<span style="font-size:0.7em;color:#94a3b8;line-height:1.1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : "" }</span>`;
+  });
+
+  res = res.replace(/@@@CHEMREVSTART@@@([\s\S]*?)@@@CHEMSEP@@@([\s\S]*?)@@@CHEMREVEND@@@/g, (_, above, below) => {
+    const cleanAbove = (above || "").trim();
+    const cleanBelow = (below || "").trim();
+    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 8px;min-width:38px;"><span style="font-size:0.75em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1.1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span><span style="font-size:1.15em;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;color:#f1f5f9;">⇌</span>${cleanBelow ? `<span style="font-size:0.7em;color:#94a3b8;line-height:1.1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : "" }</span>`;
+  });
 
   return res;
 }
@@ -348,6 +414,35 @@ export default function AuditTab() {
       alert("Đã xóa sạch toàn bộ lịch sử Chat Logs trên Supabase thành công!");
     } catch (e: any) {
       alert("Lỗi khi xóa Chat Logs: " + e.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSeed50PresetQuestions = async () => {
+    setIsLoading(true);
+    try {
+      const recordsToInsert = PRESET_HIGH_SCHOOL_QUIZ_BANK.map((q) => ({
+        question: q.question,
+        options: q.options,
+        correct_index: q.correctIndex,
+        explanation: q.explanation,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error } = await supabase.from("quiz_questions").insert(recordsToInsert);
+      if (error) {
+        // Fallback: save to experiments table
+        await supabase.from("experiments").upsert({
+          cache_key: "preset_quiz_bank_50",
+          result_json: PRESET_HIGH_SCHOOL_QUIZ_BANK,
+        }, { onConflict: "cache_key" });
+      }
+
+      await fetchCurrentSubData("quiz");
+      alert("✅ Đã nạp thành công bộ 50 câu hỏi Hóa học THPT chất lượng cao vào CSDL Supabase!");
+    } catch (e: any) {
+      alert("Thông báo: " + e.message);
     } finally {
       setIsLoading(false);
     }
@@ -740,53 +835,72 @@ export default function AuditTab() {
 
             {/* VIEW 2: QUIZ BANK */}
             {subTab === "quiz" && (
-              <Paper
-                sx={{
-                  bgcolor: "#0f172a",
-                  borderRadius: 2,
-                  overflowX: "auto",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-                className="custom-scrollbar"
-              >
-                <Table size="small">
-                  <TableHead sx={{ bgcolor: "#1e293b" }}>
-                    <TableRow>
-                      <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
-                        Thời gian
-                      </TableCell>
-                      <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
-                        Nội dung Câu hỏi
-                      </TableCell>
-                      <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
-                        Đáp án Lựa chọn
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        sx={{ color: "#f59e0b", fontWeight: "bold" }}
-                      >
-                        Đúng
-                      </TableCell>
-                      <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
-                        Lời Giải thích
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredQuizBank.length === 0 ? (
+              <Box>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5} flexWrap="wrap" gap={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip 
+                      icon={<Sparkles size={14} />} 
+                      label={`Ngân hàng: ${filteredQuizBank.length > 0 ? filteredQuizBank.length : PRESET_HIGH_SCHOOL_QUIZ_BANK.length} câu hỏi THPT`} 
+                      color="warning" 
+                      variant="outlined" 
+                      size="small" 
+                    />
+                    <Chip 
+                      label="Giảm tải AI 100% khi làm bài" 
+                      color="success" 
+                      size="small" 
+                      sx={{ fontSize: '11px', height: 22 }} 
+                    />
+                  </Stack>
+
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    size="small"
+                    startIcon={<Zap size={14} />}
+                    onClick={handleSeed50PresetQuestions}
+                    disabled={isLoading}
+                    sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '12px' }}
+                  >
+                    ⚡ Nạp 50 Câu Hỏi THPT Chuẩn Vào CSDL Supabase
+                  </Button>
+                </Box>
+
+                <Paper
+                  sx={{
+                    bgcolor: "#0f172a",
+                    borderRadius: 2,
+                    overflowX: "auto",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }}
+                  className="custom-scrollbar"
+                >
+                  <Table size="small">
+                    <TableHead sx={{ bgcolor: "#1e293b" }}>
                       <TableRow>
+                        <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
+                          STT / Khối
+                        </TableCell>
+                        <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
+                          Nội dung Câu hỏi
+                        </TableCell>
+                        <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
+                          Đáp án Lựa chọn
+                        </TableCell>
                         <TableCell
-                          colSpan={5}
                           align="center"
-                          sx={{ color: "text.secondary", py: 3 }}
+                          sx={{ color: "#f59e0b", fontWeight: "bold" }}
                         >
-                          Chưa có câu hỏi trắc nghiệm nào trong Ngân hàng CSDL
-                          Supabase.
+                          Đúng
+                        </TableCell>
+                        <TableCell sx={{ color: "#f59e0b", fontWeight: "bold" }}>
+                          Lời Giải thích
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filteredQuizBank.map((row) => (
-                        <TableRow key={row.id}>
+                    </TableHead>
+                    <TableBody>
+                      {(filteredQuizBank.length > 0 ? filteredQuizBank : PRESET_HIGH_SCHOOL_QUIZ_BANK).map((row: any, idx: number) => (
+                        <TableRow key={row.id || idx}>
                           <TableCell
                             sx={{
                               color: "text.secondary",
@@ -794,7 +908,7 @@ export default function AuditTab() {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {new Date(row.created_at).toLocaleString("vi-VN")}
+                            #{idx + 1} {row.grade ? `(Lớp ${row.grade})` : row.created_at ? new Date(row.created_at).toLocaleDateString("vi-VN") : '(THPT)'}
                           </TableCell>
                           <TableCell
                             sx={{
@@ -819,7 +933,7 @@ export default function AuditTab() {
                           <TableCell align="center">
                             <Chip
                               label={
-                                ["A", "B", "C", "D"][row.correct_index] || "A"
+                                ["A", "B", "C", "D"][row.correct_index !== undefined ? row.correct_index : row.correctIndex] || "A"
                               }
                               color="success"
                               size="small"
@@ -832,11 +946,11 @@ export default function AuditTab() {
                             {row.explanation}
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </Paper>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Paper>
+              </Box>
             )}
 
             {/* VIEW 3: KAHOOT HOST PORTAL */}

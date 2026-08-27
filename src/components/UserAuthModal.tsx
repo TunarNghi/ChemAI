@@ -310,11 +310,20 @@ export default function UserAuthModal({
       location: finalLocation,
       password: regPassword,
       createdAt: new Date().toISOString(),
+      kahootExp: 0,
+      kahootStreak: 0,
+      loginStreak: 1,
+      totalKahootQuestions: 0,
+      correctKahootQuestions: 0,
+      lastActiveDate: new Date().toISOString().split('T')[0],
     };
 
     // Save to Database and Local storage
     await saveUserToDatabase(newUser);
     saveStoredCurrentUser(newUser);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('chemai_user_updated'));
+    }
 
     setAlertInfo({
       type: 'success',
