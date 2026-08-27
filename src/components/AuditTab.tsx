@@ -80,98 +80,10 @@ export function cleanChemicalLatex(text: string): string {
     .replace(/3Fe\+\}/g, "Fe<sup>3+</sup>")
     .replace(/reduse\s*\(khử\)/gi, "khử");
 
-  // A. Process Arrows with nested braces support
-  // 1. Reversible arrows with conditions: \xrightleftharpoons[below]{above}
-  res = res.replace(/\\xrightleftharpoons(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
-    const cleanAbove = formatCondition(above);
-    const cleanBelow = formatCondition(below);
-    return ` @@@CHEMREVSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMREVEND@@@ `;
-  });
-
-  // 2. Single arrows with conditions: \xrightarrow[below]{above}
-  res = res.replace(/\\xrightarrow(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
-    const cleanAbove = formatCondition(above);
-    const cleanBelow = formatCondition(below);
-    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMARREND@@@ `;
-  });
-
-  // 3. Plain text with conditions: --(cond)--> or -(cond)-> or ->(cond)
-  res = res.replace(/(?:--\s*\(?([^->]+)\)?\s*-->|-\s*\(([^->]+)\)\s*->|➔\s*\(([^)]+)\)|->\s*\(([^)]+)\)|([tT][\^˚\circ0o]+)\s*➔|➔\s*([tT][\^˚\circ0o]+))/g, (_, c1, c2, c3, c4, c5, c6) => {
-    const rawAbove = c1 || c2 || c3 || c4 || c5 || c6 || "t°";
-    const cleanAbove = formatCondition(rawAbove);
-    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
-  });
-
-  // B. Mathematical fractions like \frac{1}{2} or 1/2 O2
-  res = res.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, den) => {
-    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
-  });
-
-  res = res.replace(/(?:^|(?<=[\s\+\=]))(\d+)\/(\d+)\s*(?=[A-Z])/g, (_, num, den) => {
-    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
-  });
-
-  // C. Oxidation states via Overset / Underset
+  // 1. Remove LaTeX spacing and annotations
   res = res
-    .replace(/([A-Z][a-z]*)?\\overset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
-      return (prefix || "") + makeOverset(above, base);
-    })
-    .replace(/([A-Z][a-z]*)?\\underset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, below, base) => {
-      const p = prefix || "";
-      const cleanBelow = (below || "").replace(/\\text\{([^}]+)\}/g, "$1");
-      const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1");
-      return `${p}<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0 1px;"><span>${cleanBase}</span><span style="display:block;font-size:0.68em;color:#94a3b8;line-height:1;margin-top:1px;">${cleanBelow}</span></span>`;
-    })
-    .replace(/([A-Z][a-z]*)?\\stackrel\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
-      return (prefix || "") + makeOverset(above, base);
-    })
-    .replace(/(?<=\s|^|\()([+-][0-9]+)\s*(Fe|N|O|Cu|Zn|Al|Mg|Cl|S|P|Mn|Cr|Na|K|Ca|Ba|Ag|H|C)\b/g, (_, num, elem) => {
-      return makeOverset(num, elem);
-    })
-    .replace(/(?<=\s|^|\()(0)\s*(Fe|Cu|Zn|Al|Mg|Ag|Na|K|Ca|Ba|Cl|N|O|S|P|H)\b(?!\s*<sub>)/g, (_, num, elem) => {
-      return makeOverset("0", elem);
-    });
-
-  // D. Polyatomic and Monatomic ions & Unicode Super
-  const unicodeSuperMap: Record<string, string> = {
-    "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3",
-    "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
-  };
-  res = res.replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
-    const converted = match.split("").map((c) => unicodeSuperMap[c] || c).join("");
-    return `<sup>${converted}</sup>`;
-  });
-
-  res = res
-    .replace(/\b(SO4|SO3|CO3|Cr2O7|CrO4|SiO3|S2O3)\s*(\^?\{?(?:2-|2\+|-2|\+2)\}?|2-|2\+)(?!\d)/g, "$1<sup>2-</sup>")
-    .replace(/\b(PO4|PO3)\s*(\^?\{?(?:3-|3\+|-3|\+3)\}?|3-|3\+)(?!\d)/g, "$1<sup>3-</sup>")
-    .replace(/\b(NO3|NO2|OH|HCO3|HSO4|H2PO4|CH3COO|ClO|ClO2|ClO3|ClO4|MnO4|F|Cl|Br|I)\s*(\^?\{?(?:-|\+|-1|\+1)\}?|-|\+)(?!\d)/g, "$1<sup>$2</sup>")
-    .replace(/\b(NH4|H3O)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(2\+|\+2)(?!\d)/g, "$1<sup>2+</sup>")
-    .replace(/\b(Al|Cr|Fe)\s*(3\+|\+3)(?!\d)/g, "$1<sup>3+</sup>")
-    .replace(/\b(Na|K|Ag|Li|Cs)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/\b(H)\s*(\+|\+1)(?!\d)/g, "$1<sup>+</sup>");
-
-  // E. LaTeX Array table environment (Electron balance)
-  res = res.replace(/\\begin\{array\}\{?[^}]*\}?([\s\S]*?)\\end\{array\}/gi, (_, content) => {
-    const rows = content.trim().split("\n").map((r: string) => r.replace(/\\\\$/, "").trim()).filter(Boolean);
-    let tableRowsHTML = "";
-    for (const row of rows) {
-      const cells = row.split("&");
-      if (cells.length >= 2) {
-        const leftCell = cells[0].trim();
-        const rightCell = cells.slice(1).join("&").trim();
-        tableRowsHTML += `<tr><td style="padding:2px 8px;text-align:right;border-right:2px solid #38bdf8;font-weight:bold;color:#f59e0b;">${leftCell}</td><td style="padding:2px 8px;text-align:left;">${rightCell}</td></tr>`;
-      } else {
-        tableRowsHTML += `<tr><td colspan="2" style="padding:2px 8px;">${row}</td></tr>`;
-      }
-    }
-    return `<table style="margin:8px 0;border-collapse:collapse;"><tbody>${tableRowsHTML}</tbody></table>`;
-  });
-
-  // F. LaTeX formatting cleanup (Requires backslash for macros)
-  res = res
-    .replace(/\\(?:mathbf|textbf)\{([^}]+)\}/g, '<b style="color:#fbbf24;font-weight:bold;">$1</b>')
+    .replace(/\\(?:quad|qquad)\b|\bquad\b|\bqquad\b/gi, " ")
+    .replace(/\\widehat\{([^}]+)\}|\bwidehat\{([^}]+)\}/gi, "$1$2")
     .replace(/\\times\b/gi, "×")
     .replace(/\\cdot\b/gi, "·")
     .replace(/\\(?:approx|approxeq)\b/gi, "≈")
@@ -190,30 +102,111 @@ export function cleanChemicalLatex(text: string): string {
     .replace(/\\mathrm\{([^}]+)\}/g, "$1")
     .replace(/\\(?:left|right|big|Big|gt|lt)/g, "");
 
-  // G. Gas (↑) and Precipitate (↓) symbols
-  res = res
-    .replace(/\\uparrow|\s*\(\s*↑\s*\)|\s*\^\s*(?!\d)/g, ' <span style="display:inline-block;color:#34d399;font-weight:bold;font-size:1.1em;vertical-align:middle;" title="Khí bay lên">↑</span> ')
-    .replace(/\\downarrow|\s*\(\s*↓\s*\)|(?<=[A-Za-z0-9\)])\s*v\b/g, ' <span style="display:inline-block;color:#f87171;font-weight:bold;font-size:1.1em;vertical-align:middle;" title="Kết tủa">↓</span> ');
+  // 2. Process Arrows with nested braces support
+  res = res.replace(/\\xrightleftharpoons(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
+    const cleanAbove = formatCondition(above);
+    const cleanBelow = formatCondition(below);
+    return ` @@@CHEMREVSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMREVEND@@@ `;
+  });
 
-  // H. Plain Arrows
+  res = res.replace(/\\xrightarrow(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
+    const cleanAbove = formatCondition(above);
+    const cleanBelow = formatCondition(below);
+    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMARREND@@@ `;
+  });
+
+  res = res.replace(/(?:--\s*\(?([^->]+)\)?\s*-->|-\s*\(([^->]+)\)\s*->|➔\s*\(([^)]+)\)|->\s*\(([^)]+)\)|([tT][\^˚\circ0o]+)\s*➔|➔\s*([tT][\^˚\circ0o]+))/g, (_, c1, c2, c3, c4, c5, c6) => {
+    const rawAbove = c1 || c2 || c3 || c4 || c5 || c6 || "t°";
+    const cleanAbove = formatCondition(rawAbove);
+    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
+  });
+
+  // 3. Mathematical fractions
+  res = res.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, den) => {
+    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
+  });
+
+  res = res.replace(/(?:^|(?<=[\s\+\=]))(\d+)\/(\d+)\s*(?=[A-Z])/g, (_, num, den) => {
+    return `<span style="display:inline-block;vertical-align:middle;text-align:center;font-size:0.82em;line-height:1;margin:0 2px;"><span style="display:block;border-bottom:1px solid currentColor;padding:0 2px;">${num}</span><span style="display:block;padding:0 2px;">${den}</span></span>`;
+  });
+
+  // 4. Oxidation states via Overset / Underset
+  res = res
+    .replace(/([A-Z][a-z]*)?\\overset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, above, base) => {
+      return (prefix || "") + makeOverset(above, base);
+    })
+    .replace(/([A-Z][a-z]*)?\\underset\{([^}]+)\}\{([^}]+)\}/g, (_, prefix, below, base) => {
+      const p = prefix || "";
+      const cleanBelow = (below || "").replace(/\\text\{([^}]+)\}/g, "$1");
+      const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1");
+      return `${p}<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0 1px;"><span>${cleanBase}</span><span style="display:block;font-size:0.68em;color:#94a3b8;line-height:1;margin-top:1px;">${cleanBelow}</span></span>`;
+    })
+    .replace(/(?<=\s|^|\()([+-][0-9]+)\s*(Fe|N|O|Cu|Zn|Al|Mg|Cl|S|P|Mn|Cr|Na|K|Ca|Ba|Ag|H|C)\b/g, (_, num, elem) => {
+      return makeOverset(num, elem);
+    });
+
+  // 5. Polyatomic and Monatomic ions
+  const unicodeSuperMap: Record<string, string> = {
+    "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3",
+    "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
+  };
+  res = res.replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
+    const converted = match.split("").map((c) => unicodeSuperMap[c] || c).join("");
+    return `<sup>${converted}</sup>`;
+  });
+
+  res = res
+    .replace(/\b(SO4|SO3|CO3|Cr2O7|CrO4|SiO3|S2O3)\s*(\^?\{?(?:2-|2\+|-2|\+2)\}?|2-|2\+)(?!\d)/g, "$1<sup>2-</sup>")
+    .replace(/\b(PO4|PO3)\s*(\^?\{?(?:3-|3\+|-3|\+3)\}?|3-|3\+)(?!\d)/g, "$1<sup>3-</sup>")
+    .replace(/\b(NO3|NO2|OH|HCO3|HSO4|H2PO4|CH3COO|ClO|ClO2|ClO3|ClO4|MnO4|F|Cl|Br|I)\s*(\^?\{?(?:-|\+|-1|\+1)\}?|-|\+)(?!\d)/g, "$1<sup>$2</sup>")
+    .replace(/\b(NH4|H3O)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
+    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(2\+|\+2)(?!\d)/g, "$1<sup>2+</sup>")
+    .replace(/\b(Al|Cr|Fe)\s*(3\+|\+3)(?!\d)/g, "$1<sup>3+</sup>");
+
+  // 6. LaTeX Array table environment (Electron balance)
+  res = res.replace(/\\begin\{array\}\{?[^}]*\}?([\s\S]*?)\\end\{array\}/gi, (_, content) => {
+    const rows = content.trim().split("\n").map((r: string) => r.replace(/\\\\$/, "").trim()).filter(Boolean);
+    let tableRowsHTML = "";
+    for (const row of rows) {
+      const cells = row.split("&");
+      if (cells.length >= 2) {
+        const leftCell = cells[0].trim();
+        const rightCell = cells.slice(1).join("&").trim();
+        tableRowsHTML += `<tr><td style="padding:2px 8px;text-align:right;border-right:2px solid #38bdf8;font-weight:bold;color:#f59e0b;">${leftCell}</td><td style="padding:2px 8px;text-align:left;">${rightCell}</td></tr>`;
+      } else {
+        tableRowsHTML += `<tr><td colspan="2" style="padding:2px 8px;">${row}</td></tr>`;
+      }
+    }
+    return `<table style="margin:8px 0;border-collapse:collapse;"><tbody>${tableRowsHTML}</tbody></table>`;
+  });
+
+  // 7. Gas (↑) and Precipitate (↓) symbols ONLY (Exact symbols, never match caret '^' or letter 'v'!)
+  res = res
+    .replace(/\\uparrow|\s*\(\s*↑\s*\)|(?<=[A-Za-z0-9\)])\s*↑/g, ' <span style="display:inline-block;color:#34d399;font-weight:bold;" title="Khí bay lên">↑</span> ')
+    .replace(/\\downarrow|\s*\(\s*↓\s*\)|(?<=[A-Za-z0-9\)])\s*↓/g, ' <span style="display:inline-block;color:#f87171;font-weight:bold;" title="Kết tủa">↓</span> ');
+
+  // 8. Plain Arrows (including 'arrow' keyword from AI)
   res = res
     .replace(/\\rightleftharpoons|\\leftrightarrow|\\Leftrightarrow|<=>|<==>|<->|<-->|⇌/g, ' <span style="display:inline-block;margin:0 6px;font-size:1.15em;vertical-align:middle;color:#f1f5f9;">⇌</span> ')
-    .replace(/\\rightarrow|\\longrightarrow|\\to|->|-->|=>|==>|→|➔/gi, ' <span style="display:inline-block;margin:0 6px;font-size:1.2em;vertical-align:middle;color:#f1f5f9;">➔</span> ');
+    .replace(/\\rightarrow|\\longrightarrow|\\to|->|-->|=>|==>|→|➔|\barrow\b|\\arrow\b|\brightarrow\b/gi, ' <span style="display:inline-block;margin:0 6px;font-size:1.2em;vertical-align:middle;color:#f1f5f9;">➔</span> ');
 
-  // I. Strip dollar signs and LaTeX artifacts
+  // 9. Superscripts and Subscripts
   res = res
     .replace(/\$([^\$]+)\$/g, "$1")
     .replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>")
+    .replace(/\^([0-9\+\-°]+|[a-zA-Z]+)/g, (_, val) => {
+      if (val === "0" || val === "o" || val === "circ") return "°";
+      return `<sup>${val}</sup>`;
+    })
     .replace(/_\{([^}]+)\}/g, "<sub>$1</sub>")
     .replace(/_([a-zA-Z0-9+\-]+)/g, "<sub>$1</sub>")
     .replace(/\\\\/g, "<br/>")
     .replace(/\\/g, "");
 
-  // J. Automatic subscripts on chemical formulas
+  // 10. Automatic subscripts on chemical formulas
   res = res.replace(/([A-Z][a-z]?|\))([0-9]+)(?![<0-9\+\-])/g, "$1<sub>$2</sub>");
-  res = res.replace(/([^\n<]+)\s*\n+\s*(<span[^>]*>[^<]*t°[^<]*➔[^<]*<\/span>|➔|→|⇌)\s*\n+\s*([^\n<]+)/gi, "$1 $2 $3");
 
-  // K. Restore condition arrows (Flawless textbook appearance)
+  // 11. Restore condition arrows (Flawless textbook appearance)
   res = res.replace(/@@@CHEMARRSTART@@@([\s\S]*?)@@@CHEMSEP@@@([\s\S]*?)@@@CHEMARREND@@@/g, (_, above, below) => {
     const cleanAbove = (above || "").trim();
     const cleanBelow = (below || "").trim();

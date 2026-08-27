@@ -8,7 +8,7 @@ import { supabase, callGeminiAPI } from '@/lib/api';
 import { cleanChemicalLatex } from '@/components/AuditTab';
 import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 import { saveUserToDatabase } from '@/lib/userDatabase';
-import { PRESET_HIGH_SCHOOL_QUIZ_BANK, getPresetQuizQuestion } from '@/lib/quizBank';
+import { PRESET_HIGH_SCHOOL_QUIZ_BANK, getPresetQuizQuestion, shuffleQuestionOptions } from '@/lib/quizBank';
 
 interface QuizQuestion {
   question: string;
@@ -126,7 +126,7 @@ export default function QuizKahootTab() {
         sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
       }
 
-      setCurrentQuiz(selected);
+      setCurrentQuiz(shuffleQuestionOptions(selected));
       setIsLoading(false);
       return;
     }
@@ -145,12 +145,12 @@ export default function QuizKahootTab() {
               sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
             }
 
-            setCurrentQuiz({
+            setCurrentQuiz(shuffleQuestionOptions({
               question: rand.question,
               options: rand.options,
               correctIndex: rand.correct_index !== undefined ? rand.correct_index : rand.correctIndex,
               explanation: rand.explanation
-            });
+            }));
             setIsLoading(false);
             return;
           }
@@ -193,14 +193,14 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
           }
-          setCurrentQuiz(parsed);
+          setCurrentQuiz(shuffleQuestionOptions(parsed));
         }
       }
     } catch (e) {
       console.error("AI Quiz Error:", e);
       // Ultimate safety: pick any random question from the 50-question bank
       const fallback = getPresetQuizQuestion();
-      setCurrentQuiz(fallback);
+      setCurrentQuiz(shuffleQuestionOptions(fallback));
     } finally {
       setIsLoading(false);
     }
@@ -424,7 +424,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
     try {
       const { data } = await supabase.from("quiz_questions").select("*").limit(10);
       if (data && data.length >= 5) {
-        const mapped = data.map(q => ({
+        const mapped = data.map(q => shuffleQuestionOptions({
           question: q.question,
           options: q.options,
           correctIndex: q.correct_index !== undefined ? q.correct_index : q.correctIndex,
@@ -433,16 +433,22 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
         setAllQuestions(mapped);
         setKahootQuiz(mapped[0]);
       } else {
-        // Sample 10 diverse questions from 50 High School preset questions
-        const shuffled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
-        setAllQuestions(shuffled);
-        setKahootQuiz(shuffled[0]);
+        // Sample 10 diverse questions from 50 High School preset questions with dynamic option shuffling
+        const sampled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 10)
+          .map(q => shuffleQuestionOptions(q));
+        setAllQuestions(sampled);
+        setKahootQuiz(sampled[0]);
       }
     } catch (e) {
       console.warn("Fetch Kahoot question error:", e);
-      const shuffled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
-      setAllQuestions(shuffled);
-      setKahootQuiz(shuffled[0]);
+      const sampled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 10)
+        .map(q => shuffleQuestionOptions(q));
+      setAllQuestions(sampled);
+      setKahootQuiz(sampled[0]);
     }
   };
 
