@@ -51,6 +51,7 @@ import {
   Radio,
   ExternalLink,
   FlameKindling,
+  Volume2,
 } from 'lucide-react';
 import {
   ChemicalElement,
@@ -112,6 +113,16 @@ export default function ElementDetailModal({
         setCopiedCas(true);
         setTimeout(() => setCopiedCas(false), 2000);
       }
+    }
+  };
+
+  const speakIUPAC = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(element.nameEn);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
     }
   };
 
@@ -248,6 +259,21 @@ export default function ElementDetailModal({
                 <Typography variant="h5" fontWeight="bold" color="white" sx={{ fontSize: { xs: '18px', sm: '22px' } }}>
                   {element.nameVi} ({element.nameEn})
                 </Typography>
+                <Tooltip title="Nghe phát âm chuẩn quốc tế IUPAC">
+                  <IconButton
+                    size="small"
+                    onClick={speakIUPAC}
+                    sx={{
+                      bgcolor: 'rgba(56, 189, 248, 0.15)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      color: '#38bdf8',
+                      p: 0.6,
+                      '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.35)' },
+                    }}
+                  >
+                    <Volume2 size={16} />
+                  </IconButton>
+                </Tooltip>
                 <Chip
                   label={mainColor.label}
                   size="small"
