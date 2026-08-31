@@ -644,57 +644,375 @@ export const PRESET_HIGH_SCHOOL_QUIZ_BANK: QuizQuestion[] = [
     explanation: "AlCl₃ là hợp chất cộng hóa trị thăng hoa ở nhiệt độ cao, không dẫn điện khi nóng chảy. Do đó người ta phải điện phân Al₂O₃ nóng chảy hòa tan trong cryolite (Na₃AlF₆) để hạ nhiệt độ nóng chảy từ 2050 °C xuống ~950 °C và tăng độ dẫn điện."
   },
   {
-    grade: 12,
-    topic: "Phức chất",
-    question: "Trong phức chất aqua [Cu(H₂O)₆]²⁺, nguyên tử trung tâm và phối tử (ligand) lần lượt là:",
+    grade: 10,
+    topic: "Cấu hình electron",
+    question: "Cấu hình electron nguyên tử của nguyên tố Chromium (Cr, Z = 24) ở trạng thái cơ bản là:",
     options: [
-      "Ion Cu²⁺ và phân tử H₂O",
-      "Ion Cu⁺ và phân tử H₂O",
-      "Phân tử H₂O và ion Cu²⁺",
-      "Ion Cu²⁺ và ion OH⁻"
+      "[Ar] 3d⁵ 4s¹",
+      "[Ar] 3d⁴ 4s²",
+      "[Ar] 3d⁶",
+      "[Ar] 3d³ 4s² 4p¹"
     ],
     correctIndex: 0,
-    explanation: "Trong phức chất [Cu(H₂O)₆]²⁺, ion Cu²⁺ đóng vai trò là nguyên tử/ion trung tâm (nhận cặp electron tự do) và 6 phân tử H₂O đóng vai trò là phối tử liên kết phối trí với số phối trí bằng 6."
+    explanation: "Cr có hiện tượng chuyển 1 electron từ phân lớp 4s sang phân lớp 3d để đạt cấu hình bán bão hòa phân lớp d ([Ar] 3d⁵ 4s¹) bền vững hơn so với cấu hình dự kiến [Ar] 3d⁴ 4s²."
+  },
+  {
+    grade: 10,
+    topic: "Bảng tuần hoàn",
+    question: "Dãy ion nào sau đây đều có cùng cấu hình electron của khí hiếm Neon ([Ne]) và được xếp theo chiều GIẢM DẦN bán kính ion?",
+    options: [
+      "O²⁻ > F⁻ > Na⁺ > Mg²⁺ > Al³⁺",
+      "Al³⁺ > Mg²⁺ > Na⁺ > F⁻ > O²⁻",
+      "Na⁺ > Mg²⁺ > Al³⁺ > O²⁻ > F⁻",
+      "F⁻ > O²⁻ > Na⁺ > Mg²⁺ > Al³⁺"
+    ],
+    correctIndex: 0,
+    explanation: "Các ion O²⁻, F⁻, Na⁺, Mg²⁺, Al³⁺ là các ion đẳng electron (cùng có 10e). Khi điện tích hạt nhân Z tăng dần (từ O: Z=8 đến Al: Z=13), lực hút của hạt nhân lên các electron lớp ngoài càng mạnh làm bán kính ion giảm dần: O²⁻ > F⁻ > Na⁺ > Mg²⁺ > Al³⁺."
+  },
+  {
+    grade: 10,
+    topic: "Liên kết hóa học",
+    question: "Dạng hình học phân tử và góc liên kết của phân tử Boron trifluoride (BF₃) là:",
+    options: [
+      "Tam giác đều phẳng, góc liên kết 120° (lai hóa sp²)",
+      "Chóp tam giác, góc liên kết 107° (lai hóa sp³)",
+      "Tứ diện đều, góc liên kết 109.5° (lai hóa sp³)",
+      "Thẳng hàng, góc liên kết 180° (lai hóa sp)"
+    ],
+    correctIndex: 0,
+    explanation: "Nguyên tử trung tâm B (Z=5) lai hóa sp² tạo 3 liên kết sigma B-F hướng về 3 đỉnh của một tam giác đều phẳng, không còn cặp electron tự do nào, góc liên kết F-B-F là 120°."
+  },
+  {
+    grade: 10,
+    topic: "Nhiệt hóa học",
+    question: "Cho phản ứng: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) có ΔᵣH°₂₉₈ = -92.22 kJ. Nhận xét nào sau đây về phản ứng là ĐÚNG?",
+    options: [
+      "Phản ứng tỏa nhiệt; nhiệt tạo thành chuẩn của NH₃(g) là -46.11 kJ/mol",
+      "Phản ứng thu nhiệt; nhiệt tạo thành chuẩn của NH₃(g) là -92.22 kJ/mol",
+      "Phản ứng tỏa nhiệt; nhiệt tạo thành chuẩn của NH₃(g) là +46.11 kJ/mol",
+      "Phản ứng không kèm theo sự thay đổi nhiệt lượng"
+    ],
+    correctIndex: 0,
+    explanation: "ΔᵣH°₂₉₈ < 0 nên phản ứng tỏa nhiệt. Vì phản ứng tạo thành 2 mol khí NH₃ từ các đơn chất bền vững N₂ và H₂, nên nhiệt tạo thành chuẩn của 1 mol NH₃ là Δ_fH°₂₉₈(NH₃) = -92.22 / 2 = -46.11 kJ/mol."
+  },
+  {
+    grade: 10,
+    topic: "Tốc độ phản ứng",
+    question: "Biểu thức định luật tác dụng khối lượng cho phản ứng đơn giản: 2NO(g) + O₂(g) -> 2NO₂(g) là:",
+    options: [
+      "v = k.[NO]².[O₂]",
+      "v = k.[NO].[O₂]",
+      "v = k.[NO]².[O₂]²",
+      "v = k.[NO₂]² / ([NO]².[O₂])"
+    ],
+    correctIndex: 0,
+    explanation: "Theo định luật tác dụng khối lượng, tốc độ phản ứng tỉ lệ thuận với tích nồng độ các chất phản ứng nâng lên lũy thừa bằng hệ số tỉ lượng tương ứng: v = k.[NO]².[O₂]."
+  },
+  {
+    grade: 10,
+    topic: "Nhóm Halogen",
+    question: "Khi sục khí Chlorine (Cl₂) vào dung dịch NaOH đun nóng đến khoảng 70 - 80 °C, sản phẩm muối thu được là:",
+    options: [
+      "NaCl và NaClO₃",
+      "NaCl và NaClO (Nước Javel)",
+      "NaClO và NaClO₃",
+      "NaCl và NaClO₄"
+    ],
+    correctIndex: 0,
+    explanation: "Ở nhiệt độ thường, Cl₂ + 2NaOH -> NaCl + NaClO + H₂O (nước Javel). Nhưng khi đun nóng (70-80°C), Cl₂ tự oxi hóa - khử tạo muối chlorate: 3Cl₂ + 6NaOH -(t°)-> 5NaCl + NaClO₃ + 3H₂O."
+  },
+  {
+    grade: 10,
+    topic: "Nhóm Halogen",
+    question: "Để điều chế khí Chlorine (Cl₂) trong phòng thí nghiệm, người ta thường cho hydrochloric acid (HCl đặc) tác dụng với chất oxi hóa mạnh nào sau đây?",
+    options: [
+      "MnO₂ (đun nóng) hoặc KMnO₄ (ở nhiệt độ thường)",
+      "CaCO₃",
+      "FeSO₄",
+      "CuSO₄"
+    ],
+    correctIndex: 0,
+    explanation: "MnO₂ và KMnO₄ là các chất oxi hóa mạnh, oxi hóa ion Cl⁻ trong HCl đặc thành khí Cl₂: MnO₂ + 4HCl -(t°)-> MnCl₂ + Cl₂↑ + 2H₂O hoặc 2KMnO₄ + 16HCl -> 2KCl + 2MnCl₂ + 5Cl₂↑ + 8H₂O."
+  },
+  {
+    grade: 11,
+    topic: "Cân bằng hóa học",
+    question: "Cho cân bằng: 2SO₂(g) + O₂(g) ⇌ 2SO₃(g) (ΔᵣH°₂₉₈ < 0). Để cân bằng chuyển dịch theo chiều THUẬN (tạo nhiều SO₃ hơn), ta cần:",
+    options: [
+      "Tăng áp suất chung của hệ và hạ nhiệt độ",
+      "Giảm áp suất và tăng nhiệt độ",
+      "Tăng nhiệt độ và thêm chất xúc tác V₂O₅",
+      "Giảm nồng độ SO₂ và O₂"
+    ],
+    correctIndex: 0,
+    explanation: "Phản ứng có số mol khí giảm (3 mol -> 2 mol) và tỏa nhiệt (ΔH < 0). Theo nguyên lý Le Chatelier: tăng áp suất sẽ làm cân bằng chuyển dịch về phía ít mol khí hơn (chiều thuận), và hạ nhiệt độ sẽ làm cân bằng chuyển dịch theo chiều tỏa nhiệt (chiều thuận)."
+  },
+  {
+    grade: 11,
+    topic: "Cân bằng trong dung dịch",
+    question: "Giá trị pH của dung dịch hydrochloric acid (HCl) nồng độ 0.001 M ở 25 °C là:",
+    options: [
+      "3.0",
+      "1.0",
+      "11.0",
+      "7.0"
+    ],
+    correctIndex: 0,
+    explanation: "HCl là acid mạnh phân li hoàn toàn: [H⁺] = C_HCl = 0.001 M = 10⁻³ M. Do đó pH = -log[H⁺] = -log(10⁻³) = 3.0."
+  },
+  {
+    grade: 11,
+    topic: "Nitrogen & Sulfur",
+    question: "Khi cho kim loại Copper (Cu) tác dụng với dung dịch nitric acid (HNO₃ loãng), hiện tượng sinh ra khí không màu hóa nâu ngoài không khí là do tạo thành khí nào?",
+    options: [
+      "NO (Nitrogen monoxide) hóa nâu thành NO₂ ngoài không khí",
+      "N₂O (Dinitrogen monoxide)",
+      "NH₃ (Ammonia)",
+      "H₂ (Hydrogen)"
+    ],
+    correctIndex: 0,
+    explanation: "Phản ứng: 3Cu + 8HNO₃ (loãng) -> 3Cu(NO₃)₂ + 2NO↑ + 4H₂O. Khí NO sinh ra không màu, khi gặp oxygen trong không khí phản ứng tức thì: 2NO + O₂ -> 2NO₂ (khí màu nâu đỏ)."
+  },
+  {
+    grade: 11,
+    topic: "Đại cương Hóa hữu cơ",
+    question: "Trên phổ hồng ngoại (IR), tín hiệu hấp thụ mạnh và tù (broad band) trong vùng 3200 - 3600 cm⁻¹ là đặc trưng của liên kết nào?",
+    options: [
+      "Liên kết O-H (trong alcohol hoặc carboxylic acid)",
+      "Liên kết C=O (trong aldehyde, ketone)",
+      "Liên kết C≡C (trong alkyne)",
+      "Liên kết C-H (trong alkane)"
+    ],
+    correctIndex: 0,
+    explanation: "Liên kết O-H có liên kết hydrogen liên phân tử tạo tín hiệu hấp thụ rất mạnh, chân pic rộng tù đặc trưng ở vùng 3200 - 3650 cm⁻¹ trên phổ IR."
+  },
+  {
+    grade: 11,
+    topic: "Hydrocarbon",
+    question: "Theo quy tắc cộng Markovnikov, sản phẩm chính của phản ứng cộng HBr vào propene (CH₃-CH=CH₂) là:",
+    options: [
+      "2-bromopropane (CH₃-CHBr-CH₃)",
+      "1-bromopropane (CH₃-CH₂-CH₂Br)",
+      "1,2-dibromopropane",
+      "Propyl bromide"
+    ],
+    correctIndex: 0,
+    explanation: "Quy tắc Markovnikov: H⁺ ưu tiên cộng vào nguyên tử carbon bậc thấp hơn (chứa nhiều H hơn: =CH₂), còn phần mang điện âm Br⁻ cộng vào nguyên tử carbon bậc cao hơn (ít H hơn: -CH=) để tạo carbocation bền hơn. Sản phẩm chính là CH₃-CHBr-CH₃."
+  },
+  {
+    grade: 11,
+    topic: "Hydrocarbon",
+    question: "Chất nào sau đây tác dụng được với dung dịch AgNO₃ trong NH₃ tạo kết tủa màu vàng nhạt?",
+    options: [
+      "But-1-yne (CH≡C-CH₂-CH₃)",
+      "But-2-yne (CH₃-C≡C-CH₃)",
+      "But-1-ene (CH₂=CH-CH₂-CH₃)",
+      "Butane (CH₃-CH₂-CH₂-CH₃)"
+    ],
+    correctIndex: 0,
+    explanation: "Chỉ có các alk-1-yne (alkyne có liên kết ba đầu mạch) chứa nguyên tử H linh động liên kết trực tiếp với carbon lai hóa sp mới có phản ứng thế ion Ag⁺ tạo kết tủa vàng nhạt: CH≡C-R + AgNO₃ + NH₃ -> AgC≡C-R↓ + NH₄NO₃."
+  },
+  {
+    grade: 11,
+    topic: "Alcohol - Phenol",
+    question: "Khi nhỏ dung dịch nước bromine (Br₂ aq) vào dung dịch Phenol (C₆H₅OH), hiện tượng quan sát được là:",
+    options: [
+      "Xuất hiện kết tủa trắng 2,4,6-tribromophenol và nước bromine mất màu",
+      "Dung dịch chuyển sang màu tím biếc",
+      "Có khí bay lên sủi bọt mạnh",
+      "Không có hiện tượng gì xảy ra"
+    ],
+    correctIndex: 0,
+    explanation: "Nhóm -OH làm tăng mật độ electron ở các vị trí ortho và para trên nhân thơm, làm phenol phản ứng thế electrophile rất dễ dàng với nước bromine ở điều kiện thường tạo kết tủa trắng 2,4,6-tribromophenol."
+  },
+  {
+    grade: 11,
+    topic: "Hợp chất Carbonyl",
+    question: "Khi đun nóng 1 mol Formaldehyde (Methanal, HCHO) với lượng dư thuốc thử Tollens [Ag(NH₃)₂]OH, lượng kim loại Bạc (Ag) tối đa thu được là:",
+    options: [
+      "4 mol Ag",
+      "2 mol Ag",
+      "1 mol Ag",
+      "3 mol Ag"
+    ],
+    correctIndex: 0,
+    explanation: "HCHO có cấu tạo đặc biệt gồm 2 nhóm -CHO gắn vào cùng một nguyên tử carbon (H-C(=O)-H). Phản ứng tráng bạc xảy ra 2 giai đoạn tạo (NH₄)₂CO₃ và giải phóng 4 mol Ag cho mỗi 1 mol HCHO."
+  },
+  {
+    grade: 11,
+    topic: "Hợp chất Carbonyl",
+    question: "Hợp chất nào sau đây tham gia phản ứng tạo kết tủa màu vàng Triiodomethane (Iodoform, CHI₃) khi tác dụng với I₂ trong môi trường kiềm NaOH?",
+    options: [
+      "Acetone (CH₃-CO-CH₃) hoặc Ethanol (CH₃-CH₂-OH)",
+      "Methanol (CH₃OH)",
+      "Formaldehyde (HCHO)",
+      "Benzaldehyde (C₆H₅CHO)"
+    ],
+    correctIndex: 0,
+    explanation: "Phản ứng Iodoform đặc trưng cho các hợp chất chứa nhóm methyl ketone (CH₃-C=O) hoặc alcohol có thể bị oxi hóa tạo nhóm này (CH₃-CH(OH)-) như Acetone, Acetaldehyde, Ethanol."
+  },
+  {
+    grade: 12,
+    topic: "Ester - Lipid",
+    question: "Phản ứng thủy phân Ethyl acetate (CH₃COOC₂H₅) trong dung dịch NaOH đun nóng là phản ứng:",
+    options: [
+      "Phản ứng xà phòng hóa một chiều, tạo Sodium acetate (CH₃COONa) và Ethanol (C₂H₅OH)",
+      "Phản ứng thuận nghịch hai chiều",
+      "Phản ứng trùng hợp",
+      "Phản ứng tạo este vô cơ"
+    ],
+    correctIndex: 0,
+    explanation: "Thủy phân este trong môi trường kiềm (phản ứng xà phòng hóa) là phản ứng một chiều: CH₃COOC₂H₅ + NaOH -(t°)-> CH₃COONa + C₂H₅OH."
+  },
+  {
+    grade: 12,
+    topic: "Ester - Lipid",
+    question: "Chất béo Triolein (C₁₇H₃₃COO)₃C₃H₅ ở trạng thái lỏng. Để chuyển hóa thành chất béo rắn (bơ nhân tạo) phục vụ bảo quản và vận chuyển, người ta thực hiện phản ứng:",
+    options: [
+      "Hydro hóa có xúc tác Nickel (Ni, t°)",
+      "Thủy phân trong môi trường acid",
+      "Oxi hóa bằng thuốc tím KMnO₄",
+      "Xà phòng hóa bằng KOH"
+    ],
+    correctIndex: 0,
+    explanation: "Gốc oleate C₁₇H₃₃- là gốc không no chứa 1 nối đôi C=C. Phản ứng hydro hóa (cộng H₂, xúc tác Ni) biến gốc không no thành gốc stearate C₁₇H₃₅- no, chuyển dầu lỏng thành mỡ/bơ rắn (Tristearin)."
+  },
+  {
+    grade: 12,
+    topic: "Carbohydrate",
+    question: "Để phân biệt dung dịch Glucose và dung dịch Fructose ở điều kiện phòng thí nghiệm, thuốc thử thích hợp nhất là:",
+    options: [
+      "Dung dịch nước Bromine (Br₂ aq)",
+      "Thuốc thử Tollens [Ag(NH₃)₂]OH đun nóng",
+      "Cu(OH)₂ ở nhiệt độ thường",
+      "Quỳ tím"
+    ],
+    correctIndex: 0,
+    explanation: "Trong môi trường kiềm (thuốc thử Tollens, Cu(OH)₂), Fructose chuyển hóa qua lại thành Glucose nên cả hai đều tráng bạc và tạo phức xanh lam. Tuy nhiên trong môi trường acid/trung tính của nước Bromine, chỉ có nhóm aldehyde của Glucose làm mất màu nước Br₂: C₅H₁₁O₅-CHO + Br₂ + H₂O -> C₅H₁₁O₅-COOH + 2HBr."
+  },
+  {
+    grade: 12,
+    topic: "Amine - Amino Acid",
+    question: "Dãy nào sau đây sắp xếp các amine và ammonia theo chiều TĂNG DẦN lực base?",
+    options: [
+      "C₆H₅NH₂ (Aniline) < NH₃ < CH₃NH₂ (Methylamine) < (CH₃)₂NH (Dimethylamine)",
+      "NH₃ < C₆H₅NH₂ < CH₃NH₂ < (CH₃)₂NH",
+      "(CH₃)₂NH < CH₃NH₂ < NH₃ < C₆H₅NH₂",
+      "CH₃NH₂ < (CH₃)₂NH < NH₃ < C₆H₅NH₂"
+    ],
+    correctIndex: 0,
+    explanation: "Gốc phenyl C₆H₅- hút electron làm giảm mật độ điện tích trên N (lực base yếu hơn NH₃). Gốc alkyl CH₃- đẩy electron làm tăng mật độ điện tích trên N (lực base mạnh hơn NH₃). Bậc amine 2 ((CH₃)₂NH) có 2 nhóm đẩy e làm lực base mạnh hơn amine bậc 1."
+  },
+  {
+    grade: 12,
+    topic: "Peptide - Protein",
+    question: "Hợp chất nào sau đây cho phản ứng màu Biuret (tạo phức chất màu tím đặc trưng với Cu(OH)₂ trong môi trường kiềm)?",
+    options: [
+      "Tripeptide Ala-Gly-Val và Lòng trắng trứng (Albumin)",
+      "Dipeptide Gly-Ala",
+      "Glucose",
+      "Amino acid Glycine"
+    ],
+    correctIndex: 0,
+    explanation: "Phản ứng màu Biuret yêu cầu phân tử phải có từ 2 liên kết peptide (-CO-NH-) trở lên (tức là từ Tripeptide trở lên) hoặc Protein. Dipeptide chỉ có 1 liên kết peptide nên KHÔNG cho phản ứng màu Biuret."
+  },
+  {
+    grade: 12,
+    topic: "Polymer",
+    question: "Tơ Nilon-6,6 được điều chế bằng phản ứng trùng ngưng giữa hai monome nào sau đây?",
+    options: [
+      "Hexamethylenediamine H₂N-(CH₂)₆-NH₂ và Adipic acid HOOC-(CH₂)₄-COOH",
+      "Caprolactam",
+      "Terephthalic acid và Ethylene glycol",
+      "Acrylonitrile CH₂=CH-CN"
+    ],
+    correctIndex: 0,
+    explanation: "Tơ nilon-6,6 là một polyamide được điều chế bằng phản ứng trùng ngưng giữa Hexamethylenediamine (chứa 6 nguyên tử C) và Adipic acid (chứa 6 nguyên tử C)."
+  },
+  {
+    grade: 12,
+    topic: "Pin điện hóa",
+    question: "Cho pin điện hóa Galvani Zn-Cu hoạt động ở điều kiện chuẩn với E°(Zn²⁺/Zn) = -0.76 V và E°(Cu²⁺/Cu) = +0.34 V. Suất điện động chuẩn (E°pin) của pin là:",
+    options: [
+      "1.10 V",
+      "0.42 V",
+      "-1.10 V",
+      "0.76 V"
+    ],
+    correctIndex: 0,
+    explanation: "Suất điện động chuẩn của pin điện hóa: E°pin = E°(cực dương) - E°(cực âm) = E°(Cu²⁺/Cu) - E°(Zn²⁺/Zn) = +0.34 - (-0.76) = 1.10 V."
+  },
+  {
+    grade: 12,
+    topic: "Thế điện cực",
+    question: "Cho các cặp oxi hóa - khử: E°(Fe²⁺/Fe) = -0.44 V, E°(Cu²⁺/Cu) = +0.34 V, E°(Fe³⁺/Fe²⁺) = +0.77 V. Phản ứng nào sau đây tự xảy ra theo chiều thuận?",
+    options: [
+      "Cu + 2Fe³⁺ -> Cu²⁺ + 2Fe²⁺",
+      "Cu²⁺ + 2Fe²⁺ -> Cu + 2Fe³⁺",
+      "Fe²⁺ + Cu -> Fe + Cu²⁺",
+      "Fe + 3Cu²⁺ -> 2Fe³⁺ + 3Cu"
+    ],
+    correctIndex: 0,
+    explanation: "Theo quy tắc alpha: chất oxi hóa mạnh hơn (Fe³⁺, E° = +0.77V) sẽ phản ứng với chất khử mạnh hơn (Cu, E° = +0.34V) để tạo thành chất oxi hóa yếu hơn (Cu²⁺) và chất khử yếu hơn (Fe²⁺): Cu + 2Fe³⁺ -> Cu²⁺ + 2Fe²⁺."
   },
   {
     grade: 12,
     topic: "Phức chất",
-    question: "Khi cho dung dịch NH₃ dư vào dung dịch CuSO₄, ban đầu xuất hiện kết tủa xanh nhạt, sau đó kết tủa tan dần tạo thành dung dịch màu xanh lam thẫm do tạo thành phức chất nào?",
+    question: "Số phối trí của nguyên tử trung tâm Iron (Fe) trong phức chất bát diện Potassium hexacyanoferrate(II) K₄[Fe(CN)₆] là:",
     options: [
-      "[Cu(OH)₄]²⁻",
-      "[Cu(NH₃)₆]³⁺",
-      "[CuCl₄]²⁻",
-      "[Cu(NH₃)₄(H₂O)₂]²⁺ (hoặc [Cu(NH₃)₄]²⁺)"
+      "6",
+      "4",
+      "2",
+      "8"
     ],
-    correctIndex: 3,
-    explanation: "Ban đầu NH₃ tạo môi trường base làm kết tủa Cu(OH)₂: Cu²⁺ + 2NH₃ + 2H₂O -> Cu(OH)₂↓ + 2NH₄⁺. Sau đó NH₃ dư thế phối tử tạo phức chất tan màu xanh lam thẫm đặc trưng: Cu(OH)₂ + 4NH₃ -> [Cu(NH₃)₄]²⁺ + 2OH⁻."
+    correctIndex: 0,
+    explanation: "Trong phức chất [Fe(CN)₆]⁴⁻, ion Fe²⁺ liên kết với 6 phối tử monodentate cyano (CN⁻), do đó số phối trí của nguyên tử trung tâm Fe là 6 (cấu trúc hình học bát diện - octahedral)."
   }
 ];
+
+/**
+ * Fisher-Yates array shuffle algorithm for uniform unbiased distribution
+ */
+export function fisherYatesShuffle<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * Sample N diverse, non-repeating questions from the bank, prioritizing unasked questions.
+ */
+export function sampleDiverseQuizQuestions(count: number = 10, excludedSet?: Set<string>): QuizQuestion[] {
+  const cleanExcluded = excludedSet || new Set<string>();
+  
+  // 1. Filter out previously asked/played questions
+  let available = PRESET_HIGH_SCHOOL_QUIZ_BANK.filter(
+    q => !cleanExcluded.has(q.question.trim().toLowerCase())
+  );
+
+  // 2. If available unasked pool is too small, reset and use all bank
+  if (available.length < count) {
+    available = [...PRESET_HIGH_SCHOOL_QUIZ_BANK];
+  }
+
+  // 3. Shuffle thoroughly with Fisher-Yates
+  const shuffled = fisherYatesShuffle(available);
+
+  // 4. Return count sliced items with dynamically randomized ABCD options
+  return shuffled.slice(0, count).map(q => shuffleQuestionOptions(q));
+}
 
 /**
  * Get a random high school chemistry question from the preset bank,
  * prioritizing questions that haven't been asked yet in the current session.
  */
 export function getPresetQuizQuestion(askedSet?: Set<string>): QuizQuestion {
-  let selected: QuizQuestion;
-  if (!askedSet || askedSet.size === 0) {
-    selected = PRESET_HIGH_SCHOOL_QUIZ_BANK[Math.floor(Math.random() * PRESET_HIGH_SCHOOL_QUIZ_BANK.length)];
-  } else {
-    const unasked = PRESET_HIGH_SCHOOL_QUIZ_BANK.filter(
-      q => !askedSet.has(q.question.trim().toLowerCase())
-    );
-
-    if (unasked.length > 0) {
-      selected = unasked[Math.floor(Math.random() * unasked.length)];
-    } else {
-      // If all 50 questions have been asked in this session, reset and return any random question
-      selected = PRESET_HIGH_SCHOOL_QUIZ_BANK[Math.floor(Math.random() * PRESET_HIGH_SCHOOL_QUIZ_BANK.length)];
-    }
-  }
-
-  return shuffleQuestionOptions(selected);
+  const result = sampleDiverseQuizQuestions(1, askedSet);
+  return result[0] || shuffleQuestionOptions(PRESET_HIGH_SCHOOL_QUIZ_BANK[0]);
 }
-
 
 /**
  * Dynamically shuffle options of any question so the answer position (A, B, C, D) is randomized
@@ -704,20 +1022,15 @@ export function shuffleQuestionOptions(q: QuizQuestion): QuizQuestion {
 
   const originalOptions = q.options;
   const correctIndex = q.correctIndex !== undefined ? q.correctIndex : 0;
-  const correctOptionText = originalOptions[correctIndex];
 
   const indexed = originalOptions.map((opt, idx) => ({
     opt,
     isCorrect: idx === correctIndex
   }));
 
-  for (let i = indexed.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
-  }
-
-  const shuffledOptions = indexed.map(item => item.opt);
-  const newCorrectIndex = indexed.findIndex(item => item.isCorrect);
+  const shuffledIndexed = fisherYatesShuffle(indexed);
+  const shuffledOptions = shuffledIndexed.map(item => item.opt);
+  const newCorrectIndex = shuffledIndexed.findIndex(item => item.isCorrect);
 
   return {
     ...q,
