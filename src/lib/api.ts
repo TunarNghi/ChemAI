@@ -1,9 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://cohutjbyyubjntqhjoao.supabase.co";
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
+// 1. Primary Supabase Client (Gốc / Chính)
+const PRIMARY_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://cohutjbyyubjntqhjoao.supabase.co";
+const PRIMARY_SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(PRIMARY_SUPABASE_URL, PRIMARY_SUPABASE_ANON_KEY);
+
+// 2. Backup Supabase Client (Dự Phòng / Failover)
+const BACKUP_SUPABASE_URL = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL || "https://xgmwmexfyzgnkcrljdki.supabase.co";
+const BACKUP_SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_BACKUP_SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_sA51KcVjh0PJDDmgsSQbKw_0hvknAD5";
+
+export const backupSupabase = createClient(BACKUP_SUPABASE_URL, BACKUP_SUPABASE_ANON_KEY);
 
 const DIFY_API_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || "";
 const DIFY_API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || "https://api.dify.ai/v1";
