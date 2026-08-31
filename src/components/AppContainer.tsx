@@ -67,6 +67,7 @@ import LeaderboardTab from '@/components/LeaderboardTab';
 import PeriodicTableTab from '@/components/PeriodicTableTab';
 import TeacherWhiteboard from '@/components/TeacherWhiteboard';
 import DiagnosticTestCenter from '@/components/DiagnosticTestCenter';
+import MobileViewManager from '@/components/MobileViewManager';
 import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 import { Grid2X2, Brain, Pen, Compass } from 'lucide-react';
 
@@ -516,45 +517,51 @@ export default function AppContainer() {
           </Box>
         </Drawer>
 
-        {/* Main View Area with Mobile-Optimized Spacing */}
-        <Container
-          maxWidth="xl"
-          sx={{
-            mt: { xs: 1.5, sm: 2, md: 3 },
-            px: { xs: 1.5, sm: 2, md: 3 },
-            maxWidth: '100% !important',
-          }}
+        {/* Main View Area with Mobile-Optimized Spacing & Mobile View Manager */}
+        <MobileViewManager
+          currentTab={currentTab}
+          onNavigateTab={(idx) => handleSelectTab(idx)}
+          isTeacher={isTeacher}
         >
-          {(!currentUser || currentTab === 0) && (
-            <HomeDashboard
-              onNavigateTab={(idx) => handleSelectTab(idx)}
-              onOpenAuthModal={(role) => {
-                setAuthInitialRole(role || 'student');
-                setAuthModalOpen(true);
-              }}
-              currentUser={currentUser}
-              onLogout={() => {
-                saveStoredCurrentUser(null);
-                setCurrentUser(null);
-                setCurrentTab(0);
-              }}
-            />
-          )}
-          {currentUser && currentTab === 1 && <VirtualLab />}
-          {currentUser && currentTab === 2 && <DifyChatTutor />}
-          {currentUser && currentTab === 3 && <QuizKahootTab />}
-          {currentUser && currentTab === 4 && <SafetyTab />}
-          {currentUser && currentTab === 5 && (isTeacher ? <LessonPlanner /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Soạn Giáo Án (5512)" />)}
-          {currentUser && currentTab === 6 && (isTeacher ? <ExamManager /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Soạn - Chấm Bài Thi" />)}
-          {currentUser && currentTab === 7 && (isTeacher ? <StemProjects /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Dự Án Học Tập STEM" />)}
-          {currentUser && currentTab === 8 && <TeacherVideoLectures currentUser={currentUser} />}
-          {currentUser && currentTab === 9 && (isTeacher ? <StudentProgressManager currentUser={currentUser} /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh" />)}
-          {currentUser && currentTab === 10 && (isTeacher ? <AuditTab /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Cổng Quản Trị Audit" />)}
-          {currentUser && currentTab === 11 && <LeaderboardTab currentUser={currentUser} onNavigateTab={(idx) => handleSelectTab(idx)} />}
-          {currentUser && currentTab === 12 && <PeriodicTableTab />}
-          {currentUser && currentTab === 13 && (isTeacher ? <TeacherWhiteboard /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Studio Bảng Trắng Dạy Học" />)}
-          {currentUser && currentTab === 14 && <DiagnosticTestCenter />}
-        </Container>
+          <Container
+            maxWidth="xl"
+            sx={{
+              mt: { xs: 1.5, sm: 2, md: 3 },
+              px: { xs: 1, sm: 2, md: 3 },
+              maxWidth: '100% !important',
+            }}
+          >
+            {(!currentUser || currentTab === 0) && (
+              <HomeDashboard
+                onNavigateTab={(idx) => handleSelectTab(idx)}
+                onOpenAuthModal={(role) => {
+                  setAuthInitialRole(role || 'student');
+                  setAuthModalOpen(true);
+                }}
+                currentUser={currentUser}
+                onLogout={() => {
+                  saveStoredCurrentUser(null);
+                  setCurrentUser(null);
+                  setCurrentTab(0);
+                }}
+              />
+            )}
+            {currentUser && currentTab === 1 && <VirtualLab />}
+            {currentUser && currentTab === 2 && <DifyChatTutor />}
+            {currentUser && currentTab === 3 && <QuizKahootTab />}
+            {currentUser && currentTab === 4 && <SafetyTab />}
+            {currentUser && currentTab === 5 && (isTeacher ? <LessonPlanner /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Soạn Giáo Án (5512)" />)}
+            {currentUser && currentTab === 6 && (isTeacher ? <ExamManager /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Soạn - Chấm Bài Thi" />)}
+            {currentUser && currentTab === 7 && (isTeacher ? <StemProjects /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Dự Án Học Tập STEM" />)}
+            {currentUser && currentTab === 8 && <TeacherVideoLectures currentUser={currentUser} />}
+            {currentUser && currentTab === 9 && (isTeacher ? <StudentProgressManager currentUser={currentUser} /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh" />)}
+            {currentUser && currentTab === 10 && (isTeacher ? <AuditTab /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Cổng Quản Trị Audit" />)}
+            {currentUser && currentTab === 11 && <LeaderboardTab currentUser={currentUser} onNavigateTab={(idx) => handleSelectTab(idx)} />}
+            {currentUser && currentTab === 12 && <PeriodicTableTab />}
+            {currentUser && currentTab === 13 && (isTeacher ? <TeacherWhiteboard /> : <TeacherAccessGuard onBack={() => setCurrentTab(0)} onOpenAuth={() => { setAuthInitialRole('teacher'); setAuthModalOpen(true); }} title="Studio Bảng Trắng Dạy Học" />)}
+            {currentUser && currentTab === 14 && <DiagnosticTestCenter />}
+          </Container>
+        </MobileViewManager>
 
         {/* ALL FEATURES MEGA MENU / HUB MODAL */}
         <Dialog

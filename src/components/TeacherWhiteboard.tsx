@@ -43,6 +43,8 @@ import {
   ZoomIn,
   ZoomOut,
   X,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 export type BoardTheme = 'chalkboard' | 'whiteboard' | 'grid' | 'ruled';
@@ -61,18 +63,16 @@ interface DrawAction {
 }
 
 const PALETTE_COLORS = [
+  '#000000', // Đen mực
   '#ffffff', // Trắng phấn
   '#38bdf8', // Xanh cyan
-  '#34d399', // Xanh lục ngọc
-  '#fde047', // Vàng phấn
-  '#fb923c', // Cam
-  '#f87171', // Đỏ hồng
-  '#c084fc', // Tím phấn
-  '#94a3b8', // Xám sáng
-  '#000000', // Đen mực
-  '#0284c7', // Xanh biển đậm
-  '#059669', // Xanh lá đậm
-  '#dc2626', // Đỏ đậm
+  '#ef4444', // Đỏ
+  '#10b981', // Xanh lá
+  '#f59e0b', // Vàng cam
+  '#a855f7', // Tím
+  '#ec4899', // Hồng
+  '#06b6d4', // Xanh ngọc
+  '#64748b', // Xám
 ];
 
 const CHEMISTRY_STAMPS = [
@@ -112,6 +112,7 @@ export default function TeacherWhiteboard() {
   const [textInputValue, setTextInputValue] = useState('');
   const [textPos, setTextPos] = useState<{ x: number; y: number }>({ x: 100, y: 100 });
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Selection & Editing State
   const [selectedActionIndex, setSelectedActionIndex] = useState<number | null>(null);
@@ -452,14 +453,9 @@ export default function TeacherWhiteboard() {
       } else if (act.tool === 'arrow_rev' && act.start && act.end) {
         ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = act.color || '#ffffff';
+        ctx.fillStyle = act.color || '#ffffff';
         ctx.lineWidth = act.size || 3;
-        const midY = (act.start.y + act.end.y) / 2;
-        ctx.beginPath();
-        ctx.moveTo(act.start.x, midY - 4);
-        ctx.lineTo(act.end.x, midY - 4);
-        ctx.moveTo(act.start.x, midY + 4);
-        ctx.lineTo(act.end.x, midY + 4);
-        ctx.stroke();
+        drawReversibleArrow(ctx, act.start.x, act.start.y, act.end.x, act.end.y, 12);
       } else if (act.tool === 'rect' && act.start && act.end) {
         ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = act.color || '#ffffff';
@@ -494,10 +490,15 @@ export default function TeacherWhiteboard() {
     }
   };
 
-  const drawArrow = (ctx: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number, headlen: number) => {
+  // Draw One-Way Reaction Arrow (→)
+  const drawArrow = (ctx: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number, headlen: number = 14) => {
     const dx = tox - fromx;
     const dy = toy - fromy;
+    const len = Math.hypot(dx, dy);
+    if (len < 2) return;
     const angle = Math.atan2(dy, dx);
+    const h = Math.min(headlen, Math.max(8, len * 0.35));
+
     ctx.beginPath();
     ctx.moveTo(fromx, fromy);
     ctx.lineTo(tox, toy);
@@ -505,10 +506,50 @@ export default function TeacherWhiteboard() {
 
     ctx.beginPath();
     ctx.moveTo(tox, toy);
-    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.lineTo(tox - h * Math.cos(angle - Math.PI / 6), toy - h * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(tox - h * Math.cos(angle + Math.PI / 6), toy - h * Math.sin(angle + Math.PI / 6));
     ctx.closePath();
     ctx.fill();
+  };
+
+  // Draw Reversible Chemical Equilibrium Arrow (⇄)
+  const drawReversibleArrow = (ctx: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number, headlen: number = 12) => {
+    const dx = tox - fromx;
+    const dy = toy - fromy;
+    const len = Math.hypot(dx, dy);
+    if (len < 4) return;
+
+    const angle = Math.atan2(dy, dx);
+    const h = Math.min(headlen, Math.max(7, len * 0.3));
+    const offset = Math.max(3.5, ctx.lineWidth + 2);
+
+    // Perpendicular unit vector
+    const nx = -dy / len;
+    const ny = dx / len;
+
+    // Top Arrow (Points Forward: Start -> End)
+    const topStartX = fromx + nx * offset;
+    const topStartY = fromy + ny * offset;
+    const topEndX = tox + nx * offset;
+    const topEndY = toy + ny * offset;
+
+    ctx.beginPath();
+    ctx.moveTo(topStartX, topStartY);
+    ctx.lineTo(topEndX, topEndY);
+    ctx.lineTo(topEndX - h * Math.cos(angle - Math.PI / 5), topEndY - h * Math.sin(angle - Math.PI / 5));
+    ctx.stroke();
+
+    // Bottom Arrow (Points Backward: End -> Start)
+    const botStartX = tox - nx * offset;
+    const botStartY = toy - ny * offset;
+    const botEndX = fromx - nx * offset;
+    const botEndY = fromy - ny * offset;
+
+    ctx.beginPath();
+    ctx.moveTo(botStartX, botStartY);
+    ctx.lineTo(botEndX, botEndY);
+    ctx.lineTo(botEndX + h * Math.cos(angle - Math.PI / 5), botEndY + h * Math.sin(angle - Math.PI / 5));
+    ctx.stroke();
   };
 
   // Get pointer coordinates relative to canvas
@@ -1024,6 +1065,25 @@ export default function TeacherWhiteboard() {
           <Button
             size="small"
             variant="outlined"
+            startIcon={isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            sx={{
+              fontSize: '11.5px',
+              fontWeight: 'bold',
+              borderRadius: 2,
+              color: isFullscreen ? '#f59e0b' : '#38bdf8',
+              borderColor: isFullscreen ? '#f59e0b' : 'rgba(56, 189, 248, 0.4)',
+              bgcolor: isFullscreen ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+              textTransform: 'none',
+              '&:hover': { bgcolor: isFullscreen ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.15)' },
+            }}
+          >
+            {isFullscreen ? 'Thu Nhỏ Studio' : '⛶ Toàn Màn Hình Studio'}
+          </Button>
+
+          <Button
+            size="small"
+            variant="outlined"
             startIcon={<Download size={15} />}
             onClick={handleExportPNG}
             sx={{
@@ -1062,10 +1122,24 @@ export default function TeacherWhiteboard() {
       <Paper
         elevation={0}
         sx={{
-          borderRadius: 3.5,
+          borderRadius: isFullscreen ? 0 : 3.5,
           overflow: 'hidden',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: isFullscreen ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
           bgcolor: '#090d16',
+          ...(isFullscreen
+            ? {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                flexDirection: 'column',
+              }
+            : {}),
         }}
       >
         {/* Floating Top Control Toolbar */}
@@ -1275,23 +1349,40 @@ export default function TeacherWhiteboard() {
           {/* Group 2: Palette & Size */}
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
             {/* Color Palette Chips */}
-            <Box display="flex" alignItems="center" gap={0.5}>
-              {PALETTE_COLORS.slice(0, isMobile ? 6 : 10).map((c) => (
-                <Box
-                  key={c}
-                  onClick={() => setCurrentColor(c)}
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    bgcolor: c,
-                    cursor: 'pointer',
-                    border: currentColor === c ? '2.5px solid #38bdf8' : '1px solid rgba(255,255,255,0.3)',
-                    transform: currentColor === c ? 'scale(1.2)' : 'scale(1)',
-                    transition: 'all 0.15s ease',
-                    boxShadow: currentColor === c ? `0 0 10px ${c}` : 'none',
-                  }}
-                />
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={0.6}
+              sx={{
+                maxWidth: { xs: 200, sm: 'none' },
+                overflowX: 'auto',
+                py: 0.3,
+                '&::-webkit-scrollbar': { height: 3 },
+              }}
+            >
+              {PALETTE_COLORS.map((c) => (
+                <Tooltip key={c} title={c === '#000000' ? 'Đen mực' : c === '#ffffff' ? 'Trắng phấn' : c}>
+                  <Box
+                    onClick={() => setCurrentColor(c)}
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      minWidth: 20,
+                      borderRadius: '50%',
+                      bgcolor: c,
+                      cursor: 'pointer',
+                      border:
+                        currentColor === c
+                          ? '2.5px solid #38bdf8'
+                          : c === '#000000'
+                          ? '1.5px solid rgba(255,255,255,0.7)'
+                          : '1px solid rgba(255,255,255,0.3)',
+                      transform: currentColor === c ? 'scale(1.2)' : 'scale(1)',
+                      transition: 'all 0.15s ease',
+                      boxShadow: currentColor === c ? `0 0 10px ${c === '#000000' ? '#38bdf8' : c}` : 'none',
+                    }}
+                  />
+                </Tooltip>
               ))}
             </Box>
 
@@ -1470,17 +1561,23 @@ export default function TeacherWhiteboard() {
                 <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '10.5px' }}>
                   Màu:
                 </Typography>
-                {PALETTE_COLORS.slice(0, 6).map((c) => (
+                {PALETTE_COLORS.map((c) => (
                   <Box
                     key={c}
                     onClick={() => handleChangeSelectedColor(c)}
                     sx={{
                       width: 16,
                       height: 16,
+                      minWidth: 16,
                       borderRadius: '50%',
                       bgcolor: c,
                       cursor: 'pointer',
-                      border: selectedAction.color === c ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.4)',
+                      border:
+                        selectedAction.color === c
+                          ? '2px solid #38bdf8'
+                          : c === '#000000'
+                          ? '1px solid rgba(255,255,255,0.7)'
+                          : '1px solid rgba(255,255,255,0.4)',
                     }}
                   />
                 ))}
@@ -1548,7 +1645,8 @@ export default function TeacherWhiteboard() {
           ref={containerRef}
           sx={{
             width: '100%',
-            height: { xs: 450, sm: 580, md: 660 },
+            height: isFullscreen ? 'calc(100vh - 125px)' : { xs: 450, sm: 580, md: 660 },
+            flexGrow: isFullscreen ? 1 : 0,
             position: 'relative',
             cursor: currentTool === 'select' ? (selectedAction ? 'grab' : 'default') : currentTool === 'eraser' ? 'crosshair' : 'crosshair',
             userSelect: 'none',

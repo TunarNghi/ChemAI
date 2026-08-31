@@ -62,6 +62,9 @@ export default function PeriodicTableTab() {
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
+  // Mobile Display Mode: Cards (fast thumb list) vs Grid (18-column scrollable map)
+  const [mobileDisplayMode, setMobileDisplayMode] = useState<'cards' | 'grid'>('cards');
+
   // Main View Mode (Table vs Orbital Simulator)
   const [viewMode, setViewMode] = useState<'table' | 'orbital'>('table');
   const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('none');
@@ -688,6 +691,123 @@ export default function PeriodicTableTab() {
       {/* Conditional View: Orbital Simulator vs Full Periodic Table Grid */}
       {viewMode === 'orbital' ? (
         <OrbitalSimulator />
+      ) : isMobile && mobileDisplayMode === 'cards' ? (
+        /* Mobile Dedicated Element Cards Grid */
+        <Box sx={{ width: '100%' }}>
+          {/* Mobile View Switcher */}
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={2}
+            p={1.2}
+            bgcolor="rgba(15, 23, 42, 0.75)"
+            borderRadius={3}
+            border="1px solid rgba(56, 189, 248, 0.3)"
+          >
+            <Typography variant="caption" sx={{ color: '#38bdf8', fontWeight: 'bold' }}>
+              📱 Chế độ xem điện thoại:
+            </Typography>
+            <Stack direction="row" spacing={0.8}>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={() => setMobileDisplayMode('cards')}
+                sx={{
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  py: 0.3,
+                  px: 1.2,
+                  borderRadius: 2,
+                  bgcolor: '#0284c7',
+                }}
+              >
+                📑 Thẻ ({filteredElements.length})
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setMobileDisplayMode('grid')}
+                sx={{
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  py: 0.3,
+                  px: 1.2,
+                  borderRadius: 2,
+                  bgcolor: 'transparent',
+                }}
+              >
+                🗺️ Bản Đồ 18 Cột
+              </Button>
+            </Stack>
+          </Box>
+
+          {/* Mobile Cards Grid */}
+          <Grid container spacing={1.2}>
+            {filteredElements.map((element) => {
+              const mainCatStyle = MAIN_CATEGORY_COLORS[element.mainCategory];
+              const subCatStyle = SUB_CATEGORY_STYLES[element.subCategory] || mainCatStyle;
+              const tileBg = isAdvancedCategories ? subCatStyle.bg : mainCatStyle.bg;
+              const tileBorder = isAdvancedCategories ? `1.5px solid ${subCatStyle.border}` : `1.5px solid ${mainCatStyle.border}`;
+              const subCatObj = SUB_CATEGORY_LABELS[element.subCategory];
+              const subCatName = subCatObj ? subCatObj.label : element.mainCategory;
+              return (
+                <Grid item xs={6} sm={4} key={element.atomicNumber}>
+                  <Paper
+                    onClick={() => handleOpenDetail(element.atomicNumber)}
+                    sx={{
+                      p: 1.2,
+                      borderRadius: 2.5,
+                      background: tileBg,
+                      border: tileBorder,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      height: '100%',
+                      minHeight: 90,
+                      transition: 'all 0.15s ease',
+                      '&:active': { transform: 'scale(0.97)' },
+                    }}
+                  >
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Chip
+                        label={`Z=${element.atomicNumber}`}
+                        size="small"
+                        sx={{ height: 18, fontSize: 9.5, fontWeight: 'bold', bgcolor: 'rgba(0,0,0,0.4)', color: '#fff' }}
+                      />
+                      <Typography variant="caption" sx={{ fontSize: '10px', color: '#e0f2fe', fontWeight: 'bold' }}>
+                        {typeof element.atomicMass === 'number' ? element.atomicMass.toFixed(1) : element.atomicMass}
+                      </Typography>
+                    </Box>
+
+                    <Box textAlign="center" my={0.5}>
+                      <Typography variant="h5" fontWeight="900" sx={{ color: '#fff', lineHeight: 1 }}>
+                        {element.symbol}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#f8fafc', fontWeight: 600, fontSize: '11px', display: 'block', mt: 0.2 }} noWrap>
+                        {element.nameVi} ({element.nameEn})
+                      </Typography>
+                    </Box>
+
+                    <Box display="flex" justifyContent="space-between" alignItems="center" pt={0.5} borderTop="1px solid rgba(255,255,255,0.1)">
+                      <Typography variant="caption" sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.85)' }}>
+                        Khối {element.block} • Nhóm {element.group}
+                      </Typography>
+                      <Chip
+                        label={subCatName}
+                        size="small"
+                        sx={{ height: 16, fontSize: '8px', bgcolor: 'rgba(255,255,255,0.15)', color: '#fff' }}
+                      />
+                    </Box>
+                  </Paper>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
       ) : (
         /* Main IUPAC Periodic Table Grid Container */
         <Box
@@ -698,6 +818,30 @@ export default function PeriodicTableTab() {
             '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(56, 189, 248, 0.3)', borderRadius: 4 },
           }}
         >
+          {isMobile && (
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              mb={1.5}
+              p={1}
+              bgcolor="rgba(15, 23, 42, 0.75)"
+              borderRadius={2}
+              border="1px solid rgba(56, 189, 248, 0.3)"
+            >
+              <Typography variant="caption" sx={{ color: '#38bdf8', fontWeight: 'bold' }}>
+                👉 Vuốt ngang để xem đủ 18 nhóm
+              </Typography>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setMobileDisplayMode('cards')}
+                sx={{ fontSize: '10.5px', textTransform: 'none', py: 0.2, px: 1, borderRadius: 2 }}
+              >
+                Chuyển sang dạng Thẻ 📑
+              </Button>
+            </Box>
+          )}
           <Box
             sx={{
               display: 'grid',
