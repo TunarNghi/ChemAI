@@ -19,7 +19,8 @@ import {
   Select,
   Slider,
   Stack, TextField,
-  Typography
+  Typography,
+  Tooltip,
 } from '@mui/material';
 import { CategoryScale, Chart as ChartJS, Tooltip as ChartTooltip, Filler, Legend, LinearScale, LineElement, PointElement, Title } from 'chart.js';
 import {
@@ -34,9 +35,13 @@ import {
   X,
   Table,
   Sliders,
+  Zap,
+  Sparkles,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import TitrationSimulator from '@/components/TitrationSimulator';
+import RedoxBalancer from '@/components/RedoxBalancer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, ChartTooltip, Legend, Filler);
 
@@ -68,51 +73,36 @@ export const PRESETS: PresetReaction[] = [
   { id: 11, grade: "10", name: "11. BaCl₂ + H₂SO₄ (Kết tủa trắng BaSO₄ không tan)", subA: "BaCl2", volA: 50, concA: 0.5, subB: "H2SO4", volB: 50, concB: 0.5, temp: 25, indicator: "none" },
 ];
 
+import { ELEMENTS_DATA } from '@/lib/elementsData';
+
 interface ChemicalMItem {
   formula: string;
   displayFormula?: string;
   mVal: string;
   color: string;
+  nameVi?: string;
+  category?: string;
+  atomicNumber?: number;
 }
 
-const PERIODIC_ELEMENTS_DATA: ChemicalMItem[] = [
-  { formula: "H", mVal: "1.0", color: "#38bdf8" },
-  { formula: "He", mVal: "4.0", color: "#38bdf8" },
-  { formula: "Li", mVal: "6.9", color: "#38bdf8" },
-  { formula: "Be", mVal: "9.0", color: "#38bdf8" },
-  { formula: "B", mVal: "10.8", color: "#38bdf8" },
-  { formula: "C", mVal: "12.0", color: "#38bdf8" },
-  { formula: "N", mVal: "14.0", color: "#38bdf8" },
-  { formula: "O", mVal: "16.0", color: "#38bdf8" },
-  { formula: "F", mVal: "19.0", color: "#38bdf8" },
-  { formula: "Na", mVal: "23.0", color: "#38bdf8" },
-  { formula: "Mg", mVal: "24.3", color: "#38bdf8" },
-  { formula: "Al", mVal: "27.0", color: "#38bdf8" },
-  { formula: "P", mVal: "31.0", color: "#38bdf8" },
-  { formula: "S", mVal: "32.1", color: "#38bdf8" },
-  { formula: "Cl", mVal: "35.5", color: "#fbbf24" },
-  { formula: "K", mVal: "39.1", color: "#38bdf8" },
-  { formula: "Ca", mVal: "40.1", color: "#38bdf8" },
-  { formula: "Fe", mVal: "55.8", color: "#38bdf8" },
-  { formula: "Cu", mVal: "63.5", color: "#38bdf8" },
-  { formula: "Zn", mVal: "65.4", color: "#38bdf8" },
-  { formula: "Ag", mVal: "107.9", color: "#38bdf8" },
-  { formula: "Ba", mVal: "137.3", color: "#38bdf8" },
-];
-
 const CHEMICAL_COMPOUNDS_DATA: ChemicalMItem[] = [
-  { formula: "HCl", mVal: "36.5", color: "#fbbf24" },
-  { formula: "H2SO4", displayFormula: "H₂SO₄", mVal: "98.0", color: "#fbbf24" },
-  { formula: "HNO3", displayFormula: "HNO₃", mVal: "63.0", color: "#fbbf24" },
-  { formula: "NaOH", mVal: "40.0", color: "#34d399" },
-  { formula: "KOH", mVal: "56.1", color: "#34d399" },
-  { formula: "AgNO3", displayFormula: "AgNO₃", mVal: "170.0", color: "#c084fc" },
-  { formula: "CuSO4", displayFormula: "CuSO₄", mVal: "160.0", color: "#38bdf8" },
-  { formula: "KMnO4", displayFormula: "KMnO₄", mVal: "158.0", color: "#c084fc" },
-  { formula: "CH3COOH", displayFormula: "CH₃COOH", mVal: "60.0", color: "#fde047" },
-  { formula: "C2H5OH", displayFormula: "C₂H₅OH", mVal: "46.0", color: "#fde047" },
-  { formula: "C6H12O6", displayFormula: "Glucose", mVal: "180.0", color: "#fb7185" },
-  { formula: "CaCO3", displayFormula: "CaCO₃", mVal: "100.0", color: "#f8fafc" },
+  { formula: "HCl", mVal: "36.5", color: "#fbbf24", nameVi: "Axit clohiđric" },
+  { formula: "H2SO4", displayFormula: "H₂SO₄", mVal: "98.0", color: "#fbbf24", nameVi: "Axit sunfuric" },
+  { formula: "HNO3", displayFormula: "HNO₃", mVal: "63.0", color: "#fbbf24", nameVi: "Axit nitric" },
+  { formula: "NaOH", mVal: "40.0", color: "#34d399", nameVi: "Natri hiđroxit" },
+  { formula: "KOH", mVal: "56.1", color: "#34d399", nameVi: "Kali hiđroxit" },
+  { formula: "AgNO3", displayFormula: "AgNO₃", mVal: "170.0", color: "#c084fc", nameVi: "Bạc nitrat" },
+  { formula: "CuSO4", displayFormula: "CuSO₄", mVal: "160.0", color: "#38bdf8", nameVi: "Đồng(II) sunfat" },
+  { formula: "KMnO4", displayFormula: "KMnO₄", mVal: "158.0", color: "#c084fc", nameVi: "Thuốc tím" },
+  { formula: "CH3COOH", displayFormula: "CH₃COOH", mVal: "60.0", color: "#fde047", nameVi: "Axit axetic (Giấm ăn)" },
+  { formula: "C2H5OH", displayFormula: "C₂H₅OH", mVal: "46.0", color: "#fde047", nameVi: "Ethanol (Cồn 96°)" },
+  { formula: "C6H12O6", displayFormula: "Glucose", mVal: "180.0", color: "#fb7185", nameVi: "Glucozơ" },
+  { formula: "CaCO3", displayFormula: "CaCO₃", mVal: "100.0", color: "#f8fafc", nameVi: "Đá vôi" },
+  { formula: "BaCl2", displayFormula: "BaCl₂", mVal: "208.2", color: "#38bdf8", nameVi: "Bari clorua" },
+  { formula: "KI", displayFormula: "KI", mVal: "166.0", color: "#a855f7", nameVi: "Kali iotua" },
+  { formula: "FeCl3", displayFormula: "FeCl₃", mVal: "162.2", color: "#f59e0b", nameVi: "Sắt(III) clorua" },
+  { formula: "AlCl3", displayFormula: "AlCl₃", mVal: "133.3", color: "#94a3b8", nameVi: "Nhôm clorua" },
+  { formula: "H2O2", displayFormula: "H₂O₂", mVal: "34.0", color: "#38bdf8", nameVi: "Oxi già" },
 ];
 
 export interface SimulationResult {
@@ -264,6 +254,7 @@ export const PRESET_SIMULATION_DATA: Record<number, SimulationResult> = {
 };
 
 export default function VirtualLab() {
+  const [activeLabModule, setActiveLabModule] = useState<'reaction' | 'titration' | 'redox'>('reaction');
   const [gradeFilter, setGradeFilter] = useState<string>("all");
   const [subA, setSubA] = useState<string>("Zn");
   const [volA, setVolA] = useState<number>(10);
@@ -282,6 +273,8 @@ export default function VirtualLab() {
 
   const [openPeriodic, setOpenPeriodic] = useState<boolean>(false);
   const [periodicTab, setPeriodicTab] = useState<'elements' | 'compounds'>('elements');
+  const [targetSlot, setTargetSlot] = useState<'A' | 'B'>('A');
+  const [elementSearchQuery, setElementSearchQuery] = useState<string>('');
 
   // Dynamic animations state
   const [bubbles, setBubbles] = useState<Array<{ id: number; left: number; delay: number; size: number }>>([]);
@@ -531,43 +524,99 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
 
   return (
     <Box>
-      <Card sx={{ bgcolor: 'background.paper', borderRadius: 3, border: '1px solid rgba(255,255,255,0.1)', mb: 3 }}>
-        <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>
-          {/* Header */}
-          <Box
-            display="flex"
-            flexDirection={{ xs: 'column', sm: 'row' }}
-            justifyContent="space-between"
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            gap={1.5}
-            mb={2}
+      {/* 3 Major Lab Modules Navigation Switcher */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 1.5,
+          mb: 2.5,
+          borderRadius: 2.5,
+          bgcolor: 'rgba(15, 23, 42, 0.85)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 1.5,
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+          <Button
+            variant={activeLabModule === 'reaction' ? 'contained' : 'outlined'}
+            color="primary"
+            size="small"
+            startIcon={<FlaskConical size={16} />}
+            onClick={() => setActiveLabModule('reaction')}
+            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
           >
-            <Box display="flex" alignItems="center" gap={1}>
-              <FlaskConical color="#0284c7" size={22} />
-              <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: '15px', sm: '18px', md: '20px' } }}>
-                Phòng Thí Nghiệm Hóa Học Ảo THPT (2D/Chart Dynamic)
-              </Typography>
-            </Box>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<Grid2X2 size={14} />}
-              onClick={() => setOpenPeriodic(true)}
-              sx={{
-                borderColor: 'rgba(255,255,255,0.2)',
-                color: '#38bdf8',
-                textTransform: 'none',
-                fontSize: { xs: '12px', sm: '13px' },
-                alignSelf: { xs: 'stretch', sm: 'auto' }
-              }}
-            >
-              Bảng tuần hoàn / M
-            </Button>
-          </Box>
+            Phản Ứng Động Học Ảo
+          </Button>
 
-          <Grid container spacing={{ xs: 2, md: 3 }}>
-            {/* LEFT INPUT PANEL */}
-            <Grid item xs={12} lg={5}>
+          <Button
+            variant={activeLabModule === 'titration' ? 'contained' : 'outlined'}
+            color="info"
+            size="small"
+            startIcon={<Pipette size={16} />}
+            onClick={() => setActiveLabModule('titration')}
+            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
+          >
+            Trạm Chuẩn Độ Axit - Bazơ
+          </Button>
+
+          <Button
+            variant={activeLabModule === 'redox' ? 'contained' : 'outlined'}
+            color="warning"
+            size="small"
+            startIcon={<Zap size={16} />}
+            onClick={() => setActiveLabModule('redox')}
+            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
+          >
+            Cân Bằng Oxi Hóa - Khử (4 Bước)
+          </Button>
+        </Box>
+
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<Grid2X2 size={14} />}
+          onClick={() => setOpenPeriodic(true)}
+          sx={{
+            borderColor: 'rgba(255,255,255,0.2)',
+            color: '#38bdf8',
+            textTransform: 'none',
+            fontSize: '12px',
+          }}
+        >
+          Bảng tuần hoàn / M
+        </Button>
+      </Paper>
+
+      {activeLabModule === 'titration' && <TitrationSimulator />}
+      {activeLabModule === 'redox' && <RedoxBalancer />}
+
+      {activeLabModule === 'reaction' && (
+        <Card sx={{ bgcolor: 'background.paper', borderRadius: 3, border: '1px solid rgba(255,255,255,0.1)', mb: 3 }}>
+          <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>
+            {/* Header */}
+            <Box
+              display="flex"
+              flexDirection={{ xs: 'column', sm: 'row' }}
+              justifyContent="space-between"
+              alignItems={{ xs: 'flex-start', sm: 'center' }}
+              gap={1.5}
+              mb={2}
+            >
+              <Box display="flex" alignItems="center" gap={1}>
+                <FlaskConical color="#0284c7" size={22} />
+                <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: '15px', sm: '18px', md: '20px' } }}>
+                  Phòng Thí Nghiệm Hóa Học Ảo THPT (2D/Chart Dynamic)
+                </Typography>
+              </Box>
+            </Box>
+
+            <Grid container spacing={{ xs: 2, md: 3 }}>
+              {/* LEFT INPUT PANEL */}
+              <Grid item xs={12} lg={5}>
               <Paper sx={{ p: { xs: 2, sm: 2.5 }, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.2} flexWrap="wrap" gap={1}>
                   <Typography variant="subtitle2" fontWeight="bold" color="cyan" sx={{ fontSize: { xs: '13px', sm: '14px' } }}>
@@ -651,14 +700,35 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
                 {/* Substance A */}
                 <Grid container spacing={1} mb={1.5}>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Chất A"
-                      size="small"
-                      fullWidth
-                      value={subA}
-                      onChange={(e) => setSubA(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                    />
+                    <Box display="flex" gap={0.5} alignItems="center">
+                      <TextField
+                        label="Chất A"
+                        size="small"
+                        fullWidth
+                        value={subA}
+                        onChange={(e) => setSubA(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                      />
+                      <Tooltip title="Chọn từ 118 nguyên tố BTH & Tủ hóa chất cho Chất A">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setTargetSlot('A');
+                            setOpenPeriodic(true);
+                          }}
+                          sx={{
+                            bgcolor: 'rgba(56, 189, 248, 0.15)',
+                            color: '#38bdf8',
+                            borderRadius: 2,
+                            p: 0.9,
+                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                            '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.3)' },
+                          }}
+                        >
+                          <Atom size={18} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </Grid>
                   <Grid item xs={6} sm={3}>
                     <TextField
@@ -687,14 +757,35 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
                 {/* Substance B */}
                 <Grid container spacing={1} mb={2}>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Chất B"
-                      size="small"
-                      fullWidth
-                      value={subB}
-                      onChange={(e) => setSubB(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                    />
+                    <Box display="flex" gap={0.5} alignItems="center">
+                      <TextField
+                        label="Chất B"
+                        size="small"
+                        fullWidth
+                        value={subB}
+                        onChange={(e) => setSubB(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                      />
+                      <Tooltip title="Chọn từ 118 nguyên tố BTH & Tủ hóa chất cho Chất B">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setTargetSlot('B');
+                            setOpenPeriodic(true);
+                          }}
+                          sx={{
+                            bgcolor: 'rgba(168, 85, 247, 0.15)',
+                            color: '#c084fc',
+                            borderRadius: 2,
+                            p: 0.9,
+                            border: '1px solid rgba(168, 85, 247, 0.3)',
+                            '&:hover': { bgcolor: 'rgba(168, 85, 247, 0.3)' },
+                          }}
+                        >
+                          <Atom size={18} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </Grid>
                   <Grid item xs={6} sm={3}>
                     <TextField
@@ -948,6 +1039,7 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
           </Grid>
         </CardContent>
       </Card>
+      )}
 
       {/* PERIODIC TABLE & CHEMICAL COMPOUNDS M-CHECKER MODAL */}
       <Dialog
@@ -970,7 +1062,7 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
           <Box display="flex" alignItems="center" gap={1.2}>
             <Table size={22} color="#22d3ee" />
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#22d3ee', fontSize: { xs: '15px', sm: '17px' } }}>
-              Tra cứu Nguyên tố & Phân tử khối (M)
+              Khay Chọn 118 Nguyên Tố & Tủ Hóa Chất Phản Ứng
             </Typography>
           </Box>
           <IconButton onClick={() => setOpenPeriodic(false)} size="small" sx={{ color: '#94a3b8', '&:hover': { color: '#ffffff' } }}>
@@ -978,103 +1070,191 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
           </IconButton>
         </Box>
 
-        {/* Dual Tab Buttons */}
-        <Stack direction="row" spacing={1.5} mb={2}>
-          <Button
-            onClick={() => setPeriodicTab('elements')}
-            startIcon={<Atom size={16} />}
-            sx={{
-              bgcolor: periodicTab === 'elements' ? '#0891b2' : 'transparent',
-              color: periodicTab === 'elements' ? '#ffffff' : '#94a3b8',
-              fontWeight: 'bold',
-              fontSize: '12.5px',
-              px: 2.5,
-              py: 0.8,
-              borderRadius: 2,
-              textTransform: 'none',
-              boxShadow: periodicTab === 'elements' ? '0 4px 14px rgba(8, 145, 178, 0.4)' : 'none',
-              '&:hover': {
-                bgcolor: periodicTab === 'elements' ? '#0e7490' : 'rgba(255,255,255,0.05)',
-                color: '#ffffff'
-              }
+        {/* Slot Target & Search Filter Bar */}
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={1.5}
+          mb={2}
+        >
+          {/* Dual Tab Buttons */}
+          <Stack direction="row" spacing={1}>
+            <Button
+              onClick={() => setPeriodicTab('elements')}
+              startIcon={<Atom size={16} />}
+              sx={{
+                bgcolor: periodicTab === 'elements' ? '#0891b2' : 'transparent',
+                color: periodicTab === 'elements' ? '#ffffff' : '#94a3b8',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                px: 2,
+                py: 0.6,
+                borderRadius: 2,
+                textTransform: 'none',
+                boxShadow: periodicTab === 'elements' ? '0 4px 14px rgba(8, 145, 178, 0.4)' : 'none',
+                '&:hover': {
+                  bgcolor: periodicTab === 'elements' ? '#0e7490' : 'rgba(255,255,255,0.05)',
+                  color: '#ffffff'
+                }
+              }}
+            >
+              118 Nguyên Tố BTH ({ELEMENTS_DATA.length})
+            </Button>
+
+            <Button
+              onClick={() => setPeriodicTab('compounds')}
+              startIcon={<Pipette size={16} />}
+              sx={{
+                bgcolor: periodicTab === 'compounds' ? '#0891b2' : 'transparent',
+                color: periodicTab === 'compounds' ? '#ffffff' : '#94a3b8',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                px: 2,
+                py: 0.6,
+                borderRadius: 2,
+                textTransform: 'none',
+                boxShadow: periodicTab === 'compounds' ? '0 4px 14px rgba(8, 145, 178, 0.4)' : 'none',
+                '&:hover': {
+                  bgcolor: periodicTab === 'compounds' ? '#0e7490' : 'rgba(255,255,255,0.05)',
+                  color: '#ffffff'
+                }
+              }}
+            >
+              Hợp Chất Phổ Biến ({CHEMICAL_COMPOUNDS_DATA.length})
+            </Button>
+          </Stack>
+
+          {/* Target Slot Toggle */}
+          <Stack direction="row" spacing={0.8} alignItems="center">
+            <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '11px' }}>
+              Chèn vào:
+            </Typography>
+            <Chip
+              label="🧪 Chất A"
+              size="small"
+              onClick={() => setTargetSlot('A')}
+              sx={{
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                bgcolor: targetSlot === 'A' ? '#0284c7' : 'rgba(255,255,255,0.06)',
+                color: targetSlot === 'A' ? '#fff' : '#94a3b8',
+                border: targetSlot === 'A' ? '1.5px solid #38bdf8' : '1px solid rgba(255,255,255,0.1)',
+              }}
+            />
+            <Chip
+              label="⚗️ Chất B"
+              size="small"
+              onClick={() => setTargetSlot('B')}
+              sx={{
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                bgcolor: targetSlot === 'B' ? '#7c3aed' : 'rgba(255,255,255,0.06)',
+                color: targetSlot === 'B' ? '#fff' : '#94a3b8',
+                border: targetSlot === 'B' ? '1.5px solid #c084fc' : '1px solid rgba(255,255,255,0.1)',
+              }}
+            />
+          </Stack>
+        </Box>
+
+        {/* Search Input Bar */}
+        <Box mb={2}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm nhanh nguyên tố (Ký hiệu H, Fe, Na / Tên Sắt, Đồng, Nhôm / Z=1..118)..."
+            value={elementSearchQuery}
+            onChange={(e) => setElementSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              backgroundColor: '#090d16',
+              color: '#fff',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              fontSize: '13px',
+              outline: 'none',
             }}
-          >
-            Bảng Tuần Hoàn (Nguyên tố)
-          </Button>
+          />
+        </Box>
 
-          <Button
-            onClick={() => setPeriodicTab('compounds')}
-            startIcon={<Pipette size={16} />}
-            sx={{
-              bgcolor: periodicTab === 'compounds' ? '#0891b2' : 'transparent',
-              color: periodicTab === 'compounds' ? '#ffffff' : '#94a3b8',
-              fontWeight: 'bold',
-              fontSize: '12.5px',
-              px: 2.5,
-              py: 0.8,
-              borderRadius: 2,
-              textTransform: 'none',
-              boxShadow: periodicTab === 'compounds' ? '0 4px 14px rgba(8, 145, 178, 0.4)' : 'none',
-              '&:hover': {
-                bgcolor: periodicTab === 'compounds' ? '#0e7490' : 'rgba(255,255,255,0.05)',
-                color: '#ffffff'
-              }
-            }}
-          >
-            Tủ Hóa Chất (Hợp chất)
-          </Button>
-        </Stack>
-
-        <Typography variant="body2" color="text.secondary" mb={2} sx={{ fontSize: '12px' }}>
-          Nhấp vào chất để chèn công thức vào ô Thí nghiệm A:
-        </Typography>
-
-        {/* Tab 1: Elements Grid */}
+        {/* Tab 1: All 118 Elements Grid */}
         {periodicTab === 'elements' && (
-          <Grid container spacing={1.2} sx={{ maxHeight: 380, overflowY: 'auto', pr: 0.5 }} className="custom-scrollbar">
-            {PERIODIC_ELEMENTS_DATA.map((item) => (
-              <Grid item xs={4} sm={3} md={2} key={item.formula}>
-                <Paper
-                  onClick={() => {
-                    setSubA(item.formula);
-                    setOpenPeriodic(false);
-                  }}
-                  sx={{
-                    p: 1.2,
-                    textAlign: 'center',
-                    bgcolor: '#0f172a',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      borderColor: item.color,
-                      bgcolor: 'rgba(2, 132, 199, 0.18)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: `0 6px 18px rgba(2, 132, 199, 0.25)`
-                    }
-                  }}
-                >
-                  <Typography variant="body1" fontWeight="bold" sx={{ color: item.color, fontSize: '15px', lineHeight: 1.2 }}>
-                    {item.displayFormula || item.formula}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '10px', display: 'block', mt: 0.4 }}>
-                    M = {item.mVal} g/mol
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
+          <Grid container spacing={1} sx={{ maxHeight: 380, overflowY: 'auto', pr: 0.5 }} className="custom-scrollbar">
+            {ELEMENTS_DATA.filter((el) => {
+              if (!elementSearchQuery.trim()) return true;
+              const q = elementSearchQuery.toLowerCase().trim();
+              return (
+                el.symbol.toLowerCase().includes(q) ||
+                el.nameVi.toLowerCase().includes(q) ||
+                el.nameEn.toLowerCase().includes(q) ||
+                el.atomicNumber.toString() === q
+              );
+            }).map((el) => {
+              const isMetal = el.mainCategory === 'metal';
+              const color = isMetal ? '#38bdf8' : el.mainCategory === 'nonmetal' ? '#34d399' : '#c084fc';
+              return (
+                <Grid item xs={3} sm={2.4} md={1.5} key={el.symbol}>
+                  <Paper
+                    onClick={() => {
+                      if (targetSlot === 'A') {
+                        setSubA(el.symbol);
+                      } else {
+                        setSubB(el.symbol);
+                      }
+                      setOpenPeriodic(false);
+                    }}
+                    sx={{
+                      p: 0.8,
+                      textAlign: 'center',
+                      bgcolor: '#0f172a',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        borderColor: color,
+                        bgcolor: 'rgba(2, 132, 199, 0.2)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: `0 4px 12px ${color}40`,
+                      },
+                    }}
+                  >
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '9px', display: 'block' }}>
+                      Z = {el.atomicNumber}
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" sx={{ color, fontSize: '14px', lineHeight: 1.1 }}>
+                      {el.symbol}
+                    </Typography>
+                    <Typography variant="caption" sx={{ fontSize: '9.5px', color: '#cbd5e1', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {el.nameVi}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '8.5px', display: 'block' }}>
+                      M = {el.atomicMass.toFixed(1)}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              );
+            })}
           </Grid>
         )}
 
-        {/* Tab 2: Compounds Grid */}
+        {/* Tab 2: Common Chemical Compounds Grid */}
         {periodicTab === 'compounds' && (
           <Grid container spacing={1.2} sx={{ maxHeight: 380, overflowY: 'auto', pr: 0.5 }} className="custom-scrollbar">
-            {CHEMICAL_COMPOUNDS_DATA.map((item) => (
+            {CHEMICAL_COMPOUNDS_DATA.filter((item) => {
+              if (!elementSearchQuery.trim()) return true;
+              const q = elementSearchQuery.toLowerCase().trim();
+              return item.formula.toLowerCase().includes(q) || (item.nameVi && item.nameVi.toLowerCase().includes(q));
+            }).map((item) => (
               <Grid item xs={4} sm={3} md={2} key={item.formula}>
                 <Paper
                   onClick={() => {
-                    setSubA(item.formula);
+                    if (targetSlot === 'A') {
+                      setSubA(item.formula);
+                    } else {
+                      setSubB(item.formula);
+                    }
                     setOpenPeriodic(false);
                   }}
                   sx={{
@@ -1089,14 +1269,19 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
                       borderColor: item.color,
                       bgcolor: 'rgba(2, 132, 199, 0.18)',
                       transform: 'translateY(-2px)',
-                      boxShadow: `0 6px 18px rgba(2, 132, 199, 0.25)`
-                    }
+                      boxShadow: `0 6px 18px rgba(2, 132, 199, 0.25)`,
+                    },
                   }}
                 >
-                  <Typography variant="body1" fontWeight="bold" sx={{ color: item.color, fontSize: '15px', lineHeight: 1.2 }}>
+                  <Typography variant="body1" fontWeight="bold" sx={{ color: item.color, fontSize: '14px', lineHeight: 1.2 }}>
                     {item.displayFormula || item.formula}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '10px', display: 'block', mt: 0.4 }}>
+                  {item.nameVi && (
+                    <Typography variant="caption" sx={{ fontSize: '10px', color: '#cbd5e1', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.nameVi}
+                    </Typography>
+                  )}
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '9.5px', display: 'block', mt: 0.2 }}>
                     M = {item.mVal} g/mol
                   </Typography>
                 </Paper>
