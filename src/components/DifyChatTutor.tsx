@@ -186,9 +186,9 @@ function checkLocalChemistryDB(query: string): string | null {
     .replace(/\s+/g, " ")
     .trim();
 
-  if (!norm || norm.length < 3) return null;
+  if (!norm || norm.length < 4) return null;
 
-  // Check in-memory database with strict matching
+  // Check in-memory database with strict full matching only
   for (const entry of CHEMISTRY_KNOWLEDGE_DB) {
     const matched = entry.keywords.some((k) => {
       const normK = k
@@ -198,18 +198,10 @@ function checkLocalChemistryDB(query: string): string | null {
         .replace(/[^a-z0-9\s]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
-      if (!normK || normK.length < 3) return false;
-      return norm === normK || norm.includes(normK);
+      if (!normK || normK.length < 4) return false;
+      return norm === normK;
     });
     if (matched) return entry.response;
-  }
-
-  // Check localStorage cache
-  if (typeof window !== "undefined") {
-    try {
-      const cached = localStorage.getItem(`chemai_cache_${norm.slice(0, 40)}`);
-      if (cached) return cached;
-    } catch {}
   }
 
   return null;
@@ -222,7 +214,7 @@ export default function DifyChatTutor() {
       id: "1",
       sender: "bot",
       text:
-        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Hệ thống tự động kiểm tra Database để phản hồi tức thì về Cấu tạo nguyên tử, Bảng tuần hoàn, Liên kết hóa học, Phản ứng Oxi hóa - Khử, Phương trình Ion hay Nhóm Halogen...",
+        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết theo chuẩn GDPT 2018 nhé!",
       source: "database"
     },
   ]);
@@ -237,7 +229,7 @@ export default function DifyChatTutor() {
           id: Date.now().toString(),
           sender: "bot",
           text:
-            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Hệ thống tự động kiểm tra Database để phản hồi tức thì về Cấu tạo nguyên tử, Bảng tuần hoàn, Liên kết hóa học, Phản ứng Oxi hóa - Khử, Phương trình Ion hay Nhóm Halogen...",
+            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết theo chuẩn GDPT 2018 nhé!",
           source: "database",
         },
       ]);
@@ -264,7 +256,7 @@ export default function DifyChatTutor() {
     setMessages(updatedMessages);
     setInput("");
 
-    // Step 1: Check Local Knowledge Base & Local Cache (Instant under 10ms)
+    // Step 1: Check Local Knowledge Base for exact prompt matches
     const localHit = checkLocalChemistryDB(textToSend);
     if (localHit) {
       const botMsg: Message = {
@@ -288,43 +280,7 @@ export default function DifyChatTutor() {
 
     setLoading(true);
 
-    // Step 2: Query Supabase Database (chat_logs) for existing answered queries
-    try {
-      const cleanKeyword = textToSend
-        .trim()
-        .replace(/[?.,!]/g, "")
-        .slice(0, 30);
-      
-      const { data: dbMatches } = await supabase
-        .from("chat_logs")
-        .select("ai_response")
-        .ilike("user_message", `%${cleanKeyword}%`)
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-      if (dbMatches && dbMatches.length > 0 && dbMatches[0].ai_response) {
-        const dbAnswer = dbMatches[0].ai_response;
-        const botMsg: Message = {
-          id: (Date.now() + 1).toString(),
-          sender: "bot",
-          text: dbAnswer,
-          source: "database",
-        };
-        setMessages((prev) => [...prev, botMsg]);
-        setLoading(false);
-
-        // Cache in localStorage for subsequent instant retrieval
-        try {
-          const normKey = textToSend.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").slice(0, 40);
-          localStorage.setItem(`chemai_cache_${normKey}`, dbAnswer);
-        } catch {}
-        return;
-      }
-    } catch (e) {
-      console.warn("Database lookup error:", e);
-    }
-
-    // Step 3: Call Gemini AI if not found in Database
+    // Step 2: Call Gemini AI for dynamic, tailored answer for every chemical equation & question
     try {
       const recentHistory = updatedMessages
         .slice(-6)
@@ -346,18 +302,19 @@ YÊU CẦU TRÌNH BÀY VÀ ĐỊNH DẠNG PHƯƠNG TRÌNH HÓA HỌC (CHUẨN S�
    - Phản ứng thuận nghịch: dùng \`\\rightleftharpoons\` hoặc \`\\xrightleftharpoons{...}\` (hoặc \`⇌\`)
    - Khí bay lên dùng \`↑\` hoặc \`\\uparrow\`, kết tủa dùng \`↓\` hoặc \`\\downarrow\`
    - Phân số hệ số cân bằng (như 1/2 O₂) dùng \`\\frac{1}{2}\\text{O}_2\` hoặc \`1/2 O2\`
-2. Cấu trúc bài giải:
+2. Cấu trúc bài giải cho câu hỏi phương trình phản ứng:
    - **I. Phương trình phản ứng phân tử:** (ghi rõ điều kiện xúc tác/nhiệt độ và trạng thái)
    - **II. Xác định chất khử, chất oxi hóa & Số oxi hóa:** (nếu là phản ứng oxi hóa - khử)
    - **III. Quá trình thăng bằng electron:** (nếu là phản ứng oxi hóa - khử)
    - **IV. Phương trình ion đầy đủ & Phương trình ion thu gọn:** (nếu phản ứng trong dung dịch)
+   - **V. Hiện tượng thực tế & Ứng dụng:** (nêu màu sắc, khí thoát ra, kết tủa...)
 3. Sử dụng công thức hóa học rõ ràng (CH₄, C₂H₅OH, HCOOH, CH₃Cl, Fe(NO₃)₃, H₂O).
 
 Lịch sử hội thoại gần đây:
 ${recentHistory}
 
 Học sinh vừa hỏi: "${textToSend}"
-Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
+Hãy giải thích và trình bày cặn kẽ, chính xác cho câu hỏi/phương trình này:`;
 
       const aiResponse = await callGeminiAPI(prompt);
 
@@ -369,13 +326,7 @@ Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
       };
       setMessages((prev) => [...prev, botMsg]);
 
-      // Cache locally
-      try {
-        const normKey = textToSend.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").slice(0, 40);
-        localStorage.setItem(`chemai_cache_${normKey}`, aiResponse);
-      } catch {}
-
-      // Save to Supabase chat_logs DB for Teacher Audit Portal & Future Database hits
+      // Save to Supabase chat_logs DB for Teacher Audit Portal
       supabase
         .from("chat_logs")
         .insert({
@@ -390,7 +341,7 @@ Hãy giải thích và trình bày cặn kẽ, rõ ràng, mạch lạc:`;
       const offlineHit = checkLocalChemistryDB(textToSend);
       const fallbackText = offlineHit || `### ⚠️ THÔNG BÁO TẠM THỜI TỪ GIA SƯ CHEMAI
 
-Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || "Lỗi mạng hoặc hạn ngạch API"}).
+Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || "Lỗi kết nối mạng"}).
 
 💡 **Gợi ý tra cứu nhanh từ Database có sẵn:**
 - **Kim loại tác dụng nước:** \`Na + H2O\`, \`K + H2O\`, \`Ba + H2O\`

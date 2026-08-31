@@ -353,6 +353,52 @@ const FEATURES: FeatureItem[] = [
     techStack: ['IUPAC Standard 2026', 'In-Element Search', 'NFPA 704 Diamond', 'State Simulation'],
     actionLabel: 'Khám Phá Bảng Hóa Học',
   },
+  {
+    id: 'diagnostic-center',
+    tabIndex: 14,
+    title: 'Trung Tâm Chẩn Đoán Lỗ Hổng Kiến Thức',
+    subtitle: 'Quét 4 đường kiểm tra (10, 11, 12, THPT) & Chỉ điểm bẫy đề thi',
+    category: 'student',
+    categoryLabel: 'Học sinh & Luyện thi',
+    badge: 'Radar 4 Cấp Độ',
+    badgeColor: '#c084fc',
+    icon: <Sparkles size={28} color="#c084fc" />,
+    iconBg: 'rgba(168, 85, 247, 0.15)',
+    glowColor: 'rgba(168, 85, 247, 0.25)',
+    description:
+      'Hệ thống đánh giá năng lực đa tầng giúp phát hiện chính xác lỗ hổng lý thuyết và bẫy đề thi học sinh hay mắc phải ở cả 4 khối: Lớp 10, 11, 12 và Tổng quan THPT Quốc Gia.',
+    highlights: [
+      '4 Đường kiểm tra chẩn đoán toàn diện (Lớp 10, 11, 12 & THPT Quốc Gia)',
+      'Phân tích 6 mũi nhọn năng lực hóa học GDPT 2018',
+      'Chỉ điểm chi tiết các bẫy đề thi và lỗi sai kinh điển',
+      'Đề xuất phác đồ ôn tập và mẹo ghi nhớ khắc phục lỗ hổng',
+    ],
+    techStack: ['Diagnostic Engine', 'Competency Breakdown', 'Exam Pitfall Detection'],
+    actionLabel: 'Bắt Đầu Chẩn Đoán',
+  },
+  {
+    id: 'teacher-whiteboard',
+    tabIndex: 13,
+    title: 'Studio Bảng Trắng Dạy Học & Xuất PDF',
+    subtitle: 'Không gian vẽ phấn số hóa, tem công thức hóa học & xuất tài liệu 1 chạm',
+    category: 'teacher',
+    categoryLabel: 'Giáo viên & Giảng dạy',
+    badge: 'Bảng Trắng Studio PDF',
+    badgeColor: '#f59e0b',
+    icon: <BookMarked size={28} color="#f59e0b" />,
+    iconBg: 'rgba(245, 158, 11, 0.15)',
+    glowColor: 'rgba(245, 158, 11, 0.25)',
+    description:
+      'Công cụ giảng dạy trực quan hỗ trợ giáo viên viết phấn, dạ quang, vẽ hình học, dán tem công thức nhanh và xuất bài giảng thành file PDF hoặc ảnh chất lượng cao để gửi học sinh.',
+    highlights: [
+      'Canvas vẽ mượt mà hỗ trợ chuột và bút cảm ứng Tablet/Mobile',
+      'Khay tem công thức hóa học dán nhanh 1 chạm (H₂SO₄, HNO₃, Δr H°, e⁻, pH...)',
+      '4 Chế độ nền: Bảng đen phấn trắng, Bảng trắng bút dạ, Giấy ô ly, Giấy kẻ ngang',
+      'Xuất bản và in ấn PDF chất lượng cao ngay lập tức',
+    ],
+    techStack: ['HTML5 Canvas 60fps', 'Formula Stamps', 'PDF/PNG Exporter'],
+    actionLabel: 'Mở Studio Bảng Trắng',
+  },
 ];
 
 const SYLLABUS_CHAPTERS = [

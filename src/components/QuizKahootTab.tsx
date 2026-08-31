@@ -8,7 +8,7 @@ import { supabase, callGeminiAPI } from '@/lib/api';
 import { cleanChemicalLatex } from '@/components/AuditTab';
 import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 import { saveUserToDatabase } from '@/lib/userDatabase';
-import { PRESET_HIGH_SCHOOL_QUIZ_BANK, getPresetQuizQuestion, shuffleQuestionOptions } from '@/lib/quizBank';
+import { PRESET_HIGH_SCHOOL_QUIZ_BANK, getPresetQuizQuestion, shuffleQuestionOptions, sampleDiverseQuizQuestions, fisherYatesShuffle } from '@/lib/quizBank';
 
 interface QuizQuestion {
   question: string;
@@ -113,7 +113,7 @@ export default function QuizKahootTab() {
     setIsAnswered(false);
     setSelectedOpt(null);
 
-    // 1. Check local preset 50 High-School questions bank first (Instant, zero AI latency & quota)
+    // 1. Check local preset 90+ High-School questions bank first (Instant, zero AI latency & quota)
     const unaskedPreset = PRESET_HIGH_SCHOOL_QUIZ_BANK.filter(
       q => !askedQuestionsRef.current.has(q.question?.trim().toLowerCase())
     );
@@ -123,7 +123,7 @@ export default function QuizKahootTab() {
       const qText = selected.question.trim().toLowerCase();
       askedQuestionsRef.current.add(qText);
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+        sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-100)));
       }
 
       setCurrentQuiz(shuffleQuestionOptions(selected));
@@ -133,7 +133,7 @@ export default function QuizKahootTab() {
 
     // 2. Try fetching unasked question from Supabase DB
     try {
-      const { data } = await supabase.from("quiz_questions").select("*");
+      const { data } = await supabase.from("quiz_questions").select("*").limit(100);
       if (data && data.length > 0) {
         const unaskedDB = data.filter(q => !askedQuestionsRef.current.has(q.question?.trim().toLowerCase()));
         if (unaskedDB.length > 0) {
@@ -142,7 +142,7 @@ export default function QuizKahootTab() {
             const qText = rand.question.trim().toLowerCase();
             askedQuestionsRef.current.add(qText);
             if (typeof window !== 'undefined') {
-              sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+              sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-100)));
             }
 
             setCurrentQuiz(shuffleQuestionOptions({
@@ -160,7 +160,7 @@ export default function QuizKahootTab() {
       console.warn("Quiz DB fetch skip:", e);
     }
 
-    // 3. Fallback to Gemini AI if all 50+ preset and DB questions have been answered in this session
+    // 3. Fallback to Gemini AI if all 90+ preset and DB questions have been answered in this session
     const randomTopic = HIGH_SCHOOL_CHEMISTRY_TOPICS[Math.floor(Math.random() * HIGH_SCHOOL_CHEMISTRY_TOPICS.length)];
     const uniqueSeed = Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 6);
 
@@ -191,15 +191,15 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
           const qText = parsed.question.trim().toLowerCase();
           askedQuestionsRef.current.add(qText);
           if (typeof window !== 'undefined') {
-            sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-50)));
+            sessionStorage.setItem('chemai_quiz_asked_history', JSON.stringify(Array.from(askedQuestionsRef.current).slice(-100)));
           }
           setCurrentQuiz(shuffleQuestionOptions(parsed));
         }
       }
     } catch (e) {
       console.error("AI Quiz Error:", e);
-      // Ultimate safety: pick any random question from the 50-question bank
-      const fallback = getPresetQuizQuestion();
+      // Ultimate safety: pick any random question from the bank with fresh options shuffle
+      const fallback = getPresetQuizQuestion(askedQuestionsRef.current);
       setCurrentQuiz(shuffleQuestionOptions(fallback));
     } finally {
       setIsLoading(false);
@@ -422,31 +422,69 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
 
   const fetchKahootQuestion = async () => {
     try {
-      const { data } = await supabase.from("quiz_questions").select("*").limit(10);
-      if (data && data.length >= 5) {
-        const mapped = data.map(q => shuffleQuestionOptions({
+      // 1. Retrieve history of already played Kahoot questions to prevent repeats on round 2+
+      let playedKahootHistory = new Set<string>();
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = sessionStorage.getItem('chemai_kahoot_played_history');
+          if (raw) {
+            const parsed: string[] = JSON.parse(raw);
+            parsed.forEach(q => playedKahootHistory.add(q.trim().toLowerCase()));
+          }
+        } catch {}
+      }
+
+      // 2. Fetch full question pool from Supabase DB (up to 100)
+      let combinedPool: QuizQuestion[] = [];
+      const { data } = await supabase.from("quiz_questions").select("*").limit(100);
+      if (data && data.length > 0) {
+        const dbMapped: QuizQuestion[] = data.map(q => ({
           question: q.question,
           options: q.options,
           correctIndex: q.correct_index !== undefined ? q.correct_index : q.correctIndex,
           explanation: q.explanation
         }));
-        setAllQuestions(mapped);
-        setKahootQuiz(mapped[0]);
-      } else {
-        // Sample 10 diverse questions from 50 High School preset questions with dynamic option shuffling
-        const sampled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK]
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 10)
-          .map(q => shuffleQuestionOptions(q));
-        setAllQuestions(sampled);
-        setKahootQuiz(sampled[0]);
+        combinedPool = dbMapped;
       }
+
+      // 3. If DB has less than 20 items or is offline, supplement with preset bank
+      if (combinedPool.length < 50) {
+        const existingQText = new Set(combinedPool.map(q => q.question.trim().toLowerCase()));
+        for (const presetQ of PRESET_HIGH_SCHOOL_QUIZ_BANK) {
+          if (!existingQText.has(presetQ.question.trim().toLowerCase())) {
+            combinedPool.push(presetQ);
+          }
+        }
+      }
+
+      // 4. Filter out questions that were played in previous rounds
+      let candidatePool = combinedPool.filter(
+        q => !playedKahootHistory.has(q.question.trim().toLowerCase())
+      );
+
+      // 5. If we have exhausted the pool (< 10 questions left), reset history so game continues seamlessly
+      if (candidatePool.length < 10) {
+        candidatePool = [...combinedPool];
+        playedKahootHistory.clear();
+      }
+
+      // 6. Shuffle with unbiased Fisher-Yates algorithm
+      const shuffledCandidates = fisherYatesShuffle(candidatePool);
+      const selected10 = shuffledCandidates.slice(0, 10).map(q => shuffleQuestionOptions(q));
+
+      // 7. Save the 10 selected questions to session history
+      selected10.forEach(q => playedKahootHistory.add(q.question.trim().toLowerCase()));
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('chemai_kahoot_played_history', JSON.stringify(Array.from(playedKahootHistory).slice(-100)));
+        } catch {}
+      }
+
+      setAllQuestions(selected10);
+      setKahootQuiz(selected10[0]);
     } catch (e) {
-      console.warn("Fetch Kahoot question error:", e);
-      const sampled = [...PRESET_HIGH_SCHOOL_QUIZ_BANK]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 10)
-        .map(q => shuffleQuestionOptions(q));
+      console.warn("Fetch Kahoot question error, using diverse preset fallback:", e);
+      const sampled = sampleDiverseQuizQuestions(10);
       setAllQuestions(sampled);
       setKahootQuiz(sampled[0]);
     }

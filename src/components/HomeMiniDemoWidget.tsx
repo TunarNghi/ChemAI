@@ -155,19 +155,33 @@ function Mini3DAtom({ position, color, radius, label }: { position: [number, num
   );
 }
 
-function Mini3DBond({ start, end, color = "#94a3b8", radius = 0.07 }: { start: [number, number, number]; end: [number, number, number]; color?: string; radius?: number }) {
-  const startVec = new THREE.Vector3(...start);
-  const endVec = new THREE.Vector3(...end);
-  const direction = new THREE.Vector3().subVectors(endVec, startVec);
+function MiniSingleCylinder({
+  start,
+  end,
+  color,
+  radius,
+}: {
+  start: THREE.Vector3;
+  end: THREE.Vector3;
+  color: string;
+  radius: number;
+}) {
+  const direction = new THREE.Vector3().subVectors(end, start);
   const length = direction.length();
-  const position = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
+  if (length < 0.001) return null;
+  const position = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
 
   const orientation = new THREE.Matrix4();
-  const rotationAxis = new THREE.Vector3(0, 1, 0).cross(direction.clone().normalize()).normalize();
-  const rotationAngle = Math.acos(new THREE.Vector3(0, 1, 0).dot(direction.clone().normalize()));
+  const dirNorm = direction.clone().normalize();
+  const up = new THREE.Vector3(0, 1, 0);
+  const rotationAxis = new THREE.Vector3().crossVectors(up, dirNorm).normalize();
+  const dot = Math.min(Math.max(up.dot(dirNorm), -1), 1);
+  const rotationAngle = Math.acos(dot);
 
-  if (rotationAxis.lengthSq() > 0) {
+  if (rotationAxis.lengthSq() > 0.0001) {
     orientation.makeRotationAxis(rotationAxis, rotationAngle);
+  } else if (dot < -0.999) {
+    orientation.makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI);
   }
 
   return (
@@ -176,6 +190,78 @@ function Mini3DBond({ start, end, color = "#94a3b8", radius = 0.07 }: { start: [
       <meshStandardMaterial color={color} roughness={0.4} />
     </mesh>
   );
+}
+
+function Mini3DBond({
+  start,
+  end,
+  color = "#94a3b8",
+  radius = 0.06,
+  order = 1
+}: {
+  start: [number, number, number];
+  end: [number, number, number];
+  color?: string;
+  radius?: number;
+  order?: 1 | 2 | 3;
+}) {
+  const startVec = new THREE.Vector3(...start);
+  const endVec = new THREE.Vector3(...end);
+  const dir = new THREE.Vector3().subVectors(endVec, startVec);
+  const length = dir.length();
+  if (length < 0.001) return null;
+  const dirNorm = dir.clone().normalize();
+
+  let perp = new THREE.Vector3(0, 0, 1).cross(dirNorm);
+  if (perp.lengthSq() < 0.01) {
+    perp = new THREE.Vector3(0, 1, 0).cross(dirNorm);
+  }
+  perp.normalize();
+
+  if (order === 2) {
+    const offset = perp.clone().multiplyScalar(0.08);
+    const r = radius * 0.75;
+    return (
+      <group>
+        <MiniSingleCylinder
+          start={startVec.clone().add(offset)}
+          end={endVec.clone().add(offset)}
+          color={color}
+          radius={r}
+        />
+        <MiniSingleCylinder
+          start={startVec.clone().sub(offset)}
+          end={endVec.clone().sub(offset)}
+          color={color}
+          radius={r}
+        />
+      </group>
+    );
+  }
+
+  if (order === 3) {
+    const offset = perp.clone().multiplyScalar(0.1);
+    const r = radius * 0.65;
+    return (
+      <group>
+        <MiniSingleCylinder start={startVec} end={endVec} color={color} radius={r} />
+        <MiniSingleCylinder
+          start={startVec.clone().add(offset)}
+          end={endVec.clone().add(offset)}
+          color={color}
+          radius={r}
+        />
+        <MiniSingleCylinder
+          start={startVec.clone().sub(offset)}
+          end={endVec.clone().sub(offset)}
+          color={color}
+          radius={r}
+        />
+      </group>
+    );
+  }
+
+  return <MiniSingleCylinder start={startVec} end={endVec} color={color} radius={radius} />;
 }
 
 interface HomeMiniDemoWidgetProps {
@@ -881,6 +967,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                         end={bond.end}
                         color={bond.color || "#94a3b8"}
                         radius={0.06}
+                        order={bond.order}
                       />
                     ))}
                   </group>
@@ -985,9 +1072,9 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                   }
                   size="small"
                   sx={{
-                    bgcolor: `${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}20`,
-                    color: MAIN_CATEGORY_COLORS[currentElement.mainCategory],
-                    border: `1px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}50`,
+                    bgcolor: MAIN_CATEGORY_COLORS[currentElement.mainCategory].lightBg,
+                    color: MAIN_CATEGORY_COLORS[currentElement.mainCategory].color,
+                    border: `1px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory].border}`,
                     fontWeight: 'bold',
                     fontSize: '10.5px',
                   }}
@@ -1000,8 +1087,8 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                   p: 2,
                   borderRadius: 2.5,
                   bgcolor: 'rgba(9, 13, 22, 0.9)',
-                  border: `1.5px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}60`,
-                  boxShadow: `inset 0 0 20px ${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}15`,
+                  border: `1.5px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory].border}`,
+                  boxShadow: `inset 0 0 20px ${MAIN_CATEGORY_COLORS[currentElement.mainCategory].glow}`,
                   my: 'auto',
                   display: 'flex',
                   alignItems: 'center',
@@ -1014,8 +1101,8 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                     width: 76,
                     height: 76,
                     borderRadius: 2,
-                    bgcolor: `${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}15`,
-                    border: `1px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory]}40`,
+                    bgcolor: MAIN_CATEGORY_COLORS[currentElement.mainCategory].lightBg,
+                    border: `1px solid ${MAIN_CATEGORY_COLORS[currentElement.mainCategory].border}`,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -1030,7 +1117,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                     variant="h4"
                     fontWeight="900"
                     sx={{
-                      color: MAIN_CATEGORY_COLORS[currentElement.mainCategory],
+                      color: MAIN_CATEGORY_COLORS[currentElement.mainCategory].color,
                       lineHeight: 1.1,
                       letterSpacing: '-0.02em',
                     }}

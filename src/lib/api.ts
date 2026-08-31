@@ -117,15 +117,13 @@ const ENV_GEMINI_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
 
 const GEMINI_API_KEYS = ENV_GEMINI_KEYS.map(decodeApiKey);
 const GEMINI_MODELS = [
-  "gemini-3.6-flash",
-  "gemini-3.5-flash-lite",
-  "gemini-flash-lite-latest",
-  "gemini-flash-latest",
-  "gemini-3.7-flash",
-  "gemini-3.5-flash",
-  "gemma-4-31b-it",
-  "gemini-3.1-pro-preview",
-  "gemini-pro-latest"
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-2.5-pro",
+  "gemini-1.5-pro",
+  "gemini-2.0-flash-lite",
+  "gemini-flash-latest"
 ];
 
 export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_KEYS): Promise<string> {
