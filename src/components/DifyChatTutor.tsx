@@ -1,6 +1,6 @@
 "use client";
 
-import { callGeminiAPI, supabase } from "@/lib/api";
+import { callGeminiAPI, sendDifyMessage, supabase } from "@/lib/api";
 import {
   Avatar,
   Box,
@@ -21,7 +21,7 @@ interface Message {
   id: string;
   sender: "user" | "bot";
   text: string;
-  source?: "database" | "gemini";
+  source?: "database" | "dify" | "gemini";
 }
 
 const QUICK_PROMPTS = [
@@ -214,12 +214,13 @@ export default function DifyChatTutor() {
       id: "1",
       sender: "bot",
       text:
-        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết theo chuẩn GDPT 2018 nhé!",
-      source: "database"
+        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Động cơ chính **Dify AI** kết hợp **Gemini AI & Database THPT GDPT 2018**). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
+      source: "dify"
     },
   ]);
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string>(() => "session_" + Math.random().toString(36).substring(2, 9));
+  const [difyConversationId, setDifyConversationId] = useState<string | undefined>(undefined);
 
   const handleClearChat = () => {
     if (messages.length <= 1) return;
@@ -229,10 +230,11 @@ export default function DifyChatTutor() {
           id: Date.now().toString(),
           sender: "bot",
           text:
-            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Đã tích hợp Database hóa học THPT siêu tốc & Gemini AI). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết theo chuẩn GDPT 2018 nhé!",
-          source: "database",
+            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Động cơ chính **Dify AI** kết hợp **Gemini AI & Database THPT GDPT 2018**). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
+          source: "dify",
         },
       ]);
+      setDifyConversationId(undefined);
       setSessionId("session_" + Math.random().toString(36).substring(2, 9));
       // clear local caches
       try {
@@ -280,14 +282,38 @@ export default function DifyChatTutor() {
 
     setLoading(true);
 
-    // Step 2: Call Gemini AI for dynamic, tailored answer for every chemical equation & question
+    // Step 2: Call Primary AI (Dify AI) with failover to Gemini AI
     try {
-      const recentHistory = updatedMessages
-        .slice(-6)
-        .map((m) => `${m.sender === "user" ? "Học sinh" : "Gia sư ChemAI"}: ${m.text}`)
-        .join("\n");
+      let aiResponseText = "";
+      let sourceTag: "dify" | "gemini" = "dify";
 
-      const prompt = `Bạn là Gia sư Hóa Học ChemAI thông minh, tận tâm và chuyên sâu về môn Hóa học THPT (theo chương trình GDPT 2018).
+      try {
+        const difyResult = await sendDifyMessage({
+          query: textToSend,
+          user: "chemai_student",
+          conversation_id: difyConversationId,
+          inputs: {},
+        });
+
+        if (difyResult && difyResult.answer && difyResult.answer.trim()) {
+          aiResponseText = difyResult.answer;
+          if (difyResult.conversation_id) {
+            setDifyConversationId(difyResult.conversation_id);
+          }
+          sourceTag = "dify";
+        } else {
+          throw new Error("Dify AI không phản hồi nội dung.");
+        }
+      } catch (difyErr: any) {
+        console.warn("Dify AI encounter issue, auto-fallback to Gemini AI:", difyErr);
+        
+        // Fallback to Gemini AI for dynamic, tailored answer
+        const recentHistory = updatedMessages
+          .slice(-6)
+          .map((m) => `${m.sender === "user" ? "Học sinh" : "Gia sư ChemAI"}: ${m.text}`)
+          .join("\n");
+
+        const prompt = `Bạn là Gia sư Hóa Học ChemAI thông minh, tận tâm và chuyên sâu về môn Hóa học THPT (theo chương trình GDPT 2018).
 
 QUY ĐỊNH BẮT BUỘC VỀ DANH PHÁP (IUPAC TIẾNG ANH THEO CHƯƠNG TRÌNH GDPT 2018):
 - BẮT BUỘC gọi tên tất cả các nguyên tố hóa học và đơn chất/hợp chất bằng TIẾNG ANH theo chuẩn IUPAC của chương trình GDPT 2018.
@@ -316,13 +342,15 @@ ${recentHistory}
 Học sinh vừa hỏi: "${textToSend}"
 Hãy giải thích và trình bày cặn kẽ, chính xác cho câu hỏi/phương trình này:`;
 
-      const aiResponse = await callGeminiAPI(prompt);
+        aiResponseText = await callGeminiAPI(prompt);
+        sourceTag = "gemini";
+      }
 
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: "bot",
-        text: aiResponse,
-        source: "gemini",
+        text: aiResponseText,
+        source: sourceTag,
       };
       setMessages((prev) => [...prev, botMsg]);
 
@@ -332,7 +360,7 @@ Hãy giải thích và trình bày cặn kẽ, chính xác cho câu hỏi/phươ
         .insert({
           session_id: sessionId,
           user_message: textToSend,
-          ai_response: aiResponse,
+          ai_response: aiResponseText,
         })
         .then();
     } catch (err: any) {
@@ -386,7 +414,22 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
               Gia Sư Hóa Học AI
             </Typography>
           </Box>
-          <Box display="flex" alignItems="center" gap={0.8}>
+          <Box display="flex" alignItems="center" gap={0.8} flexWrap="wrap">
+            <Chip 
+              icon={<Bot size={13} color="#38bdf8" />} 
+              label="Dify AI (Chính)" 
+              color="primary" 
+              size="small" 
+              variant="outlined" 
+              sx={{ height: 22, fontSize: 11, bgcolor: 'rgba(56,189,248,0.08)' }} 
+            />
+            <Chip 
+              label="Gemini AI (Dự phòng)" 
+              color="info" 
+              size="small" 
+              variant="outlined" 
+              sx={{ height: 22, fontSize: 11 }} 
+            />
             <Chip 
               icon={<Database size={13} color="#10b981" />} 
               label="Database Cache: Bật" 
@@ -395,7 +438,6 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
               variant="outlined" 
               sx={{ height: 22, fontSize: 11, bgcolor: 'rgba(16,185,129,0.08)' }} 
             />
-            <Chip label="Gemini AI" color="info" size="small" variant="outlined" sx={{ height: 22, fontSize: 11 }} />
             {messages.length > 1 && (
               <Button
                 size="small"
@@ -497,7 +539,7 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
               >
                 {msg.sender === "bot" && msg.source && (
                   <Box display="flex" alignItems="center" gap={0.5} mb={0.6}>
-                    {msg.source === "database" ? (
+                    {msg.source === "database" && (
                       <Chip
                         icon={<Zap size={11} color="#10b981" />}
                         label="⚡ Phản hồi tức thì từ Database"
@@ -511,16 +553,32 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
                           "& .MuiChip-icon": { marginLeft: "4px" }
                         }}
                       />
-                    ) : (
+                    )}
+                    {msg.source === "dify" && (
                       <Chip
-                        label="✨ Trí tuệ nhân tạo Gemini AI"
+                        icon={<Bot size={11} color="#38bdf8" />}
+                        label="🚀 Trí tuệ nhân tạo Dify AI"
                         size="small"
                         sx={{
                           height: 18,
                           fontSize: 10,
                           bgcolor: "rgba(56, 189, 248, 0.12)",
                           color: "#38bdf8",
-                          border: "1px solid rgba(56, 189, 248, 0.25)"
+                          border: "1px solid rgba(56, 189, 248, 0.25)",
+                          "& .MuiChip-icon": { marginLeft: "4px" }
+                        }}
+                      />
+                    )}
+                    {msg.source === "gemini" && (
+                      <Chip
+                        label="✨ Trí tuệ nhân tạo Gemini AI (Dự phòng)"
+                        size="small"
+                        sx={{
+                          height: 18,
+                          fontSize: 10,
+                          bgcolor: "rgba(168, 85, 247, 0.12)",
+                          color: "#c084fc",
+                          border: "1px solid rgba(168, 85, 247, 0.25)"
                         }}
                       />
                     )}
@@ -541,7 +599,7 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
               </Avatar>
               <CircularProgress size={18} color="primary" />
               <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12px' }}>
-                Đang tìm kiếm Database & phân tích qua Gemini AI...
+                Đang kết nối Dify AI & phân tích câu hỏi...
               </Typography>
             </Box>
           )}

@@ -18,14 +18,34 @@ const BACKUP_SUPABASE_ANON_KEY =
 
 export const backupSupabase = createClient(BACKUP_SUPABASE_URL, BACKUP_SUPABASE_ANON_KEY);
 
-const DIFY_API_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || "";
+// 3. Dify AI Configuration (Mã hóa Base64)
+const DEFAULT_DIFY_KEY_ENCODED = "YXBwLWlMdmN4ZVVNekhabmJkUVpKRFJ6aXFDbA==";
 const DIFY_API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || "https://api.dify.ai/v1";
+
+function decodeApiKey(key: string): string {
+  try {
+    if (!key) return "";
+    if (key.startsWith("app-") || key.startsWith("AIza") || key.startsWith("AQ.")) return key;
+    return atob(key);
+  } catch {
+    return key;
+  }
+}
+
+const ENV_DIFY_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED;
+export const DIFY_API_KEY = decodeApiKey(ENV_DIFY_KEY);
 
 export interface DifyChatMessage {
   query: string;
-  user: string;
+  user?: string;
   conversation_id?: string;
   inputs?: Record<string, any>;
+}
+
+export interface DifyChatResponse {
+  answer: string;
+  conversation_id?: string;
+  message_id?: string;
 }
 
 export interface LessonPlanRequest {
@@ -44,12 +64,14 @@ II. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU
 III. TIẾN TRÌNH DẠY HỌC (Hoạt động 1: Mở đầu -> Hoạt động 2: Hình thành kiến thức -> Hoạt động 3: Luyện tập -> Hoạt động 4: Vận dụng & STEM).
 Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
 
-  if (DIFY_API_KEY) {
+  const activeDifyKey = decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED);
+
+  if (activeDifyKey) {
     try {
       const res = await fetch(`${DIFY_API_URL}/chat-messages`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${DIFY_API_KEY}`,
+          "Authorization": `Bearer ${activeDifyKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -77,52 +99,60 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
   return await callGeminiAPI(finalPrompt);
 }
 
-export async function sendDifyMessage({ query, user, conversation_id, inputs = {} }: DifyChatMessage) {
-  if (!DIFY_API_KEY) {
-    return {
-      answer: `[Dify AI Response Simulated] Trợ lý ChemAI đã nhận câu hỏi: "${query}".`,
-      conversation_id: conversation_id || "conv_" + Date.now(),
-    };
+export async function sendDifyMessage({ query, user = "chemai_student", conversation_id, inputs = {} }: DifyChatMessage): Promise<DifyChatResponse> {
+  const activeDifyKey = decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED);
+  
+  if (!activeDifyKey) {
+    throw new Error("Dify API Key chưa được cấu hình.");
   }
+
+  const payload: Record<string, any> = {
+    inputs,
+    query,
+    response_mode: "blocking",
+    user: user || "chemai_student",
+  };
+  if (conversation_id && conversation_id.trim() && !conversation_id.startsWith("conv_error")) {
+    payload.conversation_id = conversation_id.trim();
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 35000);
 
   try {
     const res = await fetch(`${DIFY_API_URL}/chat-messages`, {
       method: "POST",
+      signal: controller.signal,
       headers: {
-        "Authorization": `Bearer ${DIFY_API_KEY}`,
+        "Authorization": `Bearer ${activeDifyKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs, query, response_mode: "blocking", user, conversation_id }),
+      body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error(`Dify API error: ${res.statusText}`);
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.message || `Dify API error: HTTP ${res.status} ${res.statusText}`);
+    }
+
     const data = await res.json();
+    const outputAnswer = data.answer || data.text || (data.data && (data.data.outputs?.result || data.data.outputs?.text)) || "";
     return {
-      answer: data.answer || data.text,
+      answer: typeof outputAnswer === "string" ? outputAnswer.trim() : JSON.stringify(outputAnswer),
       conversation_id: data.conversation_id,
+      message_id: data.message_id || data.id,
     };
-  } catch (err: any) {
-    console.error("Dify API Call Error:", err);
-    return {
-      answer: `Lỗi kết nối Dify API: ${err.message}.`,
-      conversation_id: conversation_id || "conv_error",
-    };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
+// 4. Gemini AI Configuration (Mã hóa Base64)
 const DEFAULT_GEMINI_KEYS_ENCODED = [
   "QVEuQWI4Uk42THZ3cURiMnY3b2xZUjZINlFoaldWVkJWREZpdWdBSVJoNEZSZEpxcFJqcmc=",
   "QVEuQWI4Uk42Sjh4N1RCTFV1N0s3TTlyRkZ4NXJ2VTBmNHJ0UkszeUhuSDQ4M25LQ0ZyalE=",
   "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync="
 ];
-
-function decodeApiKey(key: string): string {
-  try {
-    return atob(key);
-  } catch {
-    return key;
-  }
-}
 
 const ENV_GEMINI_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
   ? process.env.NEXT_PUBLIC_GEMINI_API_KEYS.split(',').map(k => k.trim()).filter(Boolean)
@@ -130,12 +160,9 @@ const ENV_GEMINI_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
 
 const GEMINI_API_KEYS = ENV_GEMINI_KEYS.map(decodeApiKey);
 const GEMINI_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-2.5-pro",
-  "gemini-1.5-pro",
-  "gemini-2.0-flash-lite",
+  "gemini-3.6-flash",
+  "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
   "gemini-flash-latest"
 ];
 
