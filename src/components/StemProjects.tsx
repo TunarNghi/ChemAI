@@ -144,7 +144,7 @@ export default function StemProjects() {
 
   const handleAIGenerateSteps = async () => {
     if (!newTitle.trim()) {
-      alert("Vui lòng nhập Tên Dự Án STEM để AI tự động tạo quy trình!");
+      alert("Vui lòng nhập Tên Dự Án STEM để tự động tạo quy trình!");
       return;
     }
     setIsGeneratingAI(true);
@@ -455,13 +455,13 @@ export default function StemProjects() {
                 startIcon={<Sparkles size={16} />}
                 sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: { xs: '12px', sm: '13px' } }}
               >
-                {isGeneratingAI ? "AI Đang Soạn Quy Trình..." : "Tự Động Sinh Quy Trình (AI ✨)"}
+                {isGeneratingAI ? "Đang Tự Động Soạn Quy Trình..." : "Tự Động Tạo Quy Trình ✨"}
               </Button>
 
               {generatedSteps.length > 0 && (
                 <Box p={1.2} bgcolor="#020617" borderRadius={2} border="1px solid #0284c7">
                   <Typography variant="caption" color="cyan" fontWeight="bold" display="block" mb={0.5}>
-                    ✨ Quy trình EDP 5 bước AI đã tạo:
+                    ✨ Quy trình EDP 5 bước đề xuất:
                   </Typography>
                   {generatedSteps.map((st, idx) => (
                     <Typography key={idx} variant="caption" color="text.secondary" display="block" sx={{ fontSize: '11px', mb: 0.3 }}>

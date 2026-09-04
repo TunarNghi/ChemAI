@@ -396,7 +396,7 @@ export default function AuditTab() {
   };
 
   const handleClearAllChatLogs = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu Chat Logs AI trên CSDL Supabase không? Thao tác này không thể hoàn tác.")) {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu lịch sử hội thoại trên cơ sở dữ liệu không? Thao tác này không thể hoàn tác.")) {
       return;
     }
     setIsLoading(true);
@@ -404,7 +404,7 @@ export default function AuditTab() {
       const { error } = await supabase.from("chat_logs").delete().neq("id", 0);
       if (error) throw error;
       setChatLogs([]);
-      alert("Đã xóa sạch toàn bộ lịch sử Chat Logs trên Supabase thành công!");
+      alert("Đã xóa sạch toàn bộ lịch sử hội thoại thành công!");
     } catch (e: any) {
       alert("Lỗi khi xóa Chat Logs: " + e.message);
     } finally {
@@ -433,7 +433,7 @@ export default function AuditTab() {
       }
 
       await fetchCurrentSubData("quiz");
-      alert("✅ Đã nạp thành công bộ 50 câu hỏi Hóa học THPT chất lượng cao vào CSDL Supabase!");
+      alert("✅ Đã nạp thành công bộ 50 câu hỏi Hóa học THPT chất lượng cao vào cơ sở dữ liệu!");
     } catch (e: any) {
       alert("Thông báo: " + e.message);
     } finally {
@@ -467,7 +467,7 @@ export default function AuditTab() {
       fetchCurrentSubData("quiz");
       pollParticipants(pin);
     } catch (e: any) {
-      alert("Lỗi tạo phòng Kahoot: " + e.message);
+      alert("Lỗi tạo phòng thi đấu: " + e.message);
     }
   };
 
@@ -561,7 +561,7 @@ export default function AuditTab() {
           <Box display="flex" alignItems="center" gap={1}>
             <UserCheck color="#f59e0b" size={22} />
             <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: '15px', sm: '18px' } }}>
-              Cổng Kiểm Duyệt Audit & Kahoot Host
+              Cổng Kiểm Duyệt & Quản Trị Phòng Đấu
             </Typography>
           </Box>
 
@@ -593,8 +593,8 @@ export default function AuditTab() {
           >
             <Typography variant="body2" color="text.secondary" mb={2} sx={{ fontSize: { xs: "13px", sm: "14px" } }}>
               Vui lòng nhập mật khẩu quản trị dành cho Giáo viên để xem nhật ký
-              thao tác AI, Ngân hàng câu hỏi trắc nghiệm & Quản lý điều hành
-              phòng đấu Kahoot Multiplayer.
+              thao tác học tập, Ngân hàng câu hỏi trắc nghiệm & Quản lý điều hành
+              phòng đấu trực tuyến Multiplayer.
             </Typography>
             <Button
               variant="contained"
@@ -662,7 +662,7 @@ export default function AuditTab() {
                   startIcon={<Radio size={14} />}
                   sx={{ textTransform: "none", fontWeight: "bold" }}
                 >
-                  Kahoot Host Portal
+                  Quản Trị Phòng Đấu
                 </Button>
               </Stack>
 
@@ -747,7 +747,7 @@ export default function AuditTab() {
                           align="center"
                           sx={{ color: "text.secondary", py: 3 }}
                         >
-                          Chưa có dữ liệu Chat Log được ghi nhận trên Supabase.
+                          Chưa có dữ liệu nhật ký trò chuyện được ghi nhận.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -855,7 +855,7 @@ export default function AuditTab() {
                     disabled={isLoading}
                     sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '12px' }}
                   >
-                    ⚡ Nạp 50 Câu Hỏi THPT Chuẩn Vào CSDL Supabase
+                    ⚡ Nạp 50 Câu Hỏi THPT Chuẩn Vào CSDL
                   </Button>
                 </Box>
 
@@ -965,7 +965,7 @@ export default function AuditTab() {
                       color="common.white"
                       mb={1}
                     >
-                      Tạo Phòng Đấu Kahoot Hóa Học (Bộ 10 Câu)
+                      Tạo Phòng Đấu Trắc Nghiệm Hóa Học (Bộ 10 Câu)
                     </Typography>
                     <Typography
                       variant="body2"
@@ -974,8 +974,7 @@ export default function AuditTab() {
                       maxWidth={500}
                       mx="auto"
                     >
-                      Hệ thống tự động kết hợp câu hỏi bám sát SGK Hóa Học THPT từ
-                      Dify AI & Gemini AI, tự động lưu vào Supabase DB.
+                      Hệ thống tự động kết hợp câu hỏi bám sát SGK Hóa Học THPT chuẩn GDPT 2018, tự động lưu và đồng bộ kết quả.
                     </Typography>
 
                     <Box
@@ -1028,7 +1027,7 @@ export default function AuditTab() {
                     >
                       <Box>
                         <Typography variant="caption" color="text.secondary">
-                          MÃ PIN KAHOOT PHÒNG LỚP:
+                          MÃ PIN PHÒNG ĐẤU LỚP:
                         </Typography>
                         <Typography
                           variant="h4"
@@ -1395,12 +1394,12 @@ export default function AuditTab() {
                     color="amber"
                     mb={1.5}
                   >
-                    📜 Lịch Sử Bảng Xếp Hạng Các Trận Đấu Kahoot Đã Lưu CSDL
+                    📜 Lịch Sử Bảng Xếp Hạng Các Trận Đấu Đã Lưu CSDL
                   </Typography>
                   <Stack spacing={1.5}>
                     {kahootHistory.length === 0 ? (
                       <Typography variant="caption" color="text.secondary">
-                        Chưa có lịch sử kết quả trận đấu Kahoot nào được lưu.
+                        Chưa có lịch sử kết quả trận đấu nào được lưu.
                       </Typography>
                     ) : (
                       kahootHistory.map((h, i) => (
@@ -1475,8 +1474,8 @@ export default function AuditTab() {
               display="block"
               mb={2}
             >
-              Vui lòng nhập mật khẩu quản trị để truy cập cổng Audit & Kahoot
-              Host
+              Vui lòng nhập mật khẩu quản trị để truy cập cổng Kiểm Duyệt & Quản
+              Trị Phòng Đấu
             </Typography>
             <TextField
               fullWidth
@@ -1513,7 +1512,7 @@ export default function AuditTab() {
           <DialogContent sx={{ bgcolor: "#0f172a" }}>
             <Typography variant="body2" color="text.secondary" mb={2}>
               Phân tích đáp án học sinh <b>{selectedStudent?.nickname}</b> đã
-              chọn trên tất cả 10 câu hỏi của trận đấu Kahoot:
+              chọn trên tất cả 10 câu hỏi của trận đấu:
             </Typography>
 
             <Stack spacing={2}>

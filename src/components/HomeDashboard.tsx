@@ -97,17 +97,17 @@ const FEATURES: FeatureItem[] = [
       'Đồ thị động học biến thiên pH & nhiệt độ thời gian thực',
       'Cơ chế Cache SHA-256 phản hồi tức thì 0ms',
     ],
-    techStack: ['Gemini 2.0 AI', 'Chart.js', 'Web Audio API', 'Supabase Cache'],
+    techStack: ['Thuật toán tương tác', 'Chart.js', 'Web Audio API', 'Bộ nhớ đệm siêu tốc'],
     actionLabel: 'Vào Phòng Thí Nghiệm',
   },
   {
     id: 'ai-tutor',
     tabIndex: 2,
-    title: 'Gia Sư Hóa Học AI (ChemAI Buddy)',
+    title: 'Gia Sư Hóa Học Thông Minh (ChemAI)',
     subtitle: 'Trợ lý học tập thông minh giải đáp 24/7 chuẩn GDPT 2018',
     category: 'student',
     categoryLabel: 'Học sinh & Tự học',
-    badge: 'AI Gia sư 24/7',
+    badge: 'Gia sư 24/7',
     badgeColor: '#818cf8',
     icon: <Bot size={28} color="#818cf8" />,
     iconBg: 'rgba(129, 140, 248, 0.15)',
@@ -120,13 +120,13 @@ const FEATURES: FeatureItem[] = [
       'Gợi ý câu hỏi thông minh giúp tư duy logic',
       'Lưu trữ nhật ký hội thoại phục vụ ôn tập cá nhân',
     ],
-    techStack: ['Google Gemini API', 'Markdown Renderer', 'Prompt Sư Phạm'],
-    actionLabel: 'Hỏi Gia Sư AI Ngay',
+    techStack: ['Trợ lý thông minh', 'Markdown Renderer', 'Chuẩn Sư Phạm 2018'],
+    actionLabel: 'Hỏi Gia Sư Ngay',
   },
   {
     id: 'quiz-kahoot',
     tabIndex: 3,
-    title: 'Đấu Trường Live Kahoot & Trắc Nghiệm AI',
+    title: 'Đấu Trường Luyện Tập & Trắc Nghiệm Tương Tác',
     subtitle: 'Ôn luyện vui nhộn, thi đấu đối kháng nhiều người chơi theo mã PIN',
     category: 'student',
     categoryLabel: 'Học sinh & Thi đấu',
@@ -136,15 +136,15 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(245, 158, 11, 0.15)',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     description:
-      'Tạo không khí học tập sôi nổi với 2 chế độ: Luyện tập Solo phân hóa theo chủ đề và Đấu trường Live Kahoot nhập mã PIN thi đấu tính điểm theo tốc độ trả lời.',
+      'Tạo không khí học tập sôi nổi với 2 chế độ: Luyện tập tự do phân hóa theo chủ đề và Đấu trường luyện tập nhập mã PIN thi đấu tính điểm theo tốc độ trả lời.',
     highlights: [
-      'Chế độ Solo: Tự chọn chủ đề, chấm điểm tức thì kèm lời giải chi tiết',
-      'Chế độ Đấu trường Live: Tạo phòng thi bằng mã PIN 6 số, đồng bộ Realtime',
-      'Bảng vinh danh Top 3 Podium sống động như Kahoot quốc tế',
-      'Tự động sinh bộ câu hỏi mới không giới hạn bằng AI',
+      'Chế độ tự do: Tự chọn chủ đề, chấm điểm tức thì kèm lời giải chi tiết',
+      'Chế độ Đấu trường trực tuyến: Tạo phòng thi bằng mã PIN 6 số, đồng bộ Realtime',
+      'Bảng vinh danh Top 3 Podium trực tiếp',
+      'Tự động sinh bộ câu hỏi mới không giới hạn',
     ],
-    techStack: ['Supabase Realtime', 'Gemini Question Generator', 'Live Leaderboard'],
-    actionLabel: 'Tham Gia Đấu Trường',
+    techStack: ['Đồng bộ Realtime', 'Ngân hàng trắc nghiệm chuẩn GDPT', 'Bảng xếp hạng trực tiếp'],
+    actionLabel: 'Vào Đấu Trường Luyện Tập',
   },
   {
     id: 'safety-3d',
@@ -173,23 +173,23 @@ const FEATURES: FeatureItem[] = [
     id: 'lesson-planner',
     tabIndex: 5,
     title: 'Soạn Giáo Án Chuẩn Công Văn 5512 BGD&ĐT',
-    subtitle: 'Trợ lý AI chuyên trách thiết kế Kế hoạch bài dạy chi tiết trong 30 giây',
+    subtitle: 'Trợ lý chuyên trách thiết kế Kế hoạch bài dạy chi tiết trong 30 giây',
     category: 'teacher',
     categoryLabel: 'Giáo viên & Sư phạm',
-    badge: 'Dify AI Engine (5512)',
+    badge: 'Soạn giáo án 5512',
     badgeColor: '#ec4899',
     icon: <BookOpen size={28} color="#ec4899" />,
     iconBg: 'rgba(236, 72, 153, 0.15)',
     glowColor: 'rgba(236, 72, 153, 0.25)',
     description:
-      'Ứng dụng Dify AI chuyên biệt để tự động tạo cấu trúc giáo án đầy đủ 4 hoạt động: Khởi động, Hình thành kiến thức, Luyện tập và Vận dụng đúng quy chuẩn Bộ GD&ĐT.',
+      'Tự động tạo cấu trúc giáo án đầy đủ 4 hoạt động: Khởi động, Hình thành kiến thức, Luyện tập và Vận dụng đúng quy chuẩn Bộ GD&ĐT.',
     highlights: [
       'Đầy đủ mục tiêu (Năng lực hóa học, Năng lực chung, Phẩm chất)',
       'Tiến trình 4 hoạt động sư phạm chi tiết (Nội dung, Sản phẩm, Tổ chức thực hiện)',
       'Kèm phiếu học tập, bảng rubric đánh giá và câu hỏi kiểm tra',
       'Sao chép 1 chạm và hỗ trợ xuất bản sang Microsoft Word / PDF',
     ],
-    techStack: ['Dify AI Workflow', 'BGD&ĐT 5512 Template', 'Word Exporter'],
+    techStack: ['Quy trình tự động hóa', 'Khung Kế hoạch 5512 BGD&ĐT', 'Word Exporter'],
     actionLabel: 'Soạn Giáo Án Ngay',
   },
   {
@@ -212,7 +212,7 @@ const FEATURES: FeatureItem[] = [
       'Bảng ma trận phân bố số câu, số điểm, tỉ lệ phần trăm trực quan',
       'Xuất bản đề thi, đáp án và biểu điểm chi tiết tiện in ấn',
     ],
-    techStack: ['Gemini 2.0 Pro', 'Ma Trận Nhận Thức BGD', 'Auto Exam Generator'],
+    techStack: ['Tạo đề thông minh', 'Ma Trận Nhận Thức BGD', 'Phân loại 4 mức độ'],
     actionLabel: 'Tạo Đề Thi Mới',
   },
   {
@@ -233,9 +233,9 @@ const FEATURES: FeatureItem[] = [
       'Dự án mẫu bám sát đời sống và chuyên đề học tập Hóa Học THPT',
       'Quy trình 5 bước: Giao nhiệm vụ → Nghiên cứu → Thiết kế → Chế tạo → Báo cáo',
       'Bộ tiêu chí đánh giá sản phẩm (Rubric) chi tiết cho giáo viên và học sinh',
-      'Tạo dự án STEM mới tùy chỉnh theo từng bối cảnh lớp học bằng AI',
+      'Tạo dự án STEM mới tùy chỉnh theo từng bối cảnh lớp học tự động',
     ],
-    techStack: ['STEM Framework', 'Interactive Rubric', 'AI Project Designer'],
+    techStack: ['STEM Framework', 'Interactive Rubric', 'Thiết kế dự án thông minh'],
     actionLabel: 'Khám Phá Dự Án STEM',
   },
   {
@@ -251,21 +251,21 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(244, 63, 94, 0.15)',
     glowColor: 'rgba(244, 63, 94, 0.25)',
     description:
-      'Không gian số dành cho giáo viên đăng tải video bài dạy YouTube, phân loại theo các chuyên đề Hóa học THPT GDPT 2018. Học sinh theo dõi bài giảng trực tiếp trên web, ghi chú tức thì và nhận tóm tắt kiến thức từ AI.',
+      'Không gian số dành cho giáo viên đăng tải video bài dạy YouTube, phân loại theo các chuyên đề Hóa học THPT GDPT 2018. Học sinh theo dõi bài giảng trực tiếp trên web, ghi chú tức thì và nhận tóm tắt kiến thức từ hệ thống.',
     highlights: [
       'Phát video nhúng trực tiếp không mở tab ngoài, không quảng cáo chen ngang',
       'Đăng tải dễ dàng qua link YouTube với tự động nhận diện ảnh Thumbnail',
       'Tích hợp sổ tay ghi chú học tập (Lecture Notes) lưu trữ tự động',
-      'Trợ lý AI tự động phân tích mục tiêu & tóm tắt trọng tâm bài học',
+      'Hệ thống tự động phân tích mục tiêu & tóm tắt trọng tâm bài học',
     ],
-    techStack: ['YouTube Cinema Embed', 'No-Redirect Player', 'AI Lesson Summary', 'Study Notes'],
+    techStack: ['YouTube Cinema Embed', 'No-Redirect Player', 'Tóm tắt bài dạy', 'Study Notes'],
     actionLabel: 'Xem Kho Video Bài Giảng',
   },
   {
     id: 'student-progress',
     tabIndex: 9,
     title: 'Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh',
-    subtitle: 'Theo dõi EXP Kahoot, Chuỗi thi đấu, Đặt biệt danh & Đánh giá năng lực GDPT',
+    subtitle: 'Theo dõi EXP Đấu trường, Chuỗi thi đấu, Đặt biệt danh & Đánh giá năng lực GDPT',
     category: 'teacher',
     categoryLabel: 'Giáo viên & Đánh giá',
     badge: 'Quản lý Học sinh',
@@ -274,14 +274,14 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(245, 158, 11, 0.15)',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     description:
-      'Hệ thống quản lý học sinh toàn diện dành cho giáo viên: theo dõi chi tiết điểm kinh nghiệm Kahoot, chuỗi ngày đăng nhập, tỷ lệ câu đúng, đặt biệt danh danh dự và xếp loại năng lực theo chuẩn GDPT 2018.',
+      'Hệ thống quản lý học sinh toàn diện dành cho giáo viên: theo dõi chi tiết điểm kinh nghiệm Đấu trường, chuỗi ngày đăng nhập, tỷ lệ câu đúng, đặt biệt danh danh dự và xếp loại năng lực theo chuẩn GDPT 2018.',
     highlights: [
       'Theo dõi tiến trình học tập, EXP và cấp độ Level từng học sinh',
       'Đặt biệt danh danh dự & phong tặng danh hiệu chuyên môn',
-      'Đánh giá năng lực tự động (Kim cương / Vàng / Bạc / Đồng) & Gợi ý nhận xét bằng AI',
+      'Đánh giá năng lực tự động (Kim cương / Vàng / Bạc / Đồng) & Gợi ý nhận xét sư phạm tự động',
       'Xuất danh sách và báo cáo năng lực ra file CSV/Excel tiện lợi',
     ],
-    techStack: ['Student Analytics', 'AI Pedagogical Comment', 'Excel Exporter', 'Gamification'],
+    techStack: ['Student Analytics', 'Nhận xét Sư Phạm', 'Excel Exporter', 'Gamification'],
     actionLabel: 'Mở Sổ Theo Dõi Học Sinh',
   },
   {
@@ -297,14 +297,14 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(234, 179, 8, 0.15)',
     glowColor: 'rgba(234, 179, 8, 0.25)',
     description:
-      'Khu vực bảo mật dành cho giáo viên và quản trị viên: theo dõi lịch sử tương tác AI của học sinh, quản lý phòng thi Kahoot, duyệt câu hỏi và xem báo cáo tổng hợp chất lượng.',
+      'Khu vực bảo mật dành cho giáo viên và quản trị viên: theo dõi lịch sử tương tác học tập của học sinh, quản lý phòng thi đấu luyện tập, duyệt câu hỏi và xem báo cáo tổng hợp chất lượng.',
     highlights: [
       'Bảo mật đăng nhập bằng mật mã quản trị viên giáo viên',
-      'Xem và kiểm duyệt toàn bộ nhật ký hội thoại AI Chat Logs của học sinh',
-      'Quản lý danh sách phòng thi Kahoot trực tuyến và kết quả thí sinh',
+      'Xem và kiểm duyệt toàn bộ nhật ký học tập của học sinh',
+      'Quản lý danh sách phòng thi đấu trực tuyến và kết quả thí sinh',
       'Quản trị ngân hàng câu hỏi trắc nghiệm & dữ liệu thí nghiệm',
     ],
-    techStack: ['Teacher Auth Guard', 'Supabase Management', 'Audit Logging'],
+    techStack: ['Teacher Auth Guard', 'Quản lý tập trung', 'Audit Logging'],
     actionLabel: 'Mở Cổng Giáo Viên',
   },
   {
@@ -320,10 +320,10 @@ const FEATURES: FeatureItem[] = [
     iconBg: 'rgba(245, 158, 11, 0.15)',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     description:
-      'Trang xếp hạng và vinh danh học sinh THPT toàn diện: hỗ trợ phân vùng theo 3 cấp độ (Thành phố/Thị xã/Huyện, Cấp Tỉnh, và Toàn Quốc). Tích hợp 3 bảng xếp hạng chuyên sâu: Điểm EXP, Chuỗi thắng Kahoot và Chuỗi ngày chuyên cần.',
+      'Trang xếp hạng và vinh danh học sinh THPT toàn diện: hỗ trợ phân vùng theo 3 cấp độ (Thành phố/Thị xã/Huyện, Cấp Tỉnh, và Toàn Quốc). Tích hợp 3 bảng xếp hạng chuyên sâu: Điểm EXP, Chuỗi thắng Đấu trường và Chuỗi ngày chuyên cần.',
     highlights: [
       'Phân vùng 3 cấp độ: Thành phố / Thị xã / Huyện, Cấp Tỉnh, và Toàn Quốc (Quốc gia)',
-      '3 Bảng xếp hạng độc lập: Điểm EXP, Chuỗi trận Kahoot & Chuỗi ngày đăng nhập',
+      '3 Bảng xếp hạng độc lập: Điểm EXP, Chuỗi thắng Đấu trường & Chuỗi ngày đăng nhập',
       'Bục vinh quang Olympic Top 3 (Quán quân, Á quân, Quý quân) với hiệu ứng hào quang',
       'Thẻ theo dõi thứ hạng cá nhân và xuất báo cáo bảng vàng CSV/Excel',
     ],
@@ -576,8 +576,8 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                   mb: 3,
                 }}
               >
-                Nền tảng toàn diện tích hợp <strong>Google Gemini 2.0 AI</strong> và <strong>Dify AI</strong>, kết hợp
-                phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm Kahoot cùng trợ lý
+                Nền tảng toàn diện tích hợp công nghệ tương tác thông minh, kết hợp
+                phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm trực tuyến cùng trợ lý
                 soạn giáo án 5512 & đề thi chuẩn cấu trúc mới của Bộ Giáo dục & Đào tạo.
               </Typography>
 
@@ -633,7 +633,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  Gia Sư AI
+                  Gia Sư Hóa Học
                 </Button>
 
                 <Button
@@ -659,7 +659,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  Đấu Trường
+                  Đấu Trường Luyện Tập
                 </Button>
               </Stack>
 
@@ -685,7 +685,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                 />
                 <Chip
                   icon={<Trophy size={13} color="#f59e0b" />}
-                  label="Live Kahoot Realtime"
+                  label="Đấu trường luyện tập"
                   size="small"
                   sx={{ bgcolor: 'rgba(245, 158, 11, 0.08)', color: '#94a3b8', border: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '11px' }}
                 />
@@ -767,7 +767,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                 <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12.5px', display: 'block', mt: 0.3 }}>
                   {currentUser.role === 'teacher'
                     ? `Đơn vị: ${currentUser.school || 'THPT'} • Bộ môn: ${currentUser.subject || 'Hóa Học THPT'} • Toàn quyền theo dõi học sinh, soạn giáo án 5512, ra đề thi & quản lý video.`
-                    : `Trường: ${currentUser.school || 'THPT'} • Khám phá bài giảng video, phòng thí nghiệm ảo, gia sư AI 24/7 và thi đấu Kahoot.`}
+                    : `Trường: ${currentUser.school || 'THPT'} • Khám phá bài giảng video, phòng thí nghiệm ảo, gia sư 24/7 và thi đấu tại Đấu Trường Luyện Tập.`}
                 </Typography>
 
                 {/* Extra Student Progress Bar & Pills in Dashboard Welcome Banner */}
@@ -942,7 +942,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                       Cổng Tài Khoản Học Sinh
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, fontSize: '13px' }}>
-                      Lưu tiến trình học tập, chuỗi ngày đăng nhập (Streak), tích lũy điểm kinh nghiệm (EXP), mở khóa danh hiệu và thi đấu Kahoot trực tuyến cùng cả lớp.
+                      Lưu tiến trình học tập, chuỗi ngày đăng nhập (Streak), tích lũy điểm kinh nghiệm (EXP), mở khóa danh hiệu và thi đấu tại Đấu Trường Luyện Tập trực tuyến cùng cả lớp.
                     </Typography>
                   </Box>
 
@@ -1040,7 +1040,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                       Cổng Xác Thực Giáo Viên
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, fontSize: '13px' }}>
-                      Dành riêng cho Thầy/Cô. Xác thực bảo mật bằng mật khẩu nội bộ để soạn kế hoạch bài dạy 5512, ma trận đề thi 2026 và kiểm duyệt phòng thi Kahoot.
+                      Dành riêng cho Thầy/Cô. Xác thực bảo mật bằng mật khẩu nội bộ để soạn kế hoạch bài dạy 5512, ma trận đề thi 2026 và kiểm duyệt phòng thi đấu luyện tập.
                     </Typography>
                   </Box>
 
@@ -1374,7 +1374,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Toàn bộ công cụ thí nghiệm, bài tập, câu hỏi Kahoot và giáo án trên ChemAI được thiết kế bám sát 6 chuyên đề
+          Toàn bộ công cụ thí nghiệm, bài tập, câu hỏi đấu trường luyện tập và giáo án trên ChemAI được thiết kế bám sát 6 chuyên đề
           chính của 3 bộ SGK hiện hành (Kết Nối Tri Thức, Cánh Diều, Chân Trời Sáng Tạo).
         </Typography>
 
@@ -1554,7 +1554,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                 Luyện Tập & Soạn Bài
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ fontSize: '13px', lineHeight: 1.5 }}>
-                Học sinh tham gia <strong>Đấu Trường Kahoot</strong>; Giáo viên tạo <strong>Giáo Án 5512</strong> và{' '}
+                Học sinh tham gia <strong>Đấu Trường Luyện Tập</strong>; Giáo viên tạo <strong>Giáo Án 5512</strong> và{' '}
                 <strong>Đề Thi Mới 2026</strong> trong nháy mắt.
               </Typography>
             </Box>
@@ -1574,7 +1574,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Mô Phỏng Hóa Học THPT
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-          Phát triển trên nền tảng Next.js, Material UI, Three.js, Supabase, Google Gemini API và Dify AI Platform.
+          Phát triển trên nền tảng Next.js, Material UI, Three.js và công nghệ tương tác trực tuyến hiện đại.
         </Typography>
       </Box>
     </Box>

@@ -1543,7 +1543,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
                   },
                 }}
               >
-                {isLoading ? "AI Tra Cứu..." : "Tra Cứu Hóa Chất"}
+                {isLoading ? "Đang Tra Cứu..." : "Tra Cứu Hóa Chất"}
               </Button>
             </Grid>
           </Grid>

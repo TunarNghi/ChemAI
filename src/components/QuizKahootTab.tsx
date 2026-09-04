@@ -325,7 +325,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
       setParticipantId(participant.id);
       setIsJoined(true);
     } catch (e: any) {
-      setJoinErrorMsg("Lỗi tham gia phòng Kahoot: " + e.message);
+      setJoinErrorMsg("Lỗi tham gia phòng thi đấu: " + e.message);
     }
   };
 
@@ -521,7 +521,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
           <Box display="flex" alignItems="center" gap={1}>
             <Trophy color="#eab308" size={22} />
             <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: '15px', sm: '18px' } }}>
-              Thử Thách AI & Đấu Trường Kahoot
+              Thử Thách & Đấu Trường Luyện Tập
             </Typography>
           </Box>
 
@@ -543,7 +543,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
               color="secondary"
               sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: { xs: '12px', sm: '13px' } }}
             >
-              Đấu Trường Kahoot
+              Đấu Trường Luyện Tập
             </Button>
           </Stack>
         </Box>
@@ -555,7 +555,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
                 {isLoading ? (
                   <Box display="flex" alignItems="center" justifyContent="center" py={6} gap={1.5}>
                     <RefreshCw className="animate-spin" color="#38bdf8" size={22} />
-                    <Typography color="cyan" sx={{ fontSize: '13px' }}>ChemAIBuddy đang tạo câu hỏi trắc nghiệm...</Typography>
+                    <Typography color="cyan" sx={{ fontSize: '13px' }}>Hệ thống đang chuẩn bị câu hỏi trắc nghiệm...</Typography>
                   </Box>
                 ) : currentQuiz ? (
                   <Box>
@@ -662,7 +662,7 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
             {!isJoined ? (
               <Box maxWidth={400} mx="auto" py={1}>
                 <Typography variant="h6" fontWeight="bold" textAlign="center" color="cyan" mb={2} sx={{ fontSize: { xs: '16px', sm: '18px' } }}>
-                  🎮 Tham Gia Đấu Trường Kahoot
+                  🎮 Tham Gia Đấu Trường Luyện Tập
                 </Typography>
 
                 <Stack spacing={1.5}>

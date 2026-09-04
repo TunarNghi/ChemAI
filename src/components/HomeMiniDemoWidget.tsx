@@ -282,8 +282,8 @@ const FEATURE_TABS = [
   {
     id: 'quiz',
     tabIndex: 3,
-    title: 'Thử Thách Trắc Nghiệm AI / Kahoot',
-    shortTitle: 'Đố vui AI',
+    title: 'Thử Thách Đấu Trường Luyện Tập',
+    shortTitle: 'Đấu trường',
     icon: <Trophy size={18} color="#f59e0b" />,
     color: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.3)',
@@ -759,7 +759,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
           )}
 
           {/* ============================================================ */}
-          {/* TAB 1: THỬ THÁCH TRẮC NGHIỆM AI / KAHOOT MINI                */}
+          {/* TAB 1: THỬ THÁCH TRẮC NGHIỆM ĐẤU TRƯỜNG LUYỆN TẬP MINI     */}
           {/* ============================================================ */}
           {activeTabIdx === 1 && (
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
@@ -908,7 +908,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                     '&:hover': { bgcolor: '#b45309' },
                   }}
                 >
-                  Vào Đấu Trường
+                  Vào Đấu Trường Luyện Tập
                 </Button>
               </Stack>
             </Box>

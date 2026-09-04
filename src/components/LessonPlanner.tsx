@@ -207,7 +207,7 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
         {showHistory ? (
           <Paper sx={{ p: { xs: 1.5, sm: 2.5 }, bgcolor: '#0f172a', borderRadius: 2 }}>
             <Typography variant="subtitle2" color="cyan" fontWeight="bold" mb={1.5} sx={{ fontSize: { xs: '13px', sm: '14px' } }}>
-              📜 Danh Sách Giáo Án Đã Lưu Trong CSDL Supabase
+              📜 Danh Sách Giáo Án Đã Lưu Trong CSDL
             </Typography>
             <Stack spacing={1}>
               {savedPlans.length === 0 ? (
@@ -270,7 +270,7 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
                     disabled={isGenerating || !topic.trim()}
                     sx={{ py: 1.2, fontWeight: 'bold', textTransform: 'none', fontSize: { xs: '13.5px', sm: '14.5px' } }}
                   >
-                    {isGenerating ? "AI Đang Soạn Giáo Án..." : "Tạo & Lưu Giáo Án 5512"}
+                    {isGenerating ? "Đang Soạn Giáo Án Tự Động..." : "Tạo & Lưu Giáo Án 5512"}
                   </Button>
                 </Stack>
               </Paper>
@@ -288,7 +288,7 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
                     mb={1.5}
                   >
                     <Stack direction="row" spacing={0.8} alignItems="center">
-                      <Chip label="Dify / Gemini AI" color="primary" size="small" variant="outlined" sx={{ height: 22, fontSize: 11 }} />
+                      <Chip label="Chuẩn 5512 BGD&ĐT" color="primary" size="small" variant="outlined" sx={{ height: 22, fontSize: 11 }} />
                       <Chip label="Đã lưu CSDL" color="success" size="small" sx={{ height: 22, fontSize: 11 }} />
                     </Stack>
                     <Button size="small" variant="contained" color="secondary" onClick={handleExportWord} startIcon={<Download size={15} />} sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '12px' }}>

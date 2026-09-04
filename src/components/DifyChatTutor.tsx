@@ -214,7 +214,7 @@ export default function DifyChatTutor() {
       id: "1",
       sender: "bot",
       text:
-        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Động cơ chính **Dify AI** kết hợp **Gemini AI & Database THPT GDPT 2018**). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
+        "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Trợ lý học tập môn Hóa học THPT chuẩn GDPT 2018). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
       source: "dify"
     },
   ]);
@@ -230,7 +230,7 @@ export default function DifyChatTutor() {
           id: Date.now().toString(),
           sender: "bot",
           text:
-            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Động cơ chính **Dify AI** kết hợp **Gemini AI & Database THPT GDPT 2018**). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
+            "Xin chào! Tôi là **Gia Sư Hóa Học ChemAI** (Trợ lý học tập môn Hóa học THPT chuẩn GDPT 2018). Bạn hãy nhập bất kỳ phương trình phản ứng hóa học (ví dụ: *Fe + HNO3*, *Cu + H2SO4*, *Al + NaOH*, *CH3COOH + C2H5OH*...), câu hỏi lý thuyết hoặc bài tập để nhận lời giải chi tiết nhé!",
           source: "dify",
         },
       ]);
@@ -369,9 +369,9 @@ Hãy giải thích và trình bày cặn kẽ, chính xác cho câu hỏi/phươ
       const offlineHit = checkLocalChemistryDB(textToSend);
       const fallbackText = offlineHit || `### ⚠️ THÔNG BÁO TẠM THỜI TỪ GIA SƯ CHEMAI
 
-Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || "Lỗi kết nối mạng"}).
+Không thể kết nối đến máy chủ vào lúc này (${err?.message || "Lỗi kết nối mạng"}).
 
-💡 **Gợi ý tra cứu nhanh từ Database có sẵn:**
+💡 **Gợi ý tra cứu nhanh các chủ đề phổ biến:**
 - **Kim loại tác dụng nước:** \`Na + H2O\`, \`K + H2O\`, \`Ba + H2O\`
 - **Kim loại tác dụng acid:** \`Fe + HNO3\`, \`Al + HCl\`, \`Cu + HNO3\`
 - **Phản ứng trao đổi ion:** \`BaCl2 + H2SO4\`, \`CaCO3 + HCl\`, \`AgNO3 + NaCl\`
@@ -411,33 +411,10 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
           <Box display="flex" alignItems="center" gap={1}>
             <Bot color="#0284c7" size={22} />
             <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: '15px', sm: '18px' } }}>
-              Gia Sư Hóa Học AI
+              Gia Sư Hóa Học
             </Typography>
           </Box>
           <Box display="flex" alignItems="center" gap={0.8} flexWrap="wrap">
-            <Chip 
-              icon={<Bot size={13} color="#38bdf8" />} 
-              label="Dify AI (Chính)" 
-              color="primary" 
-              size="small" 
-              variant="outlined" 
-              sx={{ height: 22, fontSize: 11, bgcolor: 'rgba(56,189,248,0.08)' }} 
-            />
-            <Chip 
-              label="Gemini AI (Dự phòng)" 
-              color="info" 
-              size="small" 
-              variant="outlined" 
-              sx={{ height: 22, fontSize: 11 }} 
-            />
-            <Chip 
-              icon={<Database size={13} color="#10b981" />} 
-              label="Database Cache: Bật" 
-              color="success" 
-              size="small" 
-              variant="outlined" 
-              sx={{ height: 22, fontSize: 11, bgcolor: 'rgba(16,185,129,0.08)' }} 
-            />
             {messages.length > 1 && (
               <Button
                 size="small"
@@ -537,53 +514,7 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
                   "& strong": { color: "#fbbf24" }
                 }}
               >
-                {msg.sender === "bot" && msg.source && (
-                  <Box display="flex" alignItems="center" gap={0.5} mb={0.6}>
-                    {msg.source === "database" && (
-                      <Chip
-                        icon={<Zap size={11} color="#10b981" />}
-                        label="⚡ Phản hồi tức thì từ Database"
-                        size="small"
-                        sx={{
-                          height: 18,
-                          fontSize: 10,
-                          bgcolor: "rgba(16, 185, 129, 0.12)",
-                          color: "#34d399",
-                          border: "1px solid rgba(52, 211, 153, 0.25)",
-                          "& .MuiChip-icon": { marginLeft: "4px" }
-                        }}
-                      />
-                    )}
-                    {msg.source === "dify" && (
-                      <Chip
-                        icon={<Bot size={11} color="#38bdf8" />}
-                        label="🚀 Trí tuệ nhân tạo Dify AI"
-                        size="small"
-                        sx={{
-                          height: 18,
-                          fontSize: 10,
-                          bgcolor: "rgba(56, 189, 248, 0.12)",
-                          color: "#38bdf8",
-                          border: "1px solid rgba(56, 189, 248, 0.25)",
-                          "& .MuiChip-icon": { marginLeft: "4px" }
-                        }}
-                      />
-                    )}
-                    {msg.source === "gemini" && (
-                      <Chip
-                        label="✨ Trí tuệ nhân tạo Gemini AI (Dự phòng)"
-                        size="small"
-                        sx={{
-                          height: 18,
-                          fontSize: 10,
-                          bgcolor: "rgba(168, 85, 247, 0.12)",
-                          color: "#c084fc",
-                          border: "1px solid rgba(168, 85, 247, 0.25)"
-                        }}
-                      />
-                    )}
-                  </Box>
-                )}
+
                 <Box
                   dangerouslySetInnerHTML={{
                     __html: formatMarkdownToHTML(cleanChemicalLatex(msg.text))
@@ -599,7 +530,7 @@ Không thể kết nối đến máy chủ AI vào lúc này (${err?.message || 
               </Avatar>
               <CircularProgress size={18} color="primary" />
               <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12px' }}>
-                Đang kết nối Dify AI & phân tích câu hỏi...
+                Đang phân tích câu hỏi và soạn lời giải chi tiết...
               </Typography>
             </Box>
           )}

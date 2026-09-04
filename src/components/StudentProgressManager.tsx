@@ -87,7 +87,7 @@ export const NICKNAME_PRESETS = [
   'Bậc Thầy Cấu Hình Electron',
   'Chiến Binh Năng Lượng Enthalpy',
   'Chuyên Gia Nhóm Halogen',
-  'Kỷ Lục Gia Đấu Trường Kahoot',
+  'Kỷ Lục Gia Đấu Trường Luyện Tập',
   'Chiến Binh Cân Bằng Phương Trình',
   'Nhà Hóa Học Trẻ Xuất Sắc',
   'Ngôi Sao Sáng Tạo STEM',
@@ -305,9 +305,9 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
 Hãy viết một lời nhận xét sư phạm ngắn gọn, súc tích (khoảng 2-3 câu, tối đa 50 từ), mang tính động viên, chuyên môn sâu sắc cho học sinh:
 - Tên học sinh: ${activeStudent.fullName}
 - Lớp: ${activeStudent.className}
-- Điểm kinh nghiệm Kahoot: ${activeStudent.kahootExp} EXP (Cấp độ ${comp.level})
+- Điểm kinh nghiệm Đấu trường: ${activeStudent.kahootExp} EXP (Cấp độ ${comp.level})
 - Số câu đúng: ${activeStudent.correctKahootQuestions}/${activeStudent.totalKahootQuestions} (${comp.accuracy}% chính xác)
-- Chuỗi thắng Kahoot: ${activeStudent.kahootStreak} trận
+- Chuỗi thắng Đấu trường: ${activeStudent.kahootStreak} trận
 - Biệt danh hiện tại: "${editNickname || activeStudent.nickname}"
 - Xếp loại năng lực: ${comp.rankLabel}
 
@@ -344,7 +344,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
       'Biệt Danh Sư Phạm',
       'Kinh Nghiệm (EXP)',
       'Cấp Độ',
-      'Chuỗi Kahoot (Trận)',
+      'Chuỗi Thắng Đấu Trường (Trận)',
       'Chuỗi Đăng Nhập (Ngày)',
       'Số Câu Làm',
       'Số Câu Đúng',
@@ -499,7 +499,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                   Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Dành riêng cho Giáo viên • Quản lý EXP Kahoot, Chuỗi thi đấu, Biệt danh & Đánh giá năng lực GDPT 2018
+                  Dành riêng cho Giáo viên • Quản lý EXP Đấu trường, Chuỗi thi đấu, Biệt danh & Đánh giá năng lực GDPT 2018
                 </Typography>
               </Box>
             </Stack>
@@ -617,7 +617,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
           >
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography variant="caption" color="text.secondary" fontWeight="bold">
-                QUÁN QUÂN KAHOOT (TOP 1)
+                QUÁN QUÂN ĐẤU TRƯỜNG (TOP 1)
               </Typography>
               <Trophy size={18} color="#f43f5e" />
             </Box>
@@ -728,7 +728,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                 onChange={(e) => setSortBy(e.target.value as any)}
               >
                 <MenuItem value="exp_desc">⚡ EXP cao nhất</MenuItem>
-                <MenuItem value="streak_desc">🔥 Chuỗi Kahoot dài nhất</MenuItem>
+                <MenuItem value="streak_desc">🔥 Chuỗi Thắng Đấu Trường dài nhất</MenuItem>
                 <MenuItem value="login_desc">📅 Chuỗi đăng nhập cao nhất</MenuItem>
                 <MenuItem value="questions_desc">🎯 Số câu làm nhiều nhất</MenuItem>
                 <MenuItem value="name_asc">🔤 Tên học sinh A - Z</MenuItem>
@@ -777,8 +777,8 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Học Sinh</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Biệt Danh Sư Phạm</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Kinh Nghiệm (EXP)</TableCell>
-                <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Chuỗi Kahoot / Đăng Nhập</TableCell>
-                <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Số Câu Kahoot</TableCell>
+                <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Chuỗi Đấu Trường / Đăng Nhập</TableCell>
+                <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Số Câu Đấu Trường</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Đánh Giá Năng Lực</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold', textAlign: 'center' }}>Thao Tác</TableCell>
               </TableRow>
@@ -886,7 +886,7 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
                       {/* 4. Streaks */}
                       <TableCell>
                         <Stack direction="row" spacing={0.8}>
-                          <Tooltip title="Chuỗi trận Kahoot liên tiếp">
+                          <Tooltip title="Chuỗi trận Đấu trường liên tiếp">
                             <Chip
                               icon={<Flame size={12} color="#f43f5e" />}
                               label={`${std.kahootStreak}`}

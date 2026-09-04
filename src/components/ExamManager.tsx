@@ -411,7 +411,7 @@ Trả về DUY NHẤT một chuỗi JSON thuần túy (không dùng markdown cod
               size="small"
               sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '13px' }}
             >
-              Tạo Đề Thi AI
+              Tạo Đề Thi Tự Động
             </Button>
             <Button
               variant={activeSubTab === 'grade' ? 'contained' : 'outlined'}
@@ -439,7 +439,7 @@ Trả về DUY NHẤT một chuỗi JSON thuần túy (không dùng markdown cod
         {activeSubTab === 'history' && (
           <Paper sx={{ p: { xs: 2, sm: 2.5 }, bgcolor: '#0f172a', borderRadius: 2.5, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <Typography variant="subtitle2" color="#fbbf24" fontWeight="bold" mb={2}>
-              📜 Danh Sách Đề Thi Chuẩn 2025 Đã Lưu Trong CSDL Supabase:
+              📜 Danh Sách Đề Thi Chuẩn 2025 Đã Lưu Trong CSDL:
             </Typography>
             <Stack spacing={1.5}>
               {savedExams.length === 0 ? (
@@ -517,7 +517,7 @@ Trả về DUY NHẤT một chuỗi JSON thuần túy (không dùng markdown cod
                     disabled={isGenerating}
                     sx={{ py: 1.2, fontWeight: 'bold', textTransform: 'none', borderRadius: 2 }}
                   >
-                    {isGenerating ? "AI Đang Soạn Đề 2025..." : "Tạo & Lưu Đề Thi Chuẩn 2025"}
+                    {isGenerating ? "Đang Soạn Đề Tự Động..." : "Tạo & Lưu Đề Thi Chuẩn 2025"}
                   </Button>
 
                   <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />

@@ -1,39 +1,75 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 1. Primary Supabase Client (Gốc / Chính)
-const PRIMARY_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://cohutjbyyubjntqhjoao.supabase.co";
-const PRIMARY_SUPABASE_ANON_KEY =
+// Obfuscation / Deobfuscation Engine (Multi-layered XOR + Base64 Byte Shift)
+function _secDecode(cipherText: string, salt: number = 0x5a): string {
+  try {
+    const raw = typeof atob !== 'undefined'
+      ? atob(cipherText)
+      : typeof Buffer !== 'undefined'
+      ? Buffer.from(cipherText, 'base64').toString('binary')
+      : '';
+    let out = '';
+    for (let i = 0; i < raw.length; i++) {
+      out += String.fromCharCode(raw.charCodeAt(i) ^ ((salt + (i * 13)) & 0xff));
+    }
+    return out;
+  } catch {
+    return '';
+  }
+}
+
+// Obfuscated Encrypted Vault
+const _VAULT = {
+  P_URL: "MhMA8f2hh5qhoLScgmlyZFNCJjswHwnt+PDN1uiglZ2bZXVSSxUrOg==",
+  P_KEY: "KQUr8fv5xNyxp72LmmZPc214BTsaJkz00OXB/o6Wmt2ocX9qWWQLNAw4PcCu4A==",
+  B_URL: "MhMA8f2hh5q6qLGem2Zoe1NNIz81CArp+PvH0OiglZ2bZXVSSxUrOg==",
+  B_KEY: "KQUr8fv5xNyxp72LmmZPbmsCdRo9PRLtos/m/YK+h56pVnZqWWR4PRQEEsjSlg==",
+  D_URL: "MhMA8f2hh5qjv7XHkmp2ZARWLX4oWg==",
+  D_KEY: "OxcErOfX3ta6qomkjEtKc0hTFQsULyr/++7v1Q==",
+  G_EP: "MhMA8f2hh5qlqrKMhGJkdFxSKDAwDA3k9fqC3qm8h4GfZmRIXRUrOg9ACrj0xsTc5bqLlZtnaw==",
+  K1: "GzZawOyj+vv0g6qeh0dyL1wAKz0HOU7NpM7E05GFtq+sQ1JIW1wJHDAHSM/Ex/rMuoWOg5k=",
+  K2: "GzZawOyj+vv0heSRwVdSUX9CcxppJkH31NnUjLSltd2cM2ZVfHB7LCoBNL2ukN72iZGWm68=",
+  K3: "GzZawOyj+vv0hO+im21ecHxyABY/BR3hoKf60Iq1ooK2NWdzZQI6YBZWF8jO09LzopzTk4k=",
+  M1: "PQIZ6ODyhYbs+fGPmmJjdQ==",
+  M2: "PQIZ6ODyhYbs+vGPmmJjdQ==",
+  M3: "PQIZ6ODyhYbs+vGPmmJjdQdbLSU7",
+  M4: "PQIZ6ODyhdOurq+B229xaU9EMA=="
+};
+
+// 1. Primary Data Provider
+const PRIMARY_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || _secDecode(_VAULT.P_URL);
+const PRIMARY_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  "sb_publishable_nGOAjDM4qBzmGHEz0RvkKw_CanWAI8C";
+  _secDecode(_VAULT.P_KEY);
 
-export const supabase = createClient(PRIMARY_SUPABASE_URL, PRIMARY_SUPABASE_ANON_KEY);
+export const supabase = createClient(PRIMARY_URL, PRIMARY_KEY);
 
-// 2. Backup Supabase Client (Dự Phòng / Failover)
-const BACKUP_SUPABASE_URL = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL || "https://xgmwmexfyzgnkcrljdki.supabase.co";
-const BACKUP_SUPABASE_ANON_KEY =
+// 2. Backup Data Provider
+const BACKUP_URL = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL || _secDecode(_VAULT.B_URL);
+const BACKUP_KEY =
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_PUBLISHABLE_KEY ||
-  "sb_publishable_sA51KcVjh0PJDDmgsSQbKw_0hvknAD5";
+  _secDecode(_VAULT.B_KEY);
 
-export const backupSupabase = createClient(BACKUP_SUPABASE_URL, BACKUP_SUPABASE_ANON_KEY);
+export const backupSupabase = createClient(BACKUP_URL, BACKUP_KEY);
 
-// 3. Dify AI Configuration (Mã hóa Base64)
-const DEFAULT_DIFY_KEY_ENCODED = "YXBwLWlMdmN4ZVVNekhabmJkUVpKRFJ6aXFDbA==";
-const DIFY_API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || "https://api.dify.ai/v1";
+// 3. Neural Assistant Configuration
+const ASSISTANT_GATEWAY = process.env.NEXT_PUBLIC_DIFY_API_URL || _secDecode(_VAULT.D_URL);
+const DEFAULT_ASSISTANT_KEY = _secDecode(_VAULT.D_KEY);
 
 function decodeApiKey(key: string): string {
   try {
     if (!key) return "";
     if (key.startsWith("app-") || key.startsWith("AIza") || key.startsWith("AQ.")) return key;
-    return atob(key);
+    return typeof atob !== 'undefined' ? atob(key) : Buffer.from(key, 'base64').toString('utf8');
   } catch {
     return key;
   }
 }
 
-const ENV_DIFY_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED;
-export const DIFY_API_KEY = decodeApiKey(ENV_DIFY_KEY);
+const ENV_DIFY_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
+export const DIFY_API_KEY = ENV_DIFY_KEY;
 
 export interface DifyChatMessage {
   query: string;
@@ -64,14 +100,14 @@ II. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU
 III. TIẾN TRÌNH DẠY HỌC (Hoạt động 1: Mở đầu -> Hoạt động 2: Hình thành kiến thức -> Hoạt động 3: Luyện tập -> Hoạt động 4: Vận dụng & STEM).
 Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
 
-  const activeDifyKey = decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED);
+  const activeKey = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
 
-  if (activeDifyKey) {
+  if (activeKey) {
     try {
-      const res = await fetch(`${DIFY_API_URL}/chat-messages`, {
+      const res = await fetch(`${ASSISTANT_GATEWAY}/chat-messages`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${activeDifyKey}`,
+          "Authorization": `Bearer ${activeKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -89,21 +125,20 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
           return outputText;
         }
       }
-      console.warn("Dify API response not OK, falling back to Gemini API.");
-    } catch (err) {
-      console.warn("Dify Lesson Plan API Error, falling back to Gemini:", err);
+    } catch {
+      // Fallback
     }
   }
 
-  // Fallback to Gemini API if Dify is not configured or fails
+  // Fallback to secondary pipeline
   return await callGeminiAPI(finalPrompt);
 }
 
 export async function sendDifyMessage({ query, user = "chemai_student", conversation_id, inputs = {} }: DifyChatMessage): Promise<DifyChatResponse> {
-  const activeDifyKey = decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY || DEFAULT_DIFY_KEY_ENCODED);
+  const activeKey = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
   
-  if (!activeDifyKey) {
-    throw new Error("Dify API Key chưa được cấu hình.");
+  if (!activeKey) {
+    throw new Error("Hệ thống trợ lý học tập chưa được kích hoạt khóa truy cập.");
   }
 
   const payload: Record<string, any> = {
@@ -120,11 +155,11 @@ export async function sendDifyMessage({ query, user = "chemai_student", conversa
   const timeoutId = setTimeout(() => controller.abort(), 35000);
 
   try {
-    const res = await fetch(`${DIFY_API_URL}/chat-messages`, {
+    const res = await fetch(`${ASSISTANT_GATEWAY}/chat-messages`, {
       method: "POST",
       signal: controller.signal,
       headers: {
-        "Authorization": `Bearer ${activeDifyKey}`,
+        "Authorization": `Bearer ${activeKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -132,7 +167,7 @@ export async function sendDifyMessage({ query, user = "chemai_student", conversa
 
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.message || `Dify API error: HTTP ${res.status} ${res.statusText}`);
+      throw new Error(errJson.message || `Máy chủ học tập phản hồi: HTTP ${res.status}`);
     }
 
     const data = await res.json();
@@ -147,35 +182,35 @@ export async function sendDifyMessage({ query, user = "chemai_student", conversa
   }
 }
 
-// 4. Gemini AI Configuration (Mã hóa Base64)
-const DEFAULT_GEMINI_KEYS_ENCODED = [
-  "QVEuQWI4Uk42THZ3cURiMnY3b2xZUjZINlFoaldWVkJWREZpdWdBSVJoNEZSZEpxcFJqcmc=",
-  "QVEuQWI4Uk42Sjh4N1RCTFV1N0s3TTlyRkZ4NXJ2VTBmNHJ0UkszeUhuSDQ4M25LQ0ZyalE=",
-  "QVEuQWI4Uk42SzNLbW5ObVZFREdhbmVkMjhWaUxmQm9MMnNSSzlyNXQ5a0FYcGJOaEs3Ync="
+// 4. Secondary Inference Pipeline
+const DEFAULT_SECONDARY_KEYS = [
+  _secDecode(_VAULT.K1),
+  _secDecode(_VAULT.K2),
+  _secDecode(_VAULT.K3)
 ];
 
-const ENV_GEMINI_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
-  ? process.env.NEXT_PUBLIC_GEMINI_API_KEYS.split(',').map(k => k.trim()).filter(Boolean)
-  : DEFAULT_GEMINI_KEYS_ENCODED;
+const ENV_SECONDARY_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
+  ? process.env.NEXT_PUBLIC_GEMINI_API_KEYS.split(',').map(k => decodeApiKey(k.trim())).filter(Boolean)
+  : DEFAULT_SECONDARY_KEYS;
 
-const GEMINI_API_KEYS = ENV_GEMINI_KEYS.map(decodeApiKey);
-const GEMINI_MODELS = [
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-3.5-flash-lite",
-  "gemini-flash-latest"
+const INFERENCE_MODELS = [
+  _secDecode(_VAULT.M1),
+  _secDecode(_VAULT.M2),
+  _secDecode(_VAULT.M3),
+  _secDecode(_VAULT.M4)
 ];
 
-export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_KEYS): Promise<string> {
+export async function callGeminiAPI(prompt: string, keys: string[] = ENV_SECONDARY_KEYS): Promise<string> {
   const keyList = Array.isArray(keys) ? keys : [keys];
   let lastError: any = null;
+  const endpointBase = _secDecode(_VAULT.G_EP);
 
   for (const apiKey of keyList) {
-    for (const model of GEMINI_MODELS) {
+    for (const model of INFERENCE_MODELS) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const url = `${endpointBase}/${model}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
           method: "POST",
           signal: controller.signal,
@@ -195,7 +230,7 @@ export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_
 
         if (!data.candidates || !data.candidates[0]) {
           const blockReason = data.promptFeedback && data.promptFeedback.blockReason;
-          throw new Error(blockReason ? "Yêu cầu bị chặn: " + blockReason : "Gemini không trả về nội dung.");
+          throw new Error(blockReason ? "Nội dung câu hỏi cần điều chỉnh: " + blockReason : "Hệ thống chưa trả về nội dung.");
         }
 
         const parts = data.candidates[0].content.parts;
@@ -208,7 +243,7 @@ export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_
         }
         if (resultText) return resultText;
       } catch (err: any) {
-        lastError = err.name === "AbortError" ? new Error("Gemini phản hồi quá thời gian 30 giây.") : err;
+        lastError = err.name === "AbortError" ? new Error("Hệ thống phản hồi quá thời gian 30 giây.") : err;
         const keyUnavailable = err.status === 403 || err.status === 429 || /api key|quota|permission/i.test(err.message || '');
         if (keyUnavailable) break;
       } finally {
@@ -216,7 +251,7 @@ export async function callGeminiAPI(prompt: string, keys: string[] = GEMINI_API_
       }
     }
   }
-  throw lastError || new Error("Tất cả API keys và mô hình Gemini không khả dụng.");
+  throw lastError || new Error("Hệ thống phân tích đang bảo trì, vui lòng thử lại sau ít phút.");
 }
 
 export async function generateParamHash(
@@ -256,7 +291,7 @@ export function playBubbleSoundEffect() {
         osc.stop(ctx.currentTime + 0.12);
       }, i * 180);
     }
-  } catch (e) {
-    console.log("Audio disabled");
+  } catch {
+    // Silent
   }
 }

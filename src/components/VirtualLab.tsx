@@ -844,7 +844,7 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
                     borderRadius: 2,
                   }}
                 >
-                  {isLoading ? 'ChemAIBuddy đang xử lý...' : 'Chạy Mô Phỏng THPT'}
+                  {isLoading ? 'Hệ thống đang xử lý...' : 'Chạy Mô Phỏng THPT'}
                 </Button>
               </Paper>
             </Grid>
@@ -981,7 +981,7 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
               <Paper sx={{ p: { xs: 2, sm: 2.5 }, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, mt: 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
                   <Typography variant="subtitle2" fontWeight="bold" color="cyan" sx={{ fontSize: { xs: '13px', sm: '14px' } }}>
-                    📊 Kết quả Phân tích Định lượng AI
+                    📊 Kết quả Phân tích Định lượng
                   </Typography>
                   <Button
                     size="small"
@@ -990,7 +990,7 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
                     onClick={speakPhenomenon}
                     sx={{ textTransform: 'none', color: '#38bdf8', borderColor: 'rgba(255,255,255,0.15)', fontSize: '11px', py: 0.3 }}
                   >
-                    Đọc AI
+                    Phát Âm Thanh
                   </Button>
                 </Box>
 

@@ -681,7 +681,7 @@ export default function UserAuthModal({
                     Cổng Dành Cho Học Sinh
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
-                    Đăng nhập bằng Email, SĐT hoặc Tên tài khoản đã đăng ký để lưu tiến trình & EXP Kahoot
+                    Đăng nhập bằng Email, SĐT hoặc Tên tài khoản đã đăng ký để lưu tiến trình & EXP Đấu trường
                   </Typography>
                 </Box>
               </Box>
@@ -1302,7 +1302,7 @@ export default function UserAuthModal({
                         <Grid item xs={6}>
                           <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: 'rgba(244, 63, 94, 0.12)', border: '1px solid rgba(244, 63, 94, 0.25)', textAlign: 'center' }}>
                             <Typography variant="caption" color="#f43f5e" fontWeight="bold" display="flex" alignItems="center" justifyContent="center" gap={0.5}>
-                              <Flame size={13} /> Chuỗi Kahoot: {currentUser.kahootStreak || 2} trận
+                              <Flame size={13} /> Chuỗi Đấu Trường: {currentUser.kahootStreak || 2} trận
                             </Typography>
                           </Box>
                         </Grid>
@@ -1365,7 +1365,7 @@ export default function UserAuthModal({
                     <Typography variant="body2" fontWeight="600" color={currentUser.role === 'teacher' ? '#f59e0b' : '#34d399'}>
                       {currentUser.role === 'teacher'
                         ? 'Giáo viên: Toàn quyền theo dõi học sinh, soạn giáo án, ra đề thi & quản lý video'
-                        : 'Học sinh: Xem bài giảng, thực hành thí nghiệm, gia sư AI 24/7 & thi đấu Kahoot'}
+                        : 'Học sinh: Xem bài giảng, thực hành thí nghiệm, gia sư 24/7 & tham gia đấu trường luyện tập'}
                     </Typography>
                   </Box>
                 </Box>

@@ -282,7 +282,7 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
   // AI Assistant: Generate Summary and Description from Title/Topic
   const handleAiGenerateDescription = async () => {
     if (!titleInput.trim()) {
-      setValidationError('Vui lòng nhập Tiêu đề hoặc Chủ đề bài học trước khi dùng trợ lý AI!');
+      setValidationError('Vui lòng nhập Tiêu đề hoặc Chủ đề bài học trước khi tạo tóm tắt tự động!');
       return;
     }
     setIsAiGenerating(true);
@@ -1486,14 +1486,14 @@ Trả về văn bản tiếng Việt tự nhiên, rõ ràng, sư phạm, không 
                     '&:hover': { bgcolor: 'rgba(168, 85, 247, 0.15)' },
                   }}
                 >
-                  {isAiGenerating ? 'AI Đang soạn tóm tắt...' : 'AI Soạn Tóm Tắt & Mục Tiêu'}
+                  {isAiGenerating ? 'Đang tạo tóm tắt tự động...' : 'Tự Động Soạn Tóm Tắt & Mục Tiêu'}
                 </Button>
               </Box>
               <TextField
                 multiline
                 rows={4}
                 fullWidth
-                placeholder="Nhập nội dung tóm tắt, mục tiêu cần đạt, kiến thức trọng tâm hoặc bấm nút 'AI Soạn Tóm Tắt' bên trên..."
+                placeholder="Nhập nội dung tóm tắt, mục tiêu cần đạt, kiến thức trọng tâm hoặc bấm nút 'Tự Động Soạn Tóm Tắt' bên trên..."
                 value={descInput}
                 onChange={(e) => setDescInput(e.target.value)}
               />

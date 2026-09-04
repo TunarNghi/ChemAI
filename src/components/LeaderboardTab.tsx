@@ -296,7 +296,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
       'Biệt Danh',
       'Kinh Nghiệm (EXP)',
       'Cấp Độ',
-      'Chuỗi Kahoot (Trận)',
+      'Chuỗi Thắng Đấu Trường (Trận)',
       'Chuỗi Đăng Nhập (Ngày)',
       'Số Câu Làm',
       'Số Câu Đúng',
@@ -408,7 +408,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 740, lineHeight: 1.7, fontSize: '13.5px' }}>
               Vinh danh các <b>Học Sinh THPT</b> có thành tích Hóa học xuất sắc nhất theo 3 phạm vi địa lý (<b>Thành Phố / Huyện</b>, <b>Tỉnh</b> và <b>Toàn Quốc</b>), 
-              dựa trên 3 chỉ số cốt lõi: <b>Điểm Kinh Nghiệm (EXP)</b>, <b>Chuỗi Thắng Kahoot</b> và <b>Chuỗi Ngày Đăng Nhập</b>.
+              dựa trên 3 chỉ số cốt lõi: <b>Điểm Kinh Nghiệm (EXP)</b>, <b>Chuỗi Thắng Đấu Trường</b> và <b>Chuỗi Ngày Đăng Nhập</b>.
             </Typography>
 
             {/* Quick Metrics */}
@@ -671,7 +671,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
           <Tab
             icon={<Flame size={18} />}
             iconPosition="start"
-            label="2. Xếp Hạng Chuỗi Kahoot (Streak)"
+            label="2. Xếp Hạng Chuỗi Thắng Đấu Trường"
           />
           <Tab
             icon={<Calendar size={18} />}
@@ -873,7 +873,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
             <Award size={20} color="#f59e0b" />
             <Typography variant="subtitle1" fontWeight="bold" color="white">
               Bảng Xếp Hạng Chi Tiết —{' '}
-              {activeCategory === 0 ? 'Điểm Kinh Nghiệm (EXP)' : activeCategory === 1 ? 'Chuỗi Kahoot Bất Bại' : 'Chuỗi Ngày Đăng Nhập'}
+              {activeCategory === 0 ? 'Điểm Kinh Nghiệm (EXP)' : activeCategory === 1 ? 'Chuỗi Thắng Đấu Trường Bất Bại' : 'Chuỗi Ngày Đăng Nhập'}
             </Typography>
           </Box>
           <Chip
@@ -892,7 +892,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Khu Vực / Tỉnh</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Biệt Danh Phong Tặng</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>
-                  {activeCategory === 0 ? '⚡ Kinh Nghiệm (EXP)' : activeCategory === 1 ? '🔥 Chuỗi Thắng Kahoot' : '📅 Chuỗi Đăng Nhập'}
+                  {activeCategory === 0 ? '⚡ Kinh Nghiệm (EXP)' : activeCategory === 1 ? '🔥 Chuỗi Thắng Đấu Trường' : '📅 Chuỗi Đăng Nhập'}
                 </TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Chỉ Số Phụ</TableCell>
                 <TableCell sx={{ bgcolor: '#1e293b', color: '#94a3b8', fontWeight: 'bold' }}>Xếp Loại Năng Lực</TableCell>
@@ -911,7 +911,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
                       </Typography>
                       <Typography variant="caption" color="text.secondary" sx={{ maxWidth: 460 }}>
                         {students.length === 0
-                          ? 'Dữ liệu xếp hạng sẽ tự động cập nhật ngay khi học sinh đăng ký tài khoản và hoàn thành các bài thi đấu Kahoot.'
+                          ? 'Dữ liệu xếp hạng sẽ tự động cập nhật ngay khi học sinh đăng ký tài khoản và hoàn thành các bài thi đấu tại Đấu Trường Luyện Tập.'
                           : 'Hãy thử đổi sang phạm vi Toàn Quốc hoặc chọn "Tất cả lớp".'}
                       </Typography>
                     </Box>
@@ -1362,7 +1362,7 @@ function PodiumCard({
       ) : activeCategory === 1 ? (
         <Box>
           <Typography variant="caption" color="text.secondary" fontWeight="bold" display="block">
-            CHUỖI KAHOOT BẤT BẠI
+            CHUỖI THẮNG ĐẤU TRƯỜNG BẤT BẠI
           </Typography>
           <Typography variant="h5" fontWeight="900" sx={{ color: '#f43f5e', my: 0.3 }}>
             🔥 {student.kahootStreak} <span style={{ fontSize: '14px' }}>trận liên tiếp</span>

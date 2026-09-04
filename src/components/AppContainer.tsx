@@ -87,8 +87,8 @@ const NAV_ITEMS: NavItem[] = [
   { index: 12, label: "Bảng Tuần Hoàn 4D", shortLabel: "Bảng tuần hoàn", category: 'practice', icon: <Atom size={20} /> },
   { index: 4, label: "3D Liên Kết & 2D Lewis", shortLabel: "3D & Lewis", category: 'practice', icon: <ShieldCheck size={20} /> },
   { index: 14, label: "Chẩn Đoán Lỗ Hổng", shortLabel: "Chẩn đoán", category: 'assistant', icon: <Brain size={20} /> },
-  { index: 2, label: "Gia Sư Hóa Học AI", shortLabel: "Gia sư AI", category: 'assistant', icon: <Bot size={20} /> },
-  { index: 3, label: "Đấu Trường Kahoot", shortLabel: "Kahoot", category: 'assistant', icon: <Trophy size={20} /> },
+  { index: 2, label: "Gia Sư Hóa Học", shortLabel: "Gia sư", category: 'assistant', icon: <Bot size={20} /> },
+  { index: 3, label: "Đấu Trường Luyện Tập", shortLabel: "Đấu trường", category: 'assistant', icon: <Trophy size={20} /> },
   { index: 11, label: "Bảng Xếp Hạng", shortLabel: "Xếp hạng", category: 'assistant', icon: <Award size={20} /> },
   { index: 8, label: "Video Bài Giảng", shortLabel: "Video bài dạy", category: 'assistant', icon: <Video size={20} /> },
   { index: 13, label: "Bảng Trắng Studio", shortLabel: "Bảng trắng", category: 'teacher', icon: <Pen size={20} />, teacherOnly: true },
@@ -641,13 +641,13 @@ export default function AppContainer() {
             {/* Category 2: AI Tutor & Exam Arena */}
             <Box>
               <Typography variant="subtitle2" fontWeight="bold" color="#c084fc" mb={1.2} display="flex" alignItems="center" gap={1}>
-                🤖 TRỢ LÝ AI & ĐẤU TRƯỜNG LUYỆN THI
+                🎯 TRỢ LÝ HỌC TẬP & ĐẤU TRƯỜNG LUYỆN TẬP
               </Typography>
               <Grid container spacing={1.5}>
                 {[
                   { idx: 14, label: "Chẩn Đoán Lỗ Hổng", desc: "Quét 4 cấp độ (10, 11, 12, THPT) & Bẫy đề thi", icon: <Brain size={20} color="#c084fc" /> },
-                  { idx: 2, label: "Gia Sư Hóa Học AI", desc: "Hỏi đáp hóa học thông minh 24/7 Dify AI", icon: <Bot size={20} color="#c084fc" /> },
-                  { idx: 3, label: "Đấu Trường Kahoot", desc: "Trắc nghiệm hóa học kịch tính", icon: <Trophy size={20} color="#c084fc" /> },
+                  { idx: 2, label: "Gia Sư Hóa Học", desc: "Hỏi đáp hóa học thông minh 24/7", icon: <Bot size={20} color="#c084fc" /> },
+                  { idx: 3, label: "Đấu Trường Luyện Tập", desc: "Trắc nghiệm hóa học kịch tính", icon: <Trophy size={20} color="#c084fc" /> },
                   { idx: 11, label: "Bảng Xếp Hạng", desc: "Vinh danh Top học sinh xuất sắc", icon: <Award size={20} color="#c084fc" /> },
                   { idx: 8, label: "Video Bài Giảng", desc: "Kho video thí nghiệm & lý thuyết chuẩn", icon: <Video size={20} color="#c084fc" /> },
                 ].map((item) => (
