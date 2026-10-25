@@ -37,10 +37,11 @@ const _VAULT = {
 };
 
 // 1. Primary Data Provider
-const PRIMARY_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || _secDecode(_VAULT.P_URL);
+const PRIMARY_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || _secDecode(_VAULT.P_URL);
 const PRIMARY_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.SUPABASE_PUBLISHABLE_KEY ||
   _secDecode(_VAULT.P_KEY);
 
 export const supabase = createClient(PRIMARY_URL, PRIMARY_KEY);
