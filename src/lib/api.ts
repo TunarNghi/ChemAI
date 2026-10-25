@@ -193,12 +193,17 @@ const ENV_SECONDARY_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
   ? process.env.NEXT_PUBLIC_GEMINI_API_KEYS.split(',').map(k => decodeApiKey(k.trim())).filter(Boolean)
   : DEFAULT_SECONDARY_KEYS;
 
-const INFERENCE_MODELS = [
-  _secDecode(_VAULT.M1),
-  _secDecode(_VAULT.M2),
-  _secDecode(_VAULT.M3),
-  _secDecode(_VAULT.M4)
+const DEFAULT_INFERENCE_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-flash-latest"
 ];
+
+const INFERENCE_MODELS = process.env.NEXT_PUBLIC_GEMINI_MODEL
+  ? [process.env.NEXT_PUBLIC_GEMINI_MODEL.trim(), ...DEFAULT_INFERENCE_MODELS]
+  : DEFAULT_INFERENCE_MODELS;
 
 export async function callGeminiAPI(prompt: string, keys: string[] = ENV_SECONDARY_KEYS): Promise<string> {
   const keyList = Array.isArray(keys) ? keys : [keys];
