@@ -213,7 +213,7 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
     try {
       const allUsers = await fetchAllUsersFromDatabase();
       const studentOnly = allUsers.filter(
-        (u) => !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
+        (u) => !isDemoAccount(u) && !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
       );
 
       const mappedList: StudentProgressData[] = studentOnly.map((u) => {

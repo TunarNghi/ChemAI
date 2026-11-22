@@ -67,7 +67,7 @@ import PeriodicTableTab from '@/components/PeriodicTableTab';
 import TeacherWhiteboard from '@/components/TeacherWhiteboard';
 import DiagnosticTestCenter from '@/components/DiagnosticTestCenter';
 import MobileViewManager from '@/components/MobileViewManager';
-import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT } from '@/components/UserAuthModal';
+import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
 import { Grid2X2, Brain, Pen } from 'lucide-react';
 
 interface NavItem {
@@ -276,13 +276,6 @@ export default function AppContainer() {
 
   const isTeacher = currentUser?.role === 'teacher';
   const isStudent = currentUser?.role === 'student';
-
-  const handleQuickDemoLogin = (role: 'student' | 'teacher') => {
-    const acc = role === 'teacher' ? DEFAULT_TEACHER_ACCOUNT : DEFAULT_STUDENT_ACCOUNT;
-    saveStoredCurrentUser(acc);
-    setCurrentUser(acc);
-    setRoleViewMode(role === 'student' ? 'student' : 'teacher');
-  };
 
   useEffect(() => {
     setMounted(true);
@@ -799,49 +792,12 @@ export default function AppContainer() {
                     }}
                   />
                 ) : (
-                  <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                    <Tooltip title="Thử nghiệm nhanh quyền Giáo viên (Giáo Viên A)">
-                      <Chip
-                        icon={<Zap size={13} color="#f59e0b" />}
-                        label="Thử Quyền GV"
-                        size="small"
-                        onClick={() => handleQuickDemoLogin('teacher')}
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: '11px',
-                          cursor: 'pointer',
-                          bgcolor: 'rgba(245, 158, 11, 0.15)',
-                          color: '#fbbf24',
-                          border: '1px solid rgba(245, 158, 11, 0.4)',
-                          height: 30,
-                          '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.3)' }
-                        }}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Thử nghiệm nhanh quyền Học sinh (Học Sinh A)">
-                      <Chip
-                        icon={<Zap size={13} color="#38bdf8" />}
-                        label="Thử Quyền HS"
-                        size="small"
-                        onClick={() => handleQuickDemoLogin('student')}
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: '11px',
-                          cursor: 'pointer',
-                          bgcolor: 'rgba(56, 189, 248, 0.15)',
-                          color: '#38bdf8',
-                          border: '1px solid rgba(56, 189, 248, 0.4)',
-                          height: 30,
-                          '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.3)' }
-                        }}
-                      />
-                    </Tooltip>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      onClick={() => setAuthModalOpen(true)}
-                      startIcon={<User size={14} />}
-                      sx={{
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={() => setAuthModalOpen(true)}
+                    startIcon={<User size={14} />}
+                    sx={{
                         fontWeight: 700,
                         fontSize: '12.5px',
                         textTransform: 'none',
@@ -858,7 +814,6 @@ export default function AppContainer() {
                     >
                       Đăng Nhập
                     </Button>
-                  </Stack>
                 )}
 
                 {/* Mobile Menu & Hub Triggers */}
@@ -1152,7 +1107,6 @@ export default function AppContainer() {
                 }}
                 roleViewMode={roleViewMode}
                 onRoleViewModeChange={setRoleViewMode}
-                onQuickLogin={handleQuickDemoLogin}
               />
             )}
             {currentUser && currentTab === 1 && <VirtualLab />}

@@ -219,6 +219,10 @@ export function getStoredCurrentUser(): UserProfile | null {
     const raw = localStorage.getItem(CURRENT_USER_KEY);
     if (!raw) return null;
     const user: UserProfile = JSON.parse(raw);
+    if (isDemoAccount(user)) {
+      localStorage.removeItem(CURRENT_USER_KEY);
+      return null;
+    }
     if (!user.role) {
       user.role = (user.className && (user.className.includes('Giáo viên') || user.className.includes('GV'))) ? 'teacher' : 'student';
     }
@@ -412,51 +416,7 @@ export default function UserAuthModal({
     const cleanId = loginIdentifier.trim().toLowerCase();
     const cleanPass = loginPassword.trim();
 
-    // 1. Direct match for Teacher A
-    if (
-      (cleanId === 'giaovien@gmail.com' || cleanId === 'giáo viên a' || cleanId === 'giaovien a' || cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com') &&
-      (cleanPass === 'giaovien@123' || cleanPass === 'chemai2026' || cleanPass === '123456')
-    ) {
-      const teacher = {
-        ...DEFAULT_TEACHER_ACCOUNT,
-        gender: loginGender,
-        title: loginGender === 'male' ? 'Thầy' : 'Cô',
-      };
-      saveStoredCurrentUser(teacher);
-      setAlertInfo({
-        type: 'success',
-        message: `${getUserGreeting(teacher)}! Đang đăng nhập...`
-      });
-      setTimeout(() => {
-        onLoginSuccess(teacher);
-        onClose();
-      }, 400);
-      return;
-    }
-
-    // 2. Direct match for Student A
-    if (
-      (cleanId === 'hocsinha@gmail.com' || cleanId === 'học sinh a' || cleanId === 'hoc sinh a' || cleanId === 'hocsinha' || cleanId === 'student' || cleanId === 'hoanglong.chem@gmail.com') &&
-      (cleanPass === 'hocsinha@123' || cleanPass === '123456')
-    ) {
-      const student = {
-        ...DEFAULT_STUDENT_ACCOUNT,
-        gender: loginGender,
-        title: 'Bạn',
-      };
-      saveStoredCurrentUser(student);
-      setAlertInfo({
-        type: 'success',
-        message: `${getUserGreeting(student)}! Đang đăng nhập...`
-      });
-      setTimeout(() => {
-        onLoginSuccess(student);
-        onClose();
-      }, 400);
-      return;
-    }
-
-    // 3. Fetch user from Database (Cloud & Local)
+    // Fetch user from Database (Cloud & Local)
     let matchedUser = await fetchUserByIdentifierFromDatabase(cleanId);
     if (!matchedUser) {
       const allUsers = await fetchAllUsersFromDatabase();
@@ -467,33 +427,12 @@ export default function UserAuthModal({
     }
 
     if (!matchedUser) {
-      if (loginRole === 'teacher' && (cleanPass === 'giaovien@123' || cleanPass === 'chemai2026')) {
-        const teacherAcc: UserProfile = {
-          ...DEFAULT_TEACHER_ACCOUNT,
-          fullName: loginIdentifier.includes('@') ? 'Giáo Viên A' : loginIdentifier.trim(),
-          emailOrPhone: loginIdentifier.trim(),
-          gender: loginGender,
-          title: loginGender === 'male' ? 'Thầy' : 'Cô',
-        };
-        await saveUserToDatabase(teacherAcc);
-        saveStoredCurrentUser(teacherAcc);
-        setAlertInfo({
-          type: 'success',
-          message: `${getUserGreeting(teacherAcc)}! Đang đăng nhập...`
-        });
-        setTimeout(() => {
-          onLoginSuccess(teacherAcc);
-          onClose();
-        }, 500);
-        return;
-      }
-
-      setAlertInfo({ type: 'error', message: 'Tài khoản không tồn tại trên hệ thống database.' });
+      setAlertInfo({ type: 'error', message: 'Tài khoản không tồn tại trên hệ thống database. Vui lòng bấm tab Đăng Ký để tạo tài khoản mới.' });
       return;
     }
 
     // Check password
-    if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'giaovien@123' && cleanPass !== 'hocsinha@123' && cleanPass !== 'chemai2026') {
+    if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'chemai2026') {
       setAlertInfo({ type: 'error', message: 'Mật khẩu không chính xác.' });
       return;
     }
@@ -514,40 +453,6 @@ export default function UserAuthModal({
       onLoginSuccess(matchedUser);
       onClose();
     }, 500);
-  };
-
-  const handleQuickLogin = async (role: 'student' | 'teacher') => {
-    if (role === 'teacher') {
-      const teacher = {
-        ...DEFAULT_TEACHER_ACCOUNT,
-        gender: loginGender,
-        title: loginGender === 'male' ? 'Thầy' : 'Cô',
-      };
-      saveStoredCurrentUser(teacher);
-      setAlertInfo({
-        type: 'success',
-        message: `${getUserGreeting(teacher)} (giaovien@gmail.com)...`
-      });
-      setTimeout(() => {
-        onLoginSuccess(teacher);
-        onClose();
-      }, 400);
-    } else {
-      const student = {
-        ...DEFAULT_STUDENT_ACCOUNT,
-        gender: loginGender,
-        title: 'Bạn',
-      };
-      saveStoredCurrentUser(student);
-      setAlertInfo({
-        type: 'success',
-        message: `${getUserGreeting(student)} (hocsinha@gmail.com)...`
-      });
-      setTimeout(() => {
-        onLoginSuccess(student);
-        onClose();
-      }, 400);
-    }
   };
 
   const handleUpdateProfile = async () => {
@@ -720,7 +625,7 @@ export default function UserAuthModal({
               </Button>
             </Paper>
 
-            {/* Role Notice & Quick Sample Fill */}
+            {/* Role Notice */}
             {loginRole === 'teacher' ? (
               <Box
                 sx={{
@@ -730,39 +635,18 @@ export default function UserAuthModal({
                   border: '1px solid rgba(245, 158, 11, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 1,
+                  gap: 1.2,
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1}>
-                  <UserCheck size={18} color="#f59e0b" />
-                  <Box>
-                    <Typography variant="caption" fontWeight="bold" color="#fbbf24" display="block">
-                      Cổng Dành Riêng Cho Giáo Viên
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
-                      Toàn quyền: Giáo án 5512, Đề thi, STEM, Sổ học sinh & Video
-                    </Typography>
-                  </Box>
+                <UserCheck size={20} color="#f59e0b" />
+                <Box>
+                  <Typography variant="caption" fontWeight="bold" color="#fbbf24" display="block">
+                    Cổng Dành Riêng Cho Giáo Viên
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
+                    Toàn quyền: Giáo án 5512, Đề thi, STEM, Sổ học sinh & Video
+                  </Typography>
                 </Box>
-                <Button
-                  size="small"
-                  onClick={() => {
-                    setLoginIdentifier(DEFAULT_TEACHER_ACCOUNT.emailOrPhone);
-                    setLoginPassword(DEFAULT_TEACHER_ACCOUNT.password || 'giaovien@123');
-                  }}
-                  sx={{
-                    fontSize: '11px',
-                    color: '#f59e0b',
-                    fontWeight: 'bold',
-                    whiteSpace: 'nowrap',
-                    textTransform: 'none',
-                    bgcolor: 'rgba(245, 158, 11, 0.2)',
-                    '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.35)' },
-                  }}
-                >
-                  ⚡ Điền mẫu GV
-                </Button>
               </Box>
             ) : (
               <Box
@@ -773,39 +657,18 @@ export default function UserAuthModal({
                   border: '1px solid rgba(56, 189, 248, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 1,
+                  gap: 1.2,
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1}>
-                  <GraduationCap size={18} color="#38bdf8" />
-                  <Box>
-                    <Typography variant="caption" fontWeight="bold" color="#38bdf8" display="block">
-                      Cổng Dành Cho Học Sinh
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
-                      Đăng nhập lưu tiến trình & EXP Đấu trường
-                    </Typography>
-                  </Box>
+                <GraduationCap size={20} color="#38bdf8" />
+                <Box>
+                  <Typography variant="caption" fontWeight="bold" color="#38bdf8" display="block">
+                    Cổng Dành Cho Học Sinh
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
+                    Đăng nhập lưu tiến trình & EXP Đấu trường
+                  </Typography>
                 </Box>
-                <Button
-                  size="small"
-                  onClick={() => {
-                    setLoginIdentifier(DEFAULT_STUDENT_ACCOUNT.emailOrPhone);
-                    setLoginPassword(DEFAULT_STUDENT_ACCOUNT.password || 'hocsinha@123');
-                  }}
-                  sx={{
-                    fontSize: '11px',
-                    color: '#38bdf8',
-                    fontWeight: 'bold',
-                    whiteSpace: 'nowrap',
-                    textTransform: 'none',
-                    bgcolor: 'rgba(56, 189, 248, 0.2)',
-                    '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.35)' },
-                  }}
-                >
-                  ⚡ Điền mẫu HS
-                </Button>
               </Box>
             )}
 

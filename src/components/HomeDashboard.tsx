@@ -60,7 +60,6 @@ interface HomeDashboardProps {
   onLogout?: () => void;
   roleViewMode?: 'all' | 'student' | 'teacher';
   onRoleViewModeChange?: (mode: 'all' | 'student' | 'teacher') => void;
-  onQuickLogin?: (role: 'student' | 'teacher') => void;
 }
 
 export interface SubFeatureItem {
@@ -317,7 +316,6 @@ export default function HomeDashboard({
   onLogout,
   roleViewMode = 'all',
   onRoleViewModeChange,
-  onQuickLogin,
 }: HomeDashboardProps) {
   const [activeRoleMode, setActiveRoleMode] = useState<'all' | 'student' | 'teacher'>(roleViewMode || 'all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -1008,27 +1006,6 @@ export default function HomeDashboard({
                   </Box>
 
                   <Box sx={{ pt: 1 }}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={() => onQuickLogin ? onQuickLogin('student') : onOpenAuthModal?.('student')}
-                      startIcon={<Zap size={16} />}
-                      sx={{
-                        mb: 1.5,
-                        bgcolor: 'rgba(56, 189, 248, 0.18)',
-                        color: '#38bdf8',
-                        border: '1px dashed #38bdf8',
-                        fontWeight: 'bold',
-                        py: 0.9,
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.32)' },
-                      }}
-                    >
-                      ⚡ Trải Nghiệm 1-Chạm: Học Sinh A (hocsinha@gmail.com)
-                    </Button>
                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
                     <Button
                       variant="contained"
@@ -1171,27 +1148,6 @@ export default function HomeDashboard({
                   </Box>
 
                   <Box sx={{ pt: 1 }}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={() => onQuickLogin ? onQuickLogin('teacher') : onOpenAuthModal?.('teacher')}
-                      startIcon={<Zap size={16} />}
-                      sx={{
-                        mb: 1.5,
-                        bgcolor: 'rgba(245, 158, 11, 0.18)',
-                        color: '#fbbf24',
-                        border: '1px dashed #f59e0b',
-                        fontWeight: 'bold',
-                        py: 0.9,
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.32)' },
-                      }}
-                    >
-                      ⚡ Trải Nghiệm 1-Chạm: Giáo Viên A (giaovien@gmail.com)
-                    </Button>
                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
                     <Button
                       variant="contained"

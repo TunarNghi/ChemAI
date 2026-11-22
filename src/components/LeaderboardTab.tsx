@@ -49,7 +49,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { supabase } from '@/lib/api';
-import { UserProfile } from '@/components/UserAuthModal';
+import { UserProfile, isDemoAccount } from '@/components/UserAuthModal';
 import { calculateCompetencyRank } from '@/components/StudentProgressManager';
 import { fetchAllUsersFromDatabase } from '@/lib/userDatabase';
 
@@ -162,7 +162,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
     try {
       const allUsers = await fetchAllUsersFromDatabase();
       const studentOnly = allUsers.filter(
-        (u) => !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
+        (u) => !isDemoAccount(u) && !u.id?.startsWith('std_seed_') && (u.role === 'student' || (!u.role && u.className && !u.className.includes('Giáo viên') && !u.className.includes('GV')))
       );
 
       const mapped: LeaderboardStudent[] = studentOnly.map((u) => {

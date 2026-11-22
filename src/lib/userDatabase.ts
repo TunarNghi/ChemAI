@@ -1,5 +1,5 @@
 import { supabase, executeWithFailover } from '@/lib/api';
-import { UserProfile, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT, isDemoAccount } from '@/components/UserAuthModal';
+import { UserProfile, isDemoAccount } from '@/components/UserAuthModal';
 
 const LOCAL_USERS_KEY = 'chemai_registered_users';
 const CURRENT_USER_KEY = 'chemai_current_user';
@@ -286,17 +286,10 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
   const usersMap = new Map<string, UserProfile>();
   const deletedIds = getDeletedUserIds();
 
-  // Add default accounts ONLY if not deleted
-  if (!deletedIds.has(DEFAULT_TEACHER_ACCOUNT.id)) {
-    usersMap.set(DEFAULT_TEACHER_ACCOUNT.id, DEFAULT_TEACHER_ACCOUNT);
-  }
-  if (!deletedIds.has(DEFAULT_STUDENT_ACCOUNT.id)) {
-    usersMap.set(DEFAULT_STUDENT_ACCOUNT.id, DEFAULT_STUDENT_ACCOUNT);
-  }
-
   // Helper to add or merge user into map
   const addOrMergeUser = (u: UserProfile) => {
     if (!u || (!u.id && !u.fullName)) return;
+    if (isDemoAccount(u) || u.id?.startsWith('std_seed_')) return;
     if (deletedIds.has(u.id) || (u.emailOrPhone && deletedIds.has(u.emailOrPhone))) {
       return;
     }
@@ -476,24 +469,17 @@ async function updateDirectoryIndex(newUser: UserProfile) {
  */
 export function getLocalRegisteredUsers(): UserProfile[] {
   const deletedIds = getDeletedUserIds();
-  const getDefaults = () => {
-    const list: UserProfile[] = [];
-    if (!deletedIds.has(DEFAULT_TEACHER_ACCOUNT.id)) list.push(DEFAULT_TEACHER_ACCOUNT);
-    if (!deletedIds.has(DEFAULT_STUDENT_ACCOUNT.id)) list.push(DEFAULT_STUDENT_ACCOUNT);
-    return list;
-  };
-
-  if (typeof window === 'undefined') return getDefaults();
+  if (typeof window === 'undefined') return [];
   try {
     const data = localStorage.getItem(LOCAL_USERS_KEY);
     if (data) {
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.filter(u => u && u.id && !deletedIds.has(u.id) && (!u.emailOrPhone || !deletedIds.has(u.emailOrPhone)));
+        return parsed.filter(u => u && u.id && !deletedIds.has(u.id) && (!u.emailOrPhone || !deletedIds.has(u.emailOrPhone)) && !isDemoAccount(u) && !u.id?.startsWith('std_seed_'));
       }
     }
   } catch {}
-  return getDefaults();
+  return [];
 }
 
 function saveLocalUser(user: UserProfile) {
