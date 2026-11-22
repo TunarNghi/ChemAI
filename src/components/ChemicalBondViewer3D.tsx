@@ -163,7 +163,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     name: "Nước (Water)",
     formula: "H₂O",
     bondType: "Cộng hóa trị có cực (Góc liên kết ~104.5°)",
-    description: "Nguyên tử Oxi lai hóa sp³ có 2 cặp electron chưa liên kết, tạo góc gấp khúc 104.5°.",
+    description: "Nguyên tử Oxygen lai hóa sp³ có 2 cặp electron chưa liên kết, tạo góc gấp khúc 104.5°.",
     atoms: [
       { position: [0, 0, 0], color: "#ef4444", radius: 0.6, label: "O" },
       { position: [1.2, -0.7, 0], color: "#f8fafc", radius: 0.35, label: "H1" },
@@ -175,7 +175,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   CO2: {
-    name: "Cacbon Đioxit (Carbon Dioxide)",
+    name: "Carbon dioxide (CO₂)",
     formula: "CO₂",
     bondType: "Liên kết đôi C=O (Thẳng hàng 180°)",
     description: "Nguyên tử Carbon lai hóa sp tạo 2 liên kết đôi C=O thẳng hàng không phân cực.",
@@ -190,10 +190,10 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   CH4: {
-    name: "Mêtan",
+    name: "Methane (CH₄)",
     formula: "CH₄",
     bondType: "Cộng hóa trị đơn (Tứ diện đều 109.5°)",
-    description: "Cacbon lai hóa sp³ liên kết với 4 Hydro hướng về 4 đỉnh tứ diện đều.",
+    description: "Nguyên tử Carbon lai hóa sp³ liên kết với 4 Hydrogen hướng về 4 đỉnh tứ diện đều.",
     atoms: [
       { position: [0, 0, 0], color: "#334155", radius: 0.55, label: "C" },
       { position: [0, 1.3, 0], color: "#f8fafc", radius: 0.35, label: "H1" },
@@ -209,7 +209,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   NaCl: {
-    name: "Natri Clorua",
+    name: "Sodium chloride (NaCl)",
     formula: "NaCl",
     bondType: "Liên kết Ion (Hút tĩnh điện Na⁺ và Cl⁻)",
     description: "Nguyên tử Na nhường 1e trở thành Na⁺, Cl nhận 1e thành Cl⁻ hút tĩnh điện bền vững.",
@@ -222,7 +222,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   HCl: {
-    name: "Hydrocloric Axit",
+    name: "Hydrochloric acid (HCl)",
     formula: "HCl",
     bondType: "Cộng hóa trị có cực (Độ lệch âm điện 0.96)",
     description: "Cặp electron liên kết bị lệch hẳn về phía nguyên tử Cl có độ âm điện lớn hơn.",
@@ -235,10 +235,10 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   NH3: {
-    name: "Amoniac",
+    name: "Ammonia (NH₃)",
     formula: "NH₃",
     bondType: "Cộng hóa trị có cực (Chóp tam giác ~107°)",
-    description: "Nguyên tử Nito còn 1 cặp electron tự do đẩy 3 liên kết N-H thành hình chóp tam giác.",
+    description: "Nguyên tử Nitrogen còn 1 cặp electron tự do đẩy 3 liên kết N-H thành hình chóp tam giác.",
     atoms: [
       { position: [0, 0.4, 0], color: "#3b82f6", radius: 0.55, label: "N" },
       { position: [0, -0.5, 1.1], color: "#f8fafc", radius: 0.35, label: "H1" },
@@ -252,7 +252,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   Cl2: {
-    name: "Khí Clo",
+    name: "Chlorine (Cl₂)",
     formula: "Cl₂",
     bondType: "Cộng hóa trị không cực (Đôi e chung ở giữa)",
     description: "Hai nguyên tử Cl có độ âm điện bằng nhau cùng góp chung 1 cặp electron.",
@@ -265,10 +265,10 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   HNO3: {
-    name: "Nitric Axit",
+    name: "Nitric acid (HNO₃)",
     formula: "HNO₃",
     bondType: "Cộng hóa trị & Liên kết cho nhận (Phẳng)",
-    description: "Nguyên tử Nito lai hóa sp² liên kết với 3 nguyên tử Oxi trên một mặt phẳng.",
+    description: "Nguyên tử Nitrogen lai hóa sp² liên kết với 3 nguyên tử Oxygen trên một mặt phẳng.",
     atoms: [
       { position: [0, 0, 0], color: "#3b82f6", radius: 0.55, label: "N" },
       { position: [0, 1.4, 0], color: "#ef4444", radius: 0.5, label: "O1" },
@@ -284,10 +284,10 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   NaOH: {
-    name: "Natri Hiđroxit",
+    name: "Sodium hydroxide (NaOH)",
     formula: "NaOH",
     bondType: "Liên kết Ion (Na⁺) & Cộng hóa trị (OH⁻)",
-    description: "Nguyên tử Na⁺ liên kết ion với nhóm hyđroxit OH⁻.",
+    description: "Cation Sodium Na⁺ liên kết ion với anion hydroxide OH⁻.",
     atoms: [
       { position: [-1.4, 0, 0], color: "#a855f7", radius: 0.55, label: "Na⁺" },
       { position: [0.5, 0, 0], color: "#ef4444", radius: 0.5, label: "O" },
@@ -299,10 +299,10 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   SO2: {
-    name: "Lưu Huỳnh Đioxit",
+    name: "Sulfur dioxide (SO₂)",
     formula: "SO₂",
     bondType: "Cộng hóa trị có cực (Gấp khúc ~119°)",
-    description: "Nguyên tử S lai hóa sp² có 1 cặp electron tự do đẩy 2 liên kết S-O thành hình gấp khúc.",
+    description: "Nguyên tử Sulfur lai hóa sp² có 1 cặp electron tự do đẩy 2 liên kết S-O thành hình gấp khúc.",
     atoms: [
       { position: [0, 0.3, 0], color: "#eab308", radius: 0.6, label: "S" },
       { position: [1.4, -0.5, 0], color: "#ef4444", radius: 0.5, label: "O1" },
@@ -314,7 +314,7 @@ export const MOLECULES: Record<string, MoleculeData> = {
     ]
   },
   CO: {
-    name: "Cacbon Monoxit (Carbon Monoxide)",
+    name: "Carbon monoxide (CO)",
     formula: "CO",
     bondType: "Liên kết ba C≡O (Bao gồm 1 liên kết cho - nhận)",
     description: "Nguyên tử C và O liên kết ba bền vững với độ dài liên kết ngắn 1.128 Å.",
@@ -2442,7 +2442,7 @@ export default function ChemicalBondViewer3D({ selectedMoleculeKey = "H2O", cust
                 touchAction: 'none',
               }}
             >
-              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+              <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 5], fov: 50 }}>
                 <ambientLight intensity={0.7} />
                 <pointLight position={[10, 10, 10]} intensity={1.2} />
                 <directionalLight position={[-10, -10, -5]} intensity={0.5} />

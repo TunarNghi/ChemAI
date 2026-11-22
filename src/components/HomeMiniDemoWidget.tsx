@@ -946,7 +946,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                   my: 'auto',
                 }}
               >
-                <Canvas camera={{ position: [0, 0, 4.5], fov: 45 }}>
+                <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 4.5], fov: 45 }}>
                   <ambientLight intensity={0.9} />
                   <pointLight position={[10, 10, 10]} intensity={1.2} />
                   <pointLight position={[-10, -10, -10]} intensity={0.5} />

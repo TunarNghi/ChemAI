@@ -62,7 +62,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { callGeminiAPI, supabase } from '@/lib/api';
-import { UserProfile } from '@/components/UserAuthModal';
+import { UserProfile, isDemoAccount, getStoredCurrentUser } from '@/components/UserAuthModal';
 
 export interface VideoLecture {
   id: string;
@@ -159,8 +159,9 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
   const [noteCopied, setNoteCopied] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  // Load videos from LocalStorage on mount
+  // Load videos from LocalStorage and Cloud Supabase on mount
   useEffect(() => {
+    let loadedFromLocal = false;
     try {
       const stored = localStorage.getItem('chemai_teacher_video_lectures');
       if (stored) {
@@ -168,15 +169,38 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
         if (Array.isArray(parsed) && parsed.length > 0) {
           setVideos(parsed);
           setSelectedVideo(parsed[0]);
-          return;
+          loadedFromLocal = true;
         }
       }
     } catch (e) {
       console.warn('Error reading stored videos:', e);
     }
-    // No default lectures
-    setVideos([]);
-    setSelectedVideo(null);
+
+    // Đồng bộ danh sách bài giảng từ Cloud Supabase
+    supabase
+      .from('experiments')
+      .select('result_json')
+      .eq('cache_key', 'chemai_teacher_video_lectures')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.result_json && Array.isArray(data.result_json) && data.result_json.length > 0) {
+          setVideos(data.result_json as VideoLecture[]);
+          if (!loadedFromLocal) {
+            setSelectedVideo(data.result_json[0] as VideoLecture);
+          }
+          try {
+            localStorage.setItem('chemai_teacher_video_lectures', JSON.stringify(data.result_json));
+          } catch {}
+        } else if (!loadedFromLocal) {
+          setVideos([]);
+          setSelectedVideo(null);
+        }
+      }, () => {
+        if (!loadedFromLocal) {
+          setVideos([]);
+          setSelectedVideo(null);
+        }
+      });
   }, []);
 
   // Update user note when selected video changes
@@ -187,13 +211,25 @@ export default function TeacherVideoLectures({ currentUser }: TeacherVideoLectur
     }
   }, [selectedVideo]);
 
-  // Save videos to LocalStorage whenever they change
+  // Save videos to LocalStorage and Cloud Supabase
   const saveVideosList = (newList: VideoLecture[]) => {
     setVideos(newList);
     try {
       localStorage.setItem('chemai_teacher_video_lectures', JSON.stringify(newList));
     } catch (e) {
       console.error('Failed to persist video lectures:', e);
+    }
+
+    // Đồng bộ lên Cloud Supabase nếu là tài khoản thực tế (tài khoản thử nghiệm chỉ lưu tạm vào LocalStorage)
+    const currentUser = getStoredCurrentUser();
+    if (!isDemoAccount(currentUser)) {
+      supabase
+        .from('experiments')
+        .upsert({
+          cache_key: 'chemai_teacher_video_lectures',
+          result_json: newList,
+        }, { onConflict: 'cache_key' })
+        .then(() => {}, (err: any) => console.warn('Cloud sync video lectures error:', err));
     }
   };
 

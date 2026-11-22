@@ -46,6 +46,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { supabase, callGeminiAPI } from '@/lib/api';
+import { isDemoAccount, getStoredCurrentUser } from '@/components/UserAuthModal';
 
 export interface MCQQuestion {
   id: number;
@@ -291,7 +292,10 @@ Trả về DUY NHẤT một chuỗi JSON thuần túy (không dùng markdown cod
   const saveExamToSupabaseDB = async (examObj: Exam2025Data) => {
     const cacheKey = `exam_2025_${examObj.grade}_${Date.now()}`;
     try {
-      await supabase.from("experiments").upsert({ cache_key: cacheKey, result_json: examObj });
+      const currentUser = getStoredCurrentUser();
+      if (!isDemoAccount(currentUser)) {
+        await supabase.from("experiments").upsert({ cache_key: cacheKey, result_json: examObj });
+      }
       setSavedExams(prev => [examObj, ...prev]);
     } catch (e) {
       console.warn("Save exam DB error:", e);

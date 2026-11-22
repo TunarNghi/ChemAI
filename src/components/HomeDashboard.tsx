@@ -47,8 +47,10 @@ import {
   Youtube,
   Calendar,
   Tag,
+  Brain,
+  Pen,
 } from 'lucide-react';
-import { UserProfile } from '@/components/UserAuthModal';
+import { UserProfile, getUserGreeting } from '@/components/UserAuthModal';
 import HomeMiniDemoWidget from '@/components/HomeMiniDemoWidget';
 
 interface HomeDashboardProps {
@@ -56,348 +58,210 @@ interface HomeDashboardProps {
   onOpenAuthModal?: (role?: 'student' | 'teacher') => void;
   currentUser?: UserProfile | null;
   onLogout?: () => void;
+  roleViewMode?: 'all' | 'student' | 'teacher';
+  onRoleViewModeChange?: (mode: 'all' | 'student' | 'teacher') => void;
+  onQuickLogin?: (role: 'student' | 'teacher') => void;
 }
 
-interface FeatureItem {
+export interface SubFeatureItem {
   id: string;
   tabIndex: number;
   title: string;
-  subtitle: string;
-  category: 'student' | 'teacher' | 'simulation';
-  categoryLabel: string;
-  badge: string;
-  badgeColor: string;
+  desc: string;
   icon: React.ReactNode;
-  iconBg: string;
-  glowColor: string;
-  description: string;
-  highlights: string[];
-  techStack: string[];
-  actionLabel: string;
+  badge?: string;
+  teacherOnly?: boolean;
 }
 
-const FEATURES: FeatureItem[] = [
+export interface CoreFeatureGroup {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  roleTarget: 'all' | 'student' | 'teacher';
+  category?: 'student' | 'teacher';
+  badge: string;
+  color: string;
+  glowColor: string;
+  icon: React.ReactNode;
+  mainActionIndex: number;
+  mainActionText: string;
+  items: SubFeatureItem[];
+}
+
+export const CORE_FEATURE_GROUPS: CoreFeatureGroup[] = [
   {
-    id: 'virtual-lab',
-    tabIndex: 1,
-    title: 'Phòng Thí Nghiệm Ảo Hóa Học THPT',
-    subtitle: 'Mô phỏng phản ứng thực nghiệm tức thì & an toàn tuyệt đối',
-    category: 'student',
-    categoryLabel: 'Học sinh & Thực hành',
-    badge: 'Mô phỏng tương tác',
-    badgeColor: '#38bdf8',
-    icon: <FlaskConical size={28} color="#38bdf8" />,
-    iconBg: 'rgba(56, 189, 248, 0.15)',
+    id: 'lab',
+    title: 'Thực Nghiệm Ảo & Không Gian 3D',
+    subtitle: 'Mô phỏng phản ứng thực nghiệm tức thì, an toàn tuyệt đối & trực quan hóa 3D',
+    description:
+      'Nền tảng thực nghiệm số toàn diện bám sát SGK GDPT 2018: 11+ kịch bản thí nghiệm tương tác WebGL, bảng tuần hoàn 118 nguyên tố đa chiều và mô hình liên kết phân tử 3D.',
+    roleTarget: 'all',
+    badge: 'Mô Phỏng Thực Nghiệm',
+    color: '#38bdf8',
     glowColor: 'rgba(56, 189, 248, 0.25)',
-    description:
-      'Thực hiện thí nghiệm hóa học chân thực: trộn hóa chất, quan sát biến đổi màu sắc, hiện tượng sủi bọt khí, tạo kết tủa, khói bay, tỏa nhiệt và đo độ pH theo thời gian thực.',
-    highlights: [
-      '11+ thí nghiệm mẫu THPT (Kim loại kiềm, Halogen, Cu + HNO₃, Este hóa, Tráng bạc, Axit - Bazơ)',
-      'Tích hợp động học phản ứng Arrhenius theo nhiệt độ đun nóng',
-      'Đồ thị động học biến thiên pH & nhiệt độ thời gian thực',
-      'Cơ chế Cache SHA-256 phản hồi tức thì 0ms',
+    icon: <FlaskConical size={26} color="#38bdf8" />,
+    mainActionIndex: 1,
+    mainActionText: 'Vào Phòng Thí Nghiệm Ảo',
+    items: [
+      {
+        id: 'virtual-lab',
+        tabIndex: 1,
+        title: 'Phòng Thí Nghiệm Ảo Hóa Học THPT',
+        desc: '11+ phản ứng mô phỏng WebGL (Axit - Bazơ, Halogen, Kim loại kiềm, Este hóa, Tráng bạc), đồ thị pH & nhiệt độ thời gian thực.',
+        icon: <FlaskConical size={18} color="#38bdf8" />,
+        badge: '11+ Mô phỏng',
+      },
+      {
+        id: 'periodic-table',
+        tabIndex: 12,
+        title: 'Bảng Tuần Hoàn Nguyên Tố Động',
+        desc: 'Tra cứu 118 nguyên tố, cấu hình electron, độ âm điện Pauling, bán kính nguyên tử và quy luật biến đổi tuần hoàn.',
+        icon: <Layers size={18} color="#38bdf8" />,
+        badge: '118 Nguyên tố',
+      },
+      {
+        id: 'chemical-bond-3d',
+        tabIndex: 4,
+        title: 'Mô Hình Phân Tử 3D & An Toàn Lab',
+        desc: 'Trực quan hóa cấu trúc liên kết 3D Three.js theo chuẩn IUPAC, cẩm nang an toàn phòng lab và quy trình xử lý sự cố hóa chất.',
+        icon: <Atom size={18} color="#38bdf8" />,
+        badge: 'Three.js 3D',
+      },
     ],
-    techStack: ['Thuật toán tương tác', 'Chart.js', 'Web Audio API', 'Bộ nhớ đệm siêu tốc'],
-    actionLabel: 'Vào Phòng Thí Nghiệm',
   },
   {
-    id: 'ai-tutor',
-    tabIndex: 2,
-    title: 'Gia Sư Hóa Học Thông Minh (ChemAI)',
-    subtitle: 'Trợ lý học tập thông minh giải đáp 24/7 chuẩn GDPT 2018',
-    category: 'student',
-    categoryLabel: 'Học sinh & Tự học',
-    badge: 'Gia sư 24/7',
-    badgeColor: '#818cf8',
-    icon: <Bot size={28} color="#818cf8" />,
-    iconBg: 'rgba(129, 140, 248, 0.15)',
+    id: 'tutor',
+    title: 'Gia Sư AI & Đánh Giá Năng Lực',
+    subtitle: 'Trợ lý thông minh giải đáp 24/7, phác đồ chẩn đoán lỗ hổng & kho bài giảng số',
+    description:
+      'Hệ thống trợ lý học tập AI chuyên sâu Hóa học THPT: giải đáp bài tập, cân bằng phản ứng oxi hóa - khử, bài thi chẩn đoán chỉ điểm bẫy đề thi và thư viện bài giảng đa phương tiện.',
+    roleTarget: 'all',
+    badge: 'Trí Tuệ Nhân Tạo 24/7',
+    color: '#818cf8',
     glowColor: 'rgba(129, 140, 248, 0.25)',
-    description:
-      'Được tinh chỉnh sâu với toàn bộ kiến thức Hóa học THPT. Sẵn sàng giải thích hiện tượng, hướng dẫn giải bài tập cân bằng oxi hóa - khử, cấu hình electron và bài toán nhiệt phản ứng.',
-    highlights: [
-      'Hỏi đáp tự nhiên mọi chủ đề Hóa học THPT (Sách Cánh Diều, Kết Nối Tri Thức, Chân Trời Sáng Tạo)',
-      'Định dạng công thức hóa học, phương trình phản ứng chuẩn xác',
-      'Gợi ý câu hỏi thông minh giúp tư duy logic',
-      'Lưu trữ nhật ký hội thoại phục vụ ôn tập cá nhân',
+    icon: <Bot size={26} color="#818cf8" />,
+    mainActionIndex: 2,
+    mainActionText: 'Hỏi Trợ Lý ChemAI Ngay',
+    items: [
+      {
+        id: 'ai-tutor',
+        tabIndex: 2,
+        title: 'Gia Sư Hóa Học ChemAI Thông Minh',
+        desc: 'Hỏi đáp 24/7 kiến thức Hóa 10, 11, 12 bám sát 3 bộ SGK mới. Giải thích từng bước cân bằng e, enthalpy phản ứng chuẩn xác.',
+        icon: <Bot size={18} color="#818cf8" />,
+        badge: 'ChemAI Core 2.0',
+      },
+      {
+        id: 'diagnostic',
+        tabIndex: 14,
+        title: 'Chẩn Đoán Lỗ Hổng & Phác Đồ Học Tập',
+        desc: 'Đánh giá 6 chỉ số năng lực hóa học GDPT 2018, phát hiện bẫy đề thi kinh điển và đề xuất phác đồ bồi dưỡng cá nhân hóa.',
+        icon: <Sparkles size={18} color="#818cf8" />,
+        badge: 'Đánh giá năng lực',
+      },
+      {
+        id: 'video-lectures',
+        tabIndex: 8,
+        title: 'Kho Video Bài Giảng & Thực Nghiệm',
+        desc: 'Hệ thống video bài giảng tóm tắt trọng tâm và video thực tế các phản ứng nguy hiểm ngoài đời thực được kiểm duyệt kỹ càng.',
+        icon: <Video size={18} color="#818cf8" />,
+        badge: 'Video HD',
+      },
     ],
-    techStack: ['Trợ lý thông minh', 'Markdown Renderer', 'Chuẩn Sư Phạm 2018'],
-    actionLabel: 'Hỏi Gia Sư Ngay',
   },
   {
-    id: 'quiz-kahoot',
-    tabIndex: 3,
-    title: 'Đấu Trường Luyện Tập & Trắc Nghiệm Tương Tác',
-    subtitle: 'Ôn luyện vui nhộn, thi đấu đối kháng nhiều người chơi theo mã PIN',
-    category: 'student',
-    categoryLabel: 'Học sinh & Thi đấu',
-    badge: 'Đấu trường trực tuyến',
-    badgeColor: '#f59e0b',
-    icon: <Trophy size={28} color="#f59e0b" />,
-    iconBg: 'rgba(245, 158, 11, 0.15)',
+    id: 'arena',
+    title: 'Đấu Trường & Luyện Thi Trực Tuyến',
+    subtitle: 'Phòng thi đấu Kahoot nhiều người chơi, bảng vàng xếp hạng & vinh danh thành tích',
+    description:
+      'Môi trường rèn luyện trắc nghiệm tương tác cao giúp ôn thi THPT Quốc Gia và Đánh giá năng lực: thi đấu đối kháng thời gian thực theo mã PIN, tích lũy điểm EXP và thăng hạng danh hiệu.',
+    roleTarget: 'student',
+    badge: 'Thi Đấu Trực Tuyến',
+    color: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.25)',
-    description:
-      'Tạo không khí học tập sôi nổi với 2 chế độ: Luyện tập tự do phân hóa theo chủ đề và Đấu trường luyện tập nhập mã PIN thi đấu tính điểm theo tốc độ trả lời.',
-    highlights: [
-      'Chế độ tự do: Tự chọn chủ đề, chấm điểm tức thì kèm lời giải chi tiết',
-      'Chế độ Đấu trường trực tuyến: Tạo phòng thi bằng mã PIN 6 số, đồng bộ Realtime',
-      'Bảng vinh danh Top 3 Podium trực tiếp',
-      'Tự động sinh bộ câu hỏi mới không giới hạn',
+    icon: <Trophy size={26} color="#f59e0b" />,
+    mainActionIndex: 3,
+    mainActionText: 'Tham Gia Đấu Trường Ngay',
+    items: [
+      {
+        id: 'quiz-kahoot',
+        tabIndex: 3,
+        title: 'Đấu Trường Trắc Nghiệm Tương Tác (Mã PIN)',
+        desc: 'Thi đấu đối kháng trực tiếp nhiều người chơi theo mã PIN phòng, tính điểm tốc độ, chuỗi combo đúng và âm thanh sống động.',
+        icon: <Trophy size={18} color="#f59e0b" />,
+        badge: 'Multiplayer Realtime',
+      },
+      {
+        id: 'leaderboard',
+        tabIndex: 11,
+        title: 'Bảng Vàng Thành Tích Toàn Trường',
+        desc: 'Vinh danh cá nhân xuất sắc, xếp hạng cấp bậc EXP (Đồng, Bạc, Vàng, Kim Cương), tỷ lệ làm đúng và bảng xếp hạng theo lớp.',
+        icon: <Award size={18} color="#f59e0b" />,
+        badge: 'BXH & Huy hiệu',
+      },
     ],
-    techStack: ['Đồng bộ Realtime', 'Ngân hàng trắc nghiệm chuẩn GDPT', 'Bảng xếp hạng trực tiếp'],
-    actionLabel: 'Vào Đấu Trường Luyện Tập',
   },
   {
-    id: 'safety-3d',
-    tabIndex: 4,
-    title: 'Mô Hình 3D Liên Kết & An Toàn Phòng Lab',
-    subtitle: 'Trực quan hóa không gian phân tử & Cẩm nang sơ cứu hóa chất GHS',
-    category: 'simulation',
-    categoryLabel: 'Trực quan hóa & An toàn',
-    badge: '3D WebGL & Sơ cứu',
-    badgeColor: '#10b981',
-    icon: <ShieldCheck size={28} color="#10b981" />,
-    iconBg: 'rgba(16, 185, 129, 0.15)',
+    id: 'teacher',
+    title: 'Không Gian Sư Phạm & Quản Trị Dạy Học',
+    subtitle: 'Soạn giáo án CV 5512 AI, ma trận đề thi chuẩn Bộ GD&ĐT, bảng trắng số & quản lý lớp',
+    description:
+      'Bộ công cụ số hóa dành riêng cho giáo viên Hóa học THPT: tự động sinh kế hoạch bài dạy chuẩn Công văn 5512, ngân hàng đề thi đa dạng cấp độ, bảng trắng tương tác xuất PDF và sổ theo dõi tiến trình học sinh.',
+    roleTarget: 'teacher',
+    badge: 'Chuyên Dụng Giáo Viên',
+    color: '#10b981',
     glowColor: 'rgba(16, 185, 129, 0.25)',
-    description:
-      'Khám phá thế giới vi mô với mô hình 3D phân tử xoay 360 độ (H₂O, CH₄, NH₃, CO₂, NaCl,...) và tra cứu quy tắc an toàn phòng thí nghiệm, sơ cứu bỏng axit/kiềm chuẩn quốc tế GHS.',
-    highlights: [
-      'Mô hình 3D tương tác chuột (Xoay 360°, Zoom in/out, Auto Rotate)',
-      'Hệ thống màu nguyên tử CPK quốc tế (H, C, O, N, Cl, Na, S, Br)',
-      'Hiển thị độ dài liên kết, góc liên kết và loại liên kết (Cộng hóa trị, Ion)',
-      'Cẩm nang sơ cứu khẩn cấp: xử lý bỏng H₂SO₄, kiềm đặc, ngộ độc Cl₂',
+    icon: <BookMarked size={26} color="#10b981" />,
+    mainActionIndex: 5,
+    mainActionText: 'Vào Không Gian Giáo Viên',
+    items: [
+      {
+        id: 'lesson-planner',
+        tabIndex: 5,
+        title: 'Soạn Kế Hoạch Bài Dạy (Công Văn 5512)',
+        desc: 'AI hỗ trợ sinh giáo án 4 hoạt động chuẩn Bộ GD&ĐT chỉ trong 5 giây, tích hợp mục tiêu năng lực và xuất file Word/PDF tiện lợi.',
+        icon: <BookMarked size={18} color="#10b981" />,
+        badge: 'Chuẩn CV 5512',
+        teacherOnly: true,
+      },
+      {
+        id: 'exam-manager',
+        tabIndex: 6,
+        title: 'Ngân Hàng Đề Thi & Ma Trận Đề Mới',
+        desc: 'Tạo đề kiểm tra 4 mức độ nhận thức (Biết - Hiểu - Vận dụng - VDC), trắc nghiệm đúng/sai và trả lời ngắn theo cấu trúc mới.',
+        icon: <FileCheck2 size={18} color="#10b981" />,
+        badge: 'Đề thi chuẩn',
+        teacherOnly: true,
+      },
+      {
+        id: 'teacher-whiteboard',
+        tabIndex: 13,
+        title: 'Studio Bảng Trắng Dạy Học & Xuất PDF',
+        desc: 'Canvas vẽ phấn mượt mà, dán tem công thức hóa học 1 chạm (H₂SO₄, Δr H°, e⁻, pH...), 4 chế độ nền và xuất bài giảng PDF ngay lập tức.',
+        icon: <Compass size={18} color="#10b981" />,
+        badge: 'Bảng phấn số',
+        teacherOnly: true,
+      },
+      {
+        id: 'student-progress',
+        tabIndex: 9,
+        title: 'Sổ Theo Dõi Tiến Trình Học Sinh',
+        desc: 'Thống kê tỷ lệ hoàn thành bài tập, điểm số bài thi, nhận diện sớm học sinh có nguy cơ hổng kiến thức để hỗ trợ kịp thời.',
+        icon: <Users size={18} color="#10b981" />,
+        badge: 'Giám sát lớp',
+        teacherOnly: true,
+      },
+      {
+        id: 'pedagogical-audit',
+        tabIndex: 10,
+        title: 'Nhật Ký & Báo Cáo Sư Phạm',
+        desc: 'Lưu trữ biên bản chấm thi, thống kê phổ điểm theo lớp và lịch sử hoạt động sư phạm phục vụ công tác thanh kiểm tra chuyên môn.',
+        icon: <ShieldCheck size={18} color="#10b981" />,
+        badge: 'Báo cáo & Kiểm toán',
+        teacherOnly: true,
+      },
     ],
-    techStack: ['Three.js', 'React Three Fiber', 'Standard PBR Material', 'GHS Guidelines'],
-    actionLabel: 'Khám Phá Mô Hình 3D',
-  },
-  {
-    id: 'lesson-planner',
-    tabIndex: 5,
-    title: 'Soạn Giáo Án Chuẩn Công Văn 5512 BGD&ĐT',
-    subtitle: 'Trợ lý chuyên trách thiết kế Kế hoạch bài dạy chi tiết trong 30 giây',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & Sư phạm',
-    badge: 'Soạn giáo án 5512',
-    badgeColor: '#ec4899',
-    icon: <BookOpen size={28} color="#ec4899" />,
-    iconBg: 'rgba(236, 72, 153, 0.15)',
-    glowColor: 'rgba(236, 72, 153, 0.25)',
-    description:
-      'Tự động tạo cấu trúc giáo án đầy đủ 4 hoạt động: Khởi động, Hình thành kiến thức, Luyện tập và Vận dụng đúng quy chuẩn Bộ GD&ĐT.',
-    highlights: [
-      'Đầy đủ mục tiêu (Năng lực hóa học, Năng lực chung, Phẩm chất)',
-      'Tiến trình 4 hoạt động sư phạm chi tiết (Nội dung, Sản phẩm, Tổ chức thực hiện)',
-      'Kèm phiếu học tập, bảng rubric đánh giá và câu hỏi kiểm tra',
-      'Sao chép 1 chạm và hỗ trợ xuất bản sang Microsoft Word / PDF',
-    ],
-    techStack: ['Quy trình tự động hóa', 'Khung Kế hoạch 5512 BGD&ĐT', 'Word Exporter'],
-    actionLabel: 'Soạn Giáo Án Ngay',
-  },
-  {
-    id: 'exam-manager',
-    tabIndex: 6,
-    title: 'Soạn & Chấm Đề Thi Định Dạng Mới (2025/2026)',
-    subtitle: 'Ma trận 4 mức độ nhận thức & Đa dạng dạng câu hỏi trắc nghiệm',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & Đánh giá',
-    badge: 'Format Mới 2025-2026',
-    badgeColor: '#06b6d4',
-    icon: <FileCheck2 size={28} color="#06b6d4" />,
-    iconBg: 'rgba(6, 182, 212, 0.15)',
-    glowColor: 'rgba(6, 182, 212, 0.25)',
-    description:
-      'Thiết lập ma trận đề thi chuẩn 4 cấp độ (Nhận biết, Thông hiểu, Vận dụng, Vận dụng cao) với 3 dạng câu hỏi mới: Trắc nghiệm 4 lựa chọn, Trắc nghiệm Đúng/Sai và Câu hỏi trả lời ngắn.',
-    highlights: [
-      'Tạo đề thi tự động theo ma trận cấu trúc quy định của Bộ GD&ĐT',
-      'Đầy đủ 3 dạng câu hỏi chuẩn đề thi tốt nghiệp THPT định dạng mới',
-      'Bảng ma trận phân bố số câu, số điểm, tỉ lệ phần trăm trực quan',
-      'Xuất bản đề thi, đáp án và biểu điểm chi tiết tiện in ấn',
-    ],
-    techStack: ['Tạo đề thông minh', 'Ma Trận Nhận Thức BGD', 'Phân loại 4 mức độ'],
-    actionLabel: 'Tạo Đề Thi Mới',
-  },
-  {
-    id: 'stem-projects',
-    tabIndex: 7,
-    title: 'Thiết Kế Dự Án Học Tập STEM Hóa Học',
-    subtitle: 'Gắn liền kiến thức hóa học với thực tiễn cuộc sống & bảo vệ môi trường',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & STEM',
-    badge: 'STEM 5 Bước',
-    badgeColor: '#a855f7',
-    icon: <Sparkles size={28} color="#a855f7" />,
-    iconBg: 'rgba(168, 85, 247, 0.15)',
-    glowColor: 'rgba(168, 85, 247, 0.25)',
-    description:
-      'Ngân hàng dự án STEM hóa học thực tế (Pha chế nước muối sinh lý, Pin điện hóa quả chanh, Làm xà phòng handmade, Xử lý nước phèn) tích hợp quy trình 5 bước sư phạm hoàn chỉnh.',
-    highlights: [
-      'Dự án mẫu bám sát đời sống và chuyên đề học tập Hóa Học THPT',
-      'Quy trình 5 bước: Giao nhiệm vụ → Nghiên cứu → Thiết kế → Chế tạo → Báo cáo',
-      'Bộ tiêu chí đánh giá sản phẩm (Rubric) chi tiết cho giáo viên và học sinh',
-      'Tạo dự án STEM mới tùy chỉnh theo từng bối cảnh lớp học tự động',
-    ],
-    techStack: ['STEM Framework', 'Interactive Rubric', 'Thiết kế dự án thông minh'],
-    actionLabel: 'Khám Phá Dự Án STEM',
-  },
-  {
-    id: 'video-lectures',
-    tabIndex: 8,
-    title: 'Thư Viện Video Bài Giảng Trực Quan',
-    subtitle: 'Đăng tải bài dạy YouTube & Phát trực tiếp chuẩn Cinema không chuyển tab',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & Học tập',
-    badge: 'Video & Bài giảng',
-    badgeColor: '#f43f5e',
-    icon: <Video size={28} color="#f43f5e" />,
-    iconBg: 'rgba(244, 63, 94, 0.15)',
-    glowColor: 'rgba(244, 63, 94, 0.25)',
-    description:
-      'Không gian số dành cho giáo viên đăng tải video bài dạy YouTube, phân loại theo các chuyên đề Hóa học THPT GDPT 2018. Học sinh theo dõi bài giảng trực tiếp trên web, ghi chú tức thì và nhận tóm tắt kiến thức từ hệ thống.',
-    highlights: [
-      'Phát video nhúng trực tiếp không mở tab ngoài, không quảng cáo chen ngang',
-      'Đăng tải dễ dàng qua link YouTube với tự động nhận diện ảnh Thumbnail',
-      'Tích hợp sổ tay ghi chú học tập (Lecture Notes) lưu trữ tự động',
-      'Hệ thống tự động phân tích mục tiêu & tóm tắt trọng tâm bài học',
-    ],
-    techStack: ['YouTube Cinema Embed', 'No-Redirect Player', 'Tóm tắt bài dạy', 'Study Notes'],
-    actionLabel: 'Xem Kho Video Bài Giảng',
-  },
-  {
-    id: 'student-progress',
-    tabIndex: 9,
-    title: 'Sổ Theo Dõi & Đánh Giá Năng Lực Học Sinh',
-    subtitle: 'Theo dõi EXP Đấu trường, Chuỗi thi đấu, Đặt biệt danh & Đánh giá năng lực GDPT',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & Đánh giá',
-    badge: 'Quản lý Học sinh',
-    badgeColor: '#f59e0b',
-    icon: <GraduationCap size={28} color="#f59e0b" />,
-    iconBg: 'rgba(245, 158, 11, 0.15)',
-    glowColor: 'rgba(245, 158, 11, 0.25)',
-    description:
-      'Hệ thống quản lý học sinh toàn diện dành cho giáo viên: theo dõi chi tiết điểm kinh nghiệm Đấu trường, chuỗi ngày đăng nhập, tỷ lệ câu đúng, đặt biệt danh danh dự và xếp loại năng lực theo chuẩn GDPT 2018.',
-    highlights: [
-      'Theo dõi tiến trình học tập, EXP và cấp độ Level từng học sinh',
-      'Đặt biệt danh danh dự & phong tặng danh hiệu chuyên môn',
-      'Đánh giá năng lực tự động (Kim cương / Vàng / Bạc / Đồng) & Gợi ý nhận xét sư phạm tự động',
-      'Xuất danh sách và báo cáo năng lực ra file CSV/Excel tiện lợi',
-    ],
-    techStack: ['Student Analytics', 'Nhận xét Sư Phạm', 'Excel Exporter', 'Gamification'],
-    actionLabel: 'Mở Sổ Theo Dõi Học Sinh',
-  },
-  {
-    id: 'teacher-audit',
-    tabIndex: 10,
-    title: 'Cổng Quản Trị & Kiểm Duyệt Sư Phạm (Audit)',
-    subtitle: 'Giám sát học tập, quản lý ngân hàng đề thi & an toàn nội dung AI',
-    category: 'teacher',
-    categoryLabel: 'Quản trị & Kiểm duyệt',
-    badge: 'Dành cho Giáo viên',
-    badgeColor: '#eab308',
-    icon: <UserCheck size={28} color="#eab308" />,
-    iconBg: 'rgba(234, 179, 8, 0.15)',
-    glowColor: 'rgba(234, 179, 8, 0.25)',
-    description:
-      'Khu vực bảo mật dành cho giáo viên và quản trị viên: theo dõi lịch sử tương tác học tập của học sinh, quản lý phòng thi đấu luyện tập, duyệt câu hỏi và xem báo cáo tổng hợp chất lượng.',
-    highlights: [
-      'Bảo mật đăng nhập bằng mật mã quản trị viên giáo viên',
-      'Xem và kiểm duyệt toàn bộ nhật ký học tập của học sinh',
-      'Quản lý danh sách phòng thi đấu trực tuyến và kết quả thí sinh',
-      'Quản trị ngân hàng câu hỏi trắc nghiệm & dữ liệu thí nghiệm',
-    ],
-    techStack: ['Teacher Auth Guard', 'Quản lý tập trung', 'Audit Logging'],
-    actionLabel: 'Mở Cổng Giáo Viên',
-  },
-  {
-    id: 'leaderboard',
-    tabIndex: 11,
-    title: 'Bảng Xếp Hạng Học Sinh THPT',
-    subtitle: 'Vinh danh Top 3 Học sinh THPT xuất sắc theo Thành Phố, Tỉnh và Toàn Quốc',
-    category: 'student',
-    categoryLabel: 'Học sinh THPT & Thi đấu',
-    badge: 'Bảng Vàng Học Sinh THPT',
-    badgeColor: '#f59e0b',
-    icon: <Award size={28} color="#f59e0b" />,
-    iconBg: 'rgba(245, 158, 11, 0.15)',
-    glowColor: 'rgba(245, 158, 11, 0.25)',
-    description:
-      'Trang xếp hạng và vinh danh học sinh THPT toàn diện: hỗ trợ phân vùng theo 3 cấp độ (Thành phố/Thị xã/Huyện, Cấp Tỉnh, và Toàn Quốc). Tích hợp 3 bảng xếp hạng chuyên sâu: Điểm EXP, Chuỗi thắng Đấu trường và Chuỗi ngày chuyên cần.',
-    highlights: [
-      'Phân vùng 3 cấp độ: Thành phố / Thị xã / Huyện, Cấp Tỉnh, và Toàn Quốc (Quốc gia)',
-      '3 Bảng xếp hạng độc lập: Điểm EXP, Chuỗi thắng Đấu trường & Chuỗi ngày đăng nhập',
-      'Bục vinh quang Olympic Top 3 (Quán quân, Á quân, Quý quân) với hiệu ứng hào quang',
-      'Thẻ theo dõi thứ hạng cá nhân và xuất báo cáo bảng vàng CSV/Excel',
-    ],
-    techStack: ['Geo-Location Filter', 'Realtime Sync', 'Podium Showcase', 'CSV Exporter'],
-    actionLabel: 'Xem Bảng Xếp Hạng Học Sinh THPT',
-  },
-  {
-    id: 'periodic-table',
-    tabIndex: 12,
-    title: 'Bảng Tuần Hoàn Hóa Học 118 Nguyên Tố',
-    subtitle: 'Chuẩn IUPAC, phân loại 3 mảng màu & Tra cứu 9 mục chuyên sâu',
-    category: 'simulation',
-    categoryLabel: 'Tra cứu & Mô phỏng',
-    badge: '118 Nguyên Tố IUPAC',
-    badgeColor: '#06b6d4',
-    icon: <Atom size={28} color="#06b6d4" />,
-    iconBg: 'rgba(6, 182, 212, 0.15)',
-    glowColor: 'rgba(6, 182, 212, 0.25)',
-    description:
-      'Khám phá toàn bộ 118 nguyên tố hóa học với 3 mảng màu chuẩn (Kim loại, Phi kim, Khí hiếm). Hỗ trợ tìm kiếm nhanh, mô phỏng trạng thái theo nhiệt độ và tra cứu 9 mục thông tin chi tiết kèm tìm kiếm nội bộ.',
-    highlights: [
-      'Đầy đủ 118 nguyên tố hóa học hiển thị trên lưới IUPAC 18 cột chuẩn quốc tế',
-      'Phân chia trực quan 3 mảng màu chính: Kim loại (Metals), Phi kim (Non-metals), Khí hiếm (Noble gases)',
-      '9 Mục thông tin chuyên sâu: Cấu trúc hạt nhân, nhiệt động học, độ âm điện, quang phổ, quặng tự nhiên, ứng dụng, an toàn NFPA 704',
-      'Tìm kiếm nhanh đa tiêu chí & Tìm kiếm thông tin nhỏ tức thì bên trong từng nguyên tố',
-    ],
-    techStack: ['IUPAC Standard 2026', 'In-Element Search', 'NFPA 704 Diamond', 'State Simulation'],
-    actionLabel: 'Khám Phá Bảng Hóa Học',
-  },
-  {
-    id: 'diagnostic-center',
-    tabIndex: 14,
-    title: 'Trung Tâm Chẩn Đoán Lỗ Hổng Kiến Thức',
-    subtitle: 'Quét 4 đường kiểm tra (10, 11, 12, THPT) & Chỉ điểm bẫy đề thi',
-    category: 'student',
-    categoryLabel: 'Học sinh & Luyện thi',
-    badge: 'Radar 4 Cấp Độ',
-    badgeColor: '#c084fc',
-    icon: <Sparkles size={28} color="#c084fc" />,
-    iconBg: 'rgba(168, 85, 247, 0.15)',
-    glowColor: 'rgba(168, 85, 247, 0.25)',
-    description:
-      'Hệ thống đánh giá năng lực đa tầng giúp phát hiện chính xác lỗ hổng lý thuyết và bẫy đề thi học sinh hay mắc phải ở cả 4 khối: Lớp 10, 11, 12 và Tổng quan THPT Quốc Gia.',
-    highlights: [
-      '4 Đường kiểm tra chẩn đoán toàn diện (Lớp 10, 11, 12 & THPT Quốc Gia)',
-      'Phân tích 6 mũi nhọn năng lực hóa học GDPT 2018',
-      'Chỉ điểm chi tiết các bẫy đề thi và lỗi sai kinh điển',
-      'Đề xuất phác đồ ôn tập và mẹo ghi nhớ khắc phục lỗ hổng',
-    ],
-    techStack: ['Diagnostic Engine', 'Competency Breakdown', 'Exam Pitfall Detection'],
-    actionLabel: 'Bắt Đầu Chẩn Đoán',
-  },
-  {
-    id: 'teacher-whiteboard',
-    tabIndex: 13,
-    title: 'Studio Bảng Trắng Dạy Học & Xuất PDF',
-    subtitle: 'Không gian vẽ phấn số hóa, tem công thức hóa học & xuất tài liệu 1 chạm',
-    category: 'teacher',
-    categoryLabel: 'Giáo viên & Giảng dạy',
-    badge: 'Bảng Trắng Studio PDF',
-    badgeColor: '#f59e0b',
-    icon: <BookMarked size={28} color="#f59e0b" />,
-    iconBg: 'rgba(245, 158, 11, 0.15)',
-    glowColor: 'rgba(245, 158, 11, 0.25)',
-    description:
-      'Công cụ giảng dạy trực quan hỗ trợ giáo viên viết phấn, dạ quang, vẽ hình học, dán tem công thức nhanh và xuất bài giảng thành file PDF hoặc ảnh chất lượng cao để gửi học sinh.',
-    highlights: [
-      'Canvas vẽ mượt mà hỗ trợ chuột và bút cảm ứng Tablet/Mobile',
-      'Khay tem công thức hóa học dán nhanh 1 chạm (H₂SO₄, HNO₃, Δr H°, e⁻, pH...)',
-      '4 Chế độ nền: Bảng đen phấn trắng, Bảng trắng bút dạ, Giấy ô ly, Giấy kẻ ngang',
-      'Xuất bản và in ấn PDF chất lượng cao ngay lập tức',
-    ],
-    techStack: ['HTML5 Canvas 60fps', 'Formula Stamps', 'PDF/PNG Exporter'],
-    actionLabel: 'Mở Studio Bảng Trắng',
   },
 ];
 
@@ -446,33 +310,80 @@ const SYLLABUS_CHAPTERS = [
   },
 ];
 
-export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentUser, onLogout }: HomeDashboardProps) {
-  const [filterCategory, setFilterCategory] = useState<'all' | 'student' | 'teacher' | 'simulation'>('all');
+export default function HomeDashboard({
+  onNavigateTab,
+  onOpenAuthModal,
+  currentUser,
+  onLogout,
+  roleViewMode = 'all',
+  onRoleViewModeChange,
+  onQuickLogin,
+}: HomeDashboardProps) {
+  const [activeRoleMode, setActiveRoleMode] = useState<'all' | 'student' | 'teacher'>(roleViewMode || 'all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  React.useEffect(() => {
+    if (currentUser?.role === 'student') {
+      setActiveRoleMode('student');
+    } else if (roleViewMode) {
+      setActiveRoleMode(roleViewMode);
+    }
+  }, [roleViewMode, currentUser]);
+
+  const handleRoleModeChange = (mode: 'all' | 'student' | 'teacher') => {
+    if (currentUser?.role === 'student' && mode === 'teacher') return;
+    setActiveRoleMode(mode);
+    if (onRoleViewModeChange) {
+      onRoleViewModeChange(mode);
+    }
+  };
 
   const handleFeatureClick = (tabIndex: number) => {
     if (!currentUser) {
-      const feat = FEATURES.find(f => f.tabIndex === tabIndex);
-      const targetRole = feat?.category === 'teacher' ? 'teacher' : 'student';
+      const teacherTabs = [5, 6, 13, 9, 10];
+      const targetRole = teacherTabs.includes(tabIndex) ? 'teacher' : 'student';
       if (onOpenAuthModal) onOpenAuthModal(targetRole);
       return;
     }
     onNavigateTab(tabIndex);
   };
 
-  const filteredFeatures = FEATURES.filter((f) => {
-    const matchCategory = filterCategory === 'all' || f.category === filterCategory;
-    const matchSearch =
-      f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.highlights.some((h) => h.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchCategory && matchSearch;
-  });
+  // Filter groups according to activeRoleMode and searchQuery
+  const filteredGroups = CORE_FEATURE_GROUPS.map((group) => {
+    const q = searchQuery.trim().toLowerCase();
+    const matchedItems = group.items.filter((item) => {
+      if (!q) return true;
+      return (
+        item.title.toLowerCase().includes(q) ||
+        item.desc.toLowerCase().includes(q) ||
+        (item.badge && item.badge.toLowerCase().includes(q))
+      );
+    });
+
+    const groupMatches =
+      !q ||
+      group.title.toLowerCase().includes(q) ||
+      group.subtitle.toLowerCase().includes(q) ||
+      group.description.toLowerCase().includes(q) ||
+      matchedItems.length > 0;
+
+    let roleMatches = true;
+    if (activeRoleMode === 'student' || currentUser?.role === 'student') {
+      roleMatches = group.roleTarget !== 'teacher';
+    } else if (activeRoleMode === 'teacher') {
+      roleMatches = true;
+    }
+
+    return {
+      ...group,
+      displayItems: q ? matchedItems : group.items,
+      isVisible: groupMatches && roleMatches,
+    };
+  }).filter((g) => g.isVisible);
 
   return (
     <Box sx={{ minHeight: '100vh', pb: 6 }}>
-      {/* 1. HERO SECTION WITH VIBRANT ANIMATED BACKGROUND */}
+      {/* 1. HERO SECTION WITH VIBRANT AURORA BACKGROUND & METRICS */}
       <Box
         sx={{
           position: 'relative',
@@ -480,67 +391,58 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           overflow: 'hidden',
           p: { xs: 2.5, sm: 4, md: 5 },
           mb: 4,
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(9, 13, 22, 0.95) 100%)',
-          border: '1px solid rgba(56, 189, 248, 0.2)',
-          boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+          bgcolor: '#0f172a',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
-        {/* Ambient Glowing Orbs Background */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '-20%',
-            right: '-10%',
-            width: 420,
-            height: 420,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(2, 132, 199, 0.2) 0%, rgba(0,0,0,0) 70%)',
-            filter: 'blur(50px)',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '-25%',
-            left: '-10%',
-            width: 380,
-            height: 380,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(0,0,0,0) 70%)',
-            filter: 'blur(50px)',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-
         <Box sx={{ position: 'relative', zIndex: 2 }}>
           <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
-            {/* LEFT COLUMN: HERO HEADLINE & CTA */}
+            {/* LEFT COLUMN: HERO HEADLINE, CTAs & STAT METRICS */}
             <Grid item xs={12} lg={6.5} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {/* Top Badge */}
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                <Chip
-                  icon={<Sparkles size={14} color="#38bdf8" />}
-                  label="HỆ THỐNG TRỢ LÝ & MÔ PHỎNG HÓA HỌC SỐ — GDPT 2018"
+              {/* Top Badge with Live Beacon */}
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }} flexWrap="wrap">
+                <Box
                   sx={{
-                    bgcolor: 'rgba(56, 189, 248, 0.12)',
-                    color: '#38bdf8',
-                    border: '1px solid rgba(56, 189, 248, 0.35)',
-                    fontWeight: 'bold',
-                    fontSize: { xs: '11px', sm: '12px' },
-                    py: 0.5,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    px: 1.5,
+                    py: 0.6,
+                    borderRadius: 999,
+                    bgcolor: 'rgba(56, 189, 248, 0.1)',
+                    border: '1px solid rgba(56, 189, 248, 0.3)',
                   }}
-                />
+                >
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      bgcolor: '#10b981',
+                      boxShadow: '0 0 10px #10b981',
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      color: '#38bdf8',
+                      fontWeight: 700,
+                      fontSize: { xs: '11px', sm: '12px' },
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Hệ Thống Trợ Lý & Thí Nghiệm Hóa Học Số GDPT 2018
+                  </Typography>
+                </Box>
                 <Chip
                   label="Phiên bản 2026"
                   size="small"
                   sx={{
                     bgcolor: 'rgba(16, 185, 129, 0.15)',
                     color: '#34d399',
-                    border: '1px solid rgba(16, 185, 129, 0.3)',
-                    fontWeight: 'bold',
+                    border: '1px solid rgba(16, 185, 129, 0.35)',
+                    fontWeight: 700,
                     fontSize: '11px',
                     display: { xs: 'none', sm: 'inline-flex' },
                   }}
@@ -549,40 +451,44 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
 
               {/* Main Hero Title */}
               <Typography
-                variant="h3"
+                variant="h1"
                 component="h1"
                 sx={{
-                  fontWeight: 800,
-                  fontSize: { xs: '24px', sm: '32px', md: '38px', lg: '42px' },
-                  lineHeight: 1.18,
+                  fontWeight: 900,
+                  fontSize: { xs: '28px', sm: '36px', md: '42px', lg: '48px' },
+                  lineHeight: 1.15,
                   letterSpacing: '-0.03em',
                   mb: 2,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #bae6fd 50%, #38bdf8 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  color: '#ffffff',
                 }}
               >
-                HCC - ChemAI: Khám Phá Hóa Học THPT <br />
-                Bằng Trí Tuệ Nhân Tạo & Mô Phỏng 3D
+                Khám Phá Hóa Học Số THPT <br />
+                <Box
+                  component="span"
+                  sx={{
+                    color: '#38bdf8',
+                  }}
+                >
+                  Trí Tuệ Nhân Tạo & Mô Phỏng 3D
+                </Box>
               </Typography>
 
               {/* Slogan & Intro */}
               <Typography
                 variant="body1"
                 sx={{
-                  color: '#94a3b8',
-                  fontSize: { xs: '13.5px', sm: '15px', md: '15.5px' },
-                  lineHeight: 1.6,
+                  color: '#cbd5e1',
+                  fontSize: { xs: '15px', sm: '16px', md: '16.5px' },
+                  lineHeight: 1.7,
                   mb: 3,
+                  maxWidth: 720,
                 }}
               >
-                Nền tảng toàn diện tích hợp công nghệ tương tác thông minh, kết hợp
-                phòng thí nghiệm ảo trực quan, mô hình 3D phân tử sống động, đấu trường trắc nghiệm trực tuyến cùng trợ lý
-                soạn giáo án 5512 & đề thi chuẩn cấu trúc mới của Bộ Giáo dục & Đào tạo.
+                Nền tảng thực nghiệm số toàn diện bám sát 6 chủ đề SGK GDPT 2018: tích hợp <strong>11+ kịch bản thí nghiệm ảo WebGL</strong> chân thực, mô hình 3D nguyên tử & liên kết chuẩn IUPAC, trợ lý AI ChemAI 2.0 hỗ trợ 24/7, cùng công cụ soạn giáo án Công văn 5512 và ngân hàng đề thi chuẩn cấu trúc mới của Bộ GD&ĐT.
               </Typography>
 
               {/* Hero Action CTA Buttons */}
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 2.5 }}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 3 }}>
                 <Button
                   variant="contained"
                   size="large"
@@ -591,20 +497,21 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                   endIcon={!currentUser ? <Lock size={15} /> : <ArrowRight size={16} />}
                   sx={{
                     bgcolor: '#0284c7',
-                    backgroundImage: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
                     color: '#ffffff',
-                    fontWeight: 'bold',
+                    fontWeight: 700,
                     fontSize: '14px',
-                    px: 2.5,
-                    py: 1.2,
+                    px: 3,
+                    py: 1.3,
                     borderRadius: 2.5,
-                    boxShadow: '0 8px 24px rgba(2, 132, 199, 0.4)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    boxShadow: '0 4px 16px rgba(2, 132, 199, 0.4)',
+                    cursor: 'pointer',
                     '&:hover': {
                       bgcolor: '#0369a1',
-                      boxShadow: '0 12px 28px rgba(2, 132, 199, 0.6)',
-                      transform: 'translateY(-1px)',
+                      boxShadow: '0 6px 20px rgba(2, 132, 199, 0.6)',
+                      transform: 'translateY(-2px)',
                     },
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
                   Vào Thí Nghiệm Ảo
@@ -617,20 +524,23 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                   startIcon={<Bot size={18} />}
                   endIcon={!currentUser ? <Lock size={15} /> : undefined}
                   sx={{
-                    borderColor: 'rgba(56, 189, 248, 0.4)',
+                    borderColor: 'rgba(56, 189, 248, 0.45)',
                     color: '#38bdf8',
-                    bgcolor: 'rgba(56, 189, 248, 0.06)',
-                    fontWeight: 'bold',
+                    bgcolor: 'rgba(56, 189, 248, 0.08)',
+                    backdropFilter: 'blur(8px)',
+                    fontWeight: 700,
                     fontSize: '14px',
-                    px: 2.2,
-                    py: 1.2,
+                    px: 2.5,
+                    py: 1.3,
                     borderRadius: 2.5,
+                    cursor: 'pointer',
                     '&:hover': {
-                      bgcolor: 'rgba(56, 189, 248, 0.15)',
+                      bgcolor: 'rgba(56, 189, 248, 0.18)',
                       borderColor: '#38bdf8',
-                      transform: 'translateY(-1px)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 20px rgba(56, 189, 248, 0.25)',
                     },
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
                   Gia Sư Hóa Học
@@ -643,52 +553,130 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                   startIcon={<Trophy size={18} />}
                   endIcon={!currentUser ? <Lock size={15} /> : undefined}
                   sx={{
-                    borderColor: 'rgba(245, 158, 11, 0.4)',
-                    color: '#f59e0b',
-                    bgcolor: 'rgba(245, 158, 11, 0.06)',
-                    fontWeight: 'bold',
+                    borderColor: 'rgba(245, 158, 11, 0.45)',
+                    color: '#fbbf24',
+                    bgcolor: 'rgba(245, 158, 11, 0.08)',
+                    backdropFilter: 'blur(8px)',
+                    fontWeight: 700,
                     fontSize: '14px',
-                    px: 2.2,
-                    py: 1.2,
+                    px: 2.5,
+                    py: 1.3,
                     borderRadius: 2.5,
+                    cursor: 'pointer',
                     '&:hover': {
-                      bgcolor: 'rgba(245, 158, 11, 0.15)',
+                      bgcolor: 'rgba(245, 158, 11, 0.18)',
                       borderColor: '#f59e0b',
-                      transform: 'translateY(-1px)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 20px rgba(245, 158, 11, 0.25)',
                     },
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
                   Đấu Trường Luyện Tập
                 </Button>
               </Stack>
 
-              {/* Quick Feature Badges */}
-              <Box display="flex" flexWrap="wrap" gap={1}>
-                <Chip
-                  icon={<FlaskConical size={13} color="#38bdf8" />}
-                  label="11+ Thí nghiệm THPT"
-                  size="small"
-                  sx={{ bgcolor: 'rgba(56, 189, 248, 0.08)', color: '#94a3b8', border: '1px solid rgba(56, 189, 248, 0.2)', fontSize: '11px' }}
-                />
-                <Chip
-                  icon={<Atom size={13} color="#06b6d4" />}
-                  label="118 Nguyên tố IUPAC"
-                  size="small"
-                  sx={{ bgcolor: 'rgba(6, 182, 212, 0.08)', color: '#94a3b8', border: '1px solid rgba(6, 182, 212, 0.2)', fontSize: '11px' }}
-                />
-                <Chip
-                  icon={<ShieldCheck size={13} color="#10b981" />}
-                  label="Mô phỏng 3D WebGL"
-                  size="small"
-                  sx={{ bgcolor: 'rgba(16, 185, 129, 0.08)', color: '#94a3b8', border: '1px solid rgba(16, 185, 129, 0.2)', fontSize: '11px' }}
-                />
-                <Chip
-                  icon={<Trophy size={13} color="#f59e0b" />}
-                  label="Đấu trường luyện tập"
-                  size="small"
-                  sx={{ bgcolor: 'rgba(245, 158, 11, 0.08)', color: '#94a3b8', border: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '11px' }}
-                />
+              {/* Quick Live Metric Strip (Stats Bar) */}
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' },
+                  gap: 1.5,
+                  pt: 2.5,
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(56, 189, 248, 0.2)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: '#38bdf8', transform: 'translateY(-1px)' },
+                  }}
+                >
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex' }}>
+                    <FlaskConical size={18} />
+                  </Box>
+                  <Box>
+                    <Typography sx={{ color: '#ffffff', fontWeight: 800, fontSize: '18px', lineHeight: 1.1 }}>11+</Typography>
+                    <Typography sx={{ color: '#94a3b8', fontSize: '12px', mt: 0.3 }}>Thí nghiệm 3D</Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(6, 182, 212, 0.2)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: '#06b6d4', transform: 'translateY(-1px)' },
+                  }}
+                >
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'rgba(6, 182, 212, 0.15)', color: '#06b6d4', display: 'flex' }}>
+                    <Atom size={18} />
+                  </Box>
+                  <Box>
+                    <Typography sx={{ color: '#ffffff', fontWeight: 800, fontSize: '18px', lineHeight: 1.1 }}>118</Typography>
+                    <Typography sx={{ color: '#94a3b8', fontSize: '12px', mt: 0.3 }}>Nguyên tố IUPAC</Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: '#10b981', transform: 'translateY(-1px)' },
+                  }}
+                >
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#10b981', display: 'flex' }}>
+                    <Bot size={18} />
+                  </Box>
+                  <Box>
+                    <Typography sx={{ color: '#ffffff', fontWeight: 800, fontSize: '18px', lineHeight: 1.1 }}>24/7</Typography>
+                    <Typography sx={{ color: '#94a3b8', fontSize: '12px', mt: 0.3 }}>ChemAI 24/7</Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(245, 158, 11, 0.2)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': { borderColor: '#f59e0b', transform: 'translateY(-1px)' },
+                  }}
+                >
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', display: 'flex' }}>
+                    <ShieldCheck size={18} />
+                  </Box>
+                  <Box>
+                    <Typography sx={{ color: '#ffffff', fontWeight: 800, fontSize: '18px', lineHeight: 1.1 }}>100%</Typography>
+                    <Typography sx={{ color: '#94a3b8', fontSize: '12px', mt: 0.3 }}>Chuẩn GDPT 2018</Typography>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
 
@@ -737,8 +725,17 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
               </Box>
               <Box>
                 <Box display="flex" alignItems="center" gap={1.2} flexWrap="wrap">
-                  <Typography variant="h6" fontWeight="bold" color="white" sx={{ fontSize: '18px' }}>
-                    {currentUser.role === 'teacher' ? `👋 Kính chào Thầy/Cô, ${currentUser.fullName}` : `👋 Xin chào bạn, ${currentUser.fullName}`}
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    color="white"
+                    sx={{
+                      fontSize: { xs: '16px', sm: '18px' },
+                      whiteSpace: 'nowrap',
+                      letterSpacing: '-0.2px',
+                    }}
+                  >
+                    👋 {getUserGreeting(currentUser)}
                   </Typography>
                   <Chip
                     icon={currentUser.role === 'teacher' ? <UserCheck size={13} color="#000" /> : <GraduationCap size={13} color="#38bdf8" />}
@@ -841,33 +838,61 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                 variant="outlined"
                 size="small"
                 onClick={() => onOpenAuthModal?.(currentUser?.role || 'student')}
-                startIcon={<Users size={16} />}
                 sx={{
-                  borderColor: 'rgba(56, 189, 248, 0.4)',
-                  color: '#38bdf8',
                   borderRadius: 2,
                   textTransform: 'none',
-                  fontWeight: 'bold',
-                  flex: { xs: 1, sm: 'none' }
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  borderColor: 'rgba(56, 189, 248, 0.45)',
+                  color: '#38bdf8',
+                  bgcolor: 'rgba(56, 189, 248, 0.08)',
+                  px: 2,
+                  py: 0.8,
+                  minWidth: 100,
+                  whiteSpace: 'nowrap',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.8,
+                  flex: { xs: 1, sm: 'none' },
+                  '&:hover': {
+                    borderColor: '#38bdf8',
+                    bgcolor: 'rgba(56, 189, 248, 0.2)',
+                  }
                 }}
               >
-                Hồ Sơ
+                <Users size={16} style={{ flexShrink: 0 }} />
+                <span>Hồ Sơ</span>
               </Button>
               {onLogout && (
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={onLogout}
-                  startIcon={<LogOut size={16} />}
-                  color="error"
                   sx={{
                     borderRadius: 2,
                     textTransform: 'none',
-                    fontWeight: 'bold',
-                    flex: { xs: 1, sm: 'none' }
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    borderColor: 'rgba(239, 68, 68, 0.5)',
+                    color: '#f87171',
+                    bgcolor: 'rgba(239, 68, 68, 0.08)',
+                    px: 2.2,
+                    py: 0.8,
+                    minWidth: 120,
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.8,
+                    flex: { xs: 1, sm: 'none' },
+                    '&:hover': {
+                      borderColor: '#ef4444',
+                      bgcolor: 'rgba(239, 68, 68, 0.2)',
+                      color: '#ef4444',
+                    }
                   }}
                 >
-                  Đăng Xuất
+                  <LogOut size={16} style={{ flexShrink: 0 }} />
+                  <span>Đăng Xuất</span>
                 </Button>
               )}
             </Stack>
@@ -891,23 +916,37 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
               <Grid item xs={12} md={6}>
                 <Paper
                   sx={{
+                    position: 'relative',
+                    overflow: 'hidden',
                     p: { xs: 2.5, sm: 3 },
-                    borderRadius: 3,
-                    bgcolor: 'rgba(15, 23, 42, 0.75)',
+                    borderRadius: 3.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.85)',
                     border: '1px solid rgba(56, 189, 248, 0.3)',
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+                    boxShadow: '0 12px 36px rgba(0,0,0,0.4)',
+                    backdropFilter: 'blur(16px)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     height: '100%',
-                    transition: 'all 0.25s ease',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       borderColor: '#38bdf8',
-                      boxShadow: '0 12px 36px rgba(2, 132, 199, 0.2)',
+                      boxShadow: '0 16px 42px rgba(2, 132, 199, 0.25)',
                       transform: 'translateY(-2px)'
                     }
                   }}
                 >
+                  {/* Subtle top neon accent line */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '3px',
+                      background: 'linear-gradient(90deg, #38bdf8 0%, #06b6d4 100%)',
+                    }}
+                  />
                   <Box>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                       <Box
@@ -931,34 +970,82 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                         sx={{
                           bgcolor: 'rgba(56, 189, 248, 0.15)',
                           color: '#38bdf8',
-                          border: '1px solid rgba(56, 189, 248, 0.3)',
+                          border: '1px solid rgba(56, 189, 248, 0.35)',
                           fontWeight: 'bold',
                           fontSize: '11px'
                         }}
                       />
                     </Box>
 
-                    <Typography variant="h6" fontWeight="bold" color="white" gutterBottom sx={{ fontSize: '17px' }}>
+                    <Typography variant="h6" fontWeight="bold" color="white" gutterBottom sx={{ fontSize: '18px' }}>
                       Cổng Tài Khoản Học Sinh
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, fontSize: '13px' }}>
-                      Lưu tiến trình học tập, chuỗi ngày đăng nhập (Streak), tích lũy điểm kinh nghiệm (EXP), mở khóa danh hiệu và thi đấu tại Đấu Trường Luyện Tập trực tuyến cùng cả lớp.
+                    <Typography variant="body2" sx={{ color: '#94a3b8', mb: 2, lineHeight: 1.6, fontSize: '13px' }}>
+                      Lưu tiến trình học tập, duy trì chuỗi ngày học tập (Streak), tích lũy điểm kinh nghiệm (EXP) và mở khóa danh hiệu khi chinh phục bài học.
                     </Typography>
+
+                    {/* Feature bullet checklist */}
+                    <Stack spacing={1} sx={{ mb: 3 }}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#38bdf8" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Thực hành 11+ mô phỏng thí nghiệm WebGL an toàn tuyệt đối
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#38bdf8" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Gia sư AI 24/7 hướng dẫn giải thích từng bước phản ứng
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#38bdf8" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Đấu trường trắc nghiệm trực tuyến tranh tài cùng cả lớp
+                        </Typography>
+                      </Box>
+                    </Stack>
                   </Box>
 
-                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, pt: 1 }}>
+                  <Box sx={{ pt: 1 }}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => onQuickLogin ? onQuickLogin('student') : onOpenAuthModal?.('student')}
+                      startIcon={<Zap size={16} />}
+                      sx={{
+                        mb: 1.5,
+                        bgcolor: 'rgba(56, 189, 248, 0.18)',
+                        color: '#38bdf8',
+                        border: '1px dashed #38bdf8',
+                        fontWeight: 'bold',
+                        py: 0.9,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.32)' },
+                      }}
+                    >
+                      ⚡ Trải Nghiệm 1-Chạm: Học Sinh A (hocsinha@gmail.com)
+                    </Button>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
                     <Button
                       variant="contained"
                       onClick={() => onOpenAuthModal?.('student')}
                       startIcon={<LogIn size={16} />}
                       sx={{
                         bgcolor: '#0284c7',
+                        color: '#fff',
                         fontWeight: 'bold',
                         py: 1.2,
                         borderRadius: 2,
                         textTransform: 'none',
                         fontSize: '13px',
-                        '&:hover': { bgcolor: '#0369a1' }
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)',
+                        '&:hover': { bgcolor: '#0369a1', transform: 'translateY(-1px)' },
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       Đăng Nhập Học Sinh
@@ -970,17 +1057,20 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                       sx={{
                         borderColor: 'rgba(56, 189, 248, 0.4)',
                         color: '#38bdf8',
-                        bgcolor: 'rgba(56, 189, 248, 0.05)',
+                        bgcolor: 'rgba(56, 189, 248, 0.06)',
                         fontWeight: 'bold',
                         py: 1.2,
                         borderRadius: 2,
                         textTransform: 'none',
                         fontSize: '13px',
-                        '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.15)', borderColor: '#38bdf8' }
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.15)', borderColor: '#38bdf8', transform: 'translateY(-1px)' },
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       Tạo Tài Khoản
                     </Button>
+                    </Box>
                   </Box>
                 </Paper>
               </Grid>
@@ -989,23 +1079,37 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
               <Grid item xs={12} md={6}>
                 <Paper
                   sx={{
+                    position: 'relative',
+                    overflow: 'hidden',
                     p: { xs: 2.5, sm: 3 },
-                    borderRadius: 3,
-                    bgcolor: 'rgba(15, 23, 42, 0.75)',
+                    borderRadius: 3.5,
+                    bgcolor: 'rgba(15, 23, 42, 0.85)',
                     border: '1px solid rgba(16, 185, 129, 0.3)',
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+                    boxShadow: '0 12px 36px rgba(0,0,0,0.4)',
+                    backdropFilter: 'blur(16px)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     height: '100%',
-                    transition: 'all 0.25s ease',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       borderColor: '#10b981',
-                      boxShadow: '0 12px 36px rgba(16, 185, 129, 0.2)',
+                      boxShadow: '0 16px 42px rgba(16, 185, 129, 0.25)',
                       transform: 'translateY(-2px)'
                     }
                   }}
                 >
+                  {/* Subtle top neon accent line */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '3px',
+                      background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                    }}
+                  />
                   <Box>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                       <Box
@@ -1029,22 +1133,66 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                         sx={{
                           bgcolor: 'rgba(16, 185, 129, 0.15)',
                           color: '#34d399',
-                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          border: '1px solid rgba(16, 185, 129, 0.35)',
                           fontWeight: 'bold',
                           fontSize: '11px'
                         }}
                       />
                     </Box>
 
-                    <Typography variant="h6" fontWeight="bold" color="white" gutterBottom sx={{ fontSize: '17px' }}>
+                    <Typography variant="h6" fontWeight="bold" color="white" gutterBottom sx={{ fontSize: '18px' }}>
                       Cổng Xác Thực Giáo Viên
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, fontSize: '13px' }}>
-                      Dành riêng cho Thầy/Cô. Xác thực bảo mật bằng mật khẩu nội bộ để soạn kế hoạch bài dạy 5512, ma trận đề thi 2026 và kiểm duyệt phòng thi đấu luyện tập.
+                    <Typography variant="body2" sx={{ color: '#94a3b8', mb: 2, lineHeight: 1.6, fontSize: '13px' }}>
+                      Khu vực sư phạm bảo mật: thiết kế Kế hoạch bài dạy (Giáo án) 5512, ngân hàng ma trận đề thi 2026 và kiểm duyệt phòng thi đấu luyện tập.
                     </Typography>
+
+                    {/* Feature bullet checklist */}
+                    <Stack spacing={1} sx={{ mb: 3 }}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#34d399" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Soạn Kế hoạch bài dạy chuẩn cấu trúc Công văn 5512 tức thì
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#34d399" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Xuất đề kiểm tra ma trận 4 mức độ bám sát quy định Bộ GD&ĐT
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CheckCircle2 size={15} color="#34d399" />
+                        <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '12.5px' }}>
+                          Phòng thí nghiệm mẫu hỗ trợ giảng dạy số tương tác trên lớp
+                        </Typography>
+                      </Box>
+                    </Stack>
                   </Box>
 
-                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, pt: 1 }}>
+                  <Box sx={{ pt: 1 }}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => onQuickLogin ? onQuickLogin('teacher') : onOpenAuthModal?.('teacher')}
+                      startIcon={<Zap size={16} />}
+                      sx={{
+                        mb: 1.5,
+                        bgcolor: 'rgba(245, 158, 11, 0.18)',
+                        color: '#fbbf24',
+                        border: '1px dashed #f59e0b',
+                        fontWeight: 'bold',
+                        py: 0.9,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.32)' },
+                      }}
+                    >
+                      ⚡ Trải Nghiệm 1-Chạm: Giáo Viên A (giaovien@gmail.com)
+                    </Button>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
                     <Button
                       variant="contained"
                       onClick={() => onOpenAuthModal?.('teacher')}
@@ -1057,8 +1205,10 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                         borderRadius: 2,
                         textTransform: 'none',
                         fontSize: '13px',
+                        cursor: 'pointer',
                         boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)',
-                        '&:hover': { bgcolor: '#d97706' }
+                        '&:hover': { bgcolor: '#d97706', transform: 'translateY(-1px)' },
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       Đăng Nhập Giáo Viên
@@ -1076,11 +1226,14 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                         borderRadius: 2,
                         textTransform: 'none',
                         fontSize: '13px',
-                        '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.15)', borderColor: '#f59e0b' }
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.15)', borderColor: '#f59e0b', transform: 'translateY(-1px)' },
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       Đăng Ký Giáo Viên
                     </Button>
+                    </Box>
                   </Box>
                 </Paper>
               </Grid>
@@ -1089,7 +1242,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         )}
       </Box>
 
-      {/* 2. FILTER & SEARCH CONTROLS */}
+      {/* 2. CHỌN CHẾ ĐỘ XEM & TÌM KIẾM TÍNH NĂNG */}
       <Box
         sx={{
           display: 'flex',
@@ -1099,45 +1252,73 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           gap: 2,
           mb: 3.5,
           p: 2,
-          bgcolor: 'rgba(15, 23, 42, 0.6)',
-          backdropFilter: 'blur(12px)',
+          bgcolor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(16px)',
           borderRadius: 3,
           border: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
-        {/* Category Pills */}
-        <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: { xs: 0.5, md: 0 } }}>
+        {/* Role View Mode Pills */}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            overflowX: 'auto',
+            pb: { xs: 0.5, md: 0 },
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': { display: 'none' },
+            msOverflowStyle: 'none',
+          }}
+        >
           <Chip
-            label="Tất Cả Công Dụng (8)"
-            onClick={() => setFilterCategory('all')}
-            color={filterCategory === 'all' ? 'primary' : 'default'}
-            variant={filterCategory === 'all' ? 'filled' : 'outlined'}
-            sx={{ fontWeight: 'bold', cursor: 'pointer' }}
+            label={currentUser?.role === 'student' ? 'Tất Cả (3 Nhóm)' : 'Tất Cả (4 Nhóm)'}
+            onClick={() => handleRoleModeChange('all')}
+            sx={{
+              fontWeight: 700,
+              fontSize: '13px',
+              cursor: 'pointer',
+              bgcolor: activeRoleMode === 'all' ? '#0284c7' : 'rgba(255, 255, 255, 0.04)',
+              color: activeRoleMode === 'all' ? '#ffffff' : '#94a3b8',
+              border: activeRoleMode === 'all' ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: activeRoleMode === 'all' ? '0 0 14px rgba(2, 132, 199, 0.45)' : 'none',
+              '&:hover': { bgcolor: activeRoleMode === 'all' ? '#0369a1' : 'rgba(255, 255, 255, 0.08)' },
+              transition: 'all 0.2s ease',
+            }}
           />
           <Chip
-            icon={<GraduationCap size={16} />}
-            label="Dành Cho Học Sinh"
-            onClick={() => setFilterCategory('student')}
-            color={filterCategory === 'student' ? 'primary' : 'default'}
-            variant={filterCategory === 'student' ? 'filled' : 'outlined'}
-            sx={{ fontWeight: 'bold', cursor: 'pointer' }}
+            icon={<GraduationCap size={16} color={activeRoleMode === 'student' ? '#38bdf8' : '#94a3b8'} />}
+            label="Góc Học Sinh (3 Nhóm)"
+            onClick={() => handleRoleModeChange('student')}
+            sx={{
+              fontWeight: 700,
+              fontSize: '13px',
+              cursor: 'pointer',
+              bgcolor: activeRoleMode === 'student' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+              color: activeRoleMode === 'student' ? '#38bdf8' : '#94a3b8',
+              border: activeRoleMode === 'student' ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: activeRoleMode === 'student' ? '0 0 14px rgba(56, 189, 248, 0.35)' : 'none',
+              '&:hover': { bgcolor: activeRoleMode === 'student' ? 'rgba(56, 189, 248, 0.28)' : 'rgba(255, 255, 255, 0.08)' },
+              transition: 'all 0.2s ease',
+            }}
           />
-          <Chip
-            icon={<BookMarked size={16} />}
-            label="Dành Cho Giáo Viên"
-            onClick={() => setFilterCategory('teacher')}
-            color={filterCategory === 'teacher' ? 'primary' : 'default'}
-            variant={filterCategory === 'teacher' ? 'filled' : 'outlined'}
-            sx={{ fontWeight: 'bold', cursor: 'pointer' }}
-          />
-          <Chip
-            icon={<Atom size={16} />}
-            label="Mô Phỏng & 3D"
-            onClick={() => setFilterCategory('simulation')}
-            color={filterCategory === 'simulation' ? 'primary' : 'default'}
-            variant={filterCategory === 'simulation' ? 'filled' : 'outlined'}
-            sx={{ fontWeight: 'bold', cursor: 'pointer' }}
-          />
+          {currentUser?.role !== 'student' && (
+            <Chip
+              icon={<BookMarked size={16} color={activeRoleMode === 'teacher' ? '#34d399' : '#94a3b8'} />}
+              label="Góc Giáo Viên (4 Nhóm)"
+              onClick={() => handleRoleModeChange('teacher')}
+              sx={{
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: 'pointer',
+                bgcolor: activeRoleMode === 'teacher' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                color: activeRoleMode === 'teacher' ? '#34d399' : '#94a3b8',
+                border: activeRoleMode === 'teacher' ? '1px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: activeRoleMode === 'teacher' ? '0 0 14px rgba(16, 185, 129, 0.35)' : 'none',
+                '&:hover': { bgcolor: activeRoleMode === 'teacher' ? 'rgba(16, 185, 129, 0.28)' : 'rgba(255, 255, 255, 0.08)' },
+                transition: 'all 0.2s ease',
+              }}
+            />
+          )}
         </Stack>
 
         {/* Search input */}
@@ -1145,18 +1326,18 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           sx={{
             display: 'flex',
             alignItems: 'center',
-            bgcolor: 'rgba(9, 13, 22, 0.8)',
+            bgcolor: 'rgba(9, 13, 22, 0.85)',
             border: '1px solid rgba(56, 189, 248, 0.25)',
             borderRadius: 2,
             px: 1.5,
-            py: 0.5,
+            py: 0.7,
             minWidth: { xs: '100%', md: 280 },
           }}
         >
           <Search size={16} color="#94a3b8" />
           <input
             type="text"
-            placeholder="Tìm kiếm tính năng, công dụng..."
+            placeholder="Tìm tính năng trong 4 nhóm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -1177,183 +1358,259 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         </Box>
       </Box>
 
-      {/* 3. GRID OF COMPREHENSIVE FEATURES & USE CASES */}
+      {/* 3. 4 NHÓM CHỨC NĂNG CỐT LÕI (CORE FEATURE GROUPS) */}
       <Box sx={{ mb: 6 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2.5}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" gap={1.5} mb={3}>
           <Box>
-            <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '18px', sm: '22px' } }}>
-              Tổng Hợp Toàn Bộ Công Dụng Của Nền Tảng ChemAI
+            <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '22px', sm: '26px' }, letterSpacing: '-0.02em' }}>
+              {currentUser?.role === 'student' || activeRoleMode === 'student' ? '3 Nhóm Chức Năng Dành Cho Học Sinh' : '4 Nhóm Chức Năng Cốt Lõi ChemAI'}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {!currentUser ? 'Biểu tượng & tính năng hệ thống (Đăng nhập vai trò để kích hoạt và thao tác)' : 'Khám phá chi tiết các phân hệ hỗ trợ học tập, thí nghiệm, luyện thi và soạn bài giảng'}
+            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '14px', mt: 0.3 }}>
+              {activeRoleMode === 'student' || currentUser?.role === 'student'
+                ? '🎓 Chế độ Học Sinh: Thu gọn các công cụ quản trị của giáo viên để bạn tập trung làm thí nghiệm và luyện thi'
+                : activeRoleMode === 'teacher'
+                ? '👨‍🏫 Chế độ Giáo Viên: Ưu tiên bộ công cụ sư phạm, giáo án CV 5512, ma trận đề thi & giám sát lớp học'
+                : 'Đã gom 13 phân hệ thành 4 nhóm mạch lạc: Thực nghiệm Ảo, Gia sư AI, Đấu trường & Không gian Giáo viên'}
             </Typography>
           </Box>
           <Chip
-            label={`${filteredFeatures.length} Tính năng`}
+            label={`${filteredGroups.length} Nhóm Chức Năng`}
             size="small"
-            sx={{ bgcolor: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', fontWeight: 'bold' }}
+            sx={{ bgcolor: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', fontWeight: 'bold', fontSize: '12px', border: '1px solid rgba(56, 189, 248, 0.3)' }}
           />
         </Box>
 
-        <Grid container spacing={2.5}>
-          {filteredFeatures.map((feat) => (
-            <Grid item xs={12} sm={6} lg={4} key={feat.id}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  bgcolor: 'rgba(15, 23, 42, 0.75)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 3,
-                  transition: 'all 0.25s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    borderColor: feat.badgeColor,
-                    boxShadow: `0 12px 30px ${feat.glowColor}`,
-                  },
-                }}
-              >
-                <CardContent sx={{ p: 2.5, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                  {/* Top Header with Icon and Badges */}
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Box
-                      sx={{
-                        p: 1.2,
-                        borderRadius: 2.5,
-                        bgcolor: feat.iconBg,
-                        border: `1px solid ${feat.badgeColor}40`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {feat.icon}
-                    </Box>
-                    <Stack direction="column" alignItems="flex-end" spacing={0.5}>
-                      <Chip
-                        label={feat.badge}
-                        size="small"
-                        sx={{
-                          height: 22,
-                          fontSize: '11px',
-                          fontWeight: 'bold',
-                          bgcolor: `${feat.badgeColor}18`,
-                          color: feat.badgeColor,
-                          border: `1px solid ${feat.badgeColor}40`,
-                        }}
-                      />
-                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '10.5px' }}>
-                        {feat.categoryLabel}
-                      </Typography>
-                    </Stack>
-                  </Box>
+        <Grid container spacing={3} alignItems="stretch">
+          {filteredGroups.map((group) => {
+            const isStudentMode = activeRoleMode === 'student';
+            const colSpan = isStudentMode ? 4 : 6;
+            const isTeacherGroup = group.id === 'teacher';
 
-                  {/* Title & Subtitle */}
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
+            return (
+              <Grid item xs={12} md={colSpan} key={group.id} sx={{ display: 'flex' }}>
+                <Card
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    bgcolor: 'rgba(15, 23, 42, 0.8)',
+                    backdropFilter: 'blur(16px)',
+                    border: `1px solid ${isTeacherGroup ? 'rgba(16, 185, 129, 0.35)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3.5,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      borderColor: group.color,
+                      boxShadow: `0 16px 40px ${group.glowColor}`,
+                    },
+                  }}
+                >
+                  {/* Top neon color accent bar */}
+                  <Box
                     sx={{
-                      fontSize: '17px',
-                      color: '#f8fafc',
-                      mb: 0.5,
-                      lineHeight: 1.3,
+                      height: 4,
+                      width: '100%',
+                      background: `linear-gradient(90deg, ${group.color} 0%, transparent 100%)`,
                     }}
-                  >
-                    {feat.title}
-                  </Typography>
+                  />
 
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: '#94a3b8',
-                      fontSize: '12px',
-                      mb: 1.5,
-                      display: 'block',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {feat.subtitle}
-                  </Typography>
-
-                  {/* Main Description */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      fontSize: '13px',
-                      lineHeight: 1.55,
-                      mb: 2,
-                    }}
-                  >
-                    {feat.description}
-                  </Typography>
-
-                  {/* Highlights Bullet Points */}
-                  <Box sx={{ mb: 2.5, flexGrow: 1 }}>
-                    <Typography variant="caption" fontWeight="bold" sx={{ color: '#cbd5e1', mb: 1, display: 'block' }}>
-                      Điểm nổi bật:
-                    </Typography>
-                    <Stack spacing={0.8}>
-                      {feat.highlights.map((h, i) => (
-                        <Box key={i} display="flex" alignItems="flex-start" gap={0.8}>
-                          <CheckCircle2 size={14} color={feat.badgeColor} style={{ marginTop: 2, flexShrink: 0 }} />
-                          <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '11.5px', lineHeight: 1.4 }}>
-                            {h}
+                  <CardContent sx={{ p: { xs: 2.5, sm: 3 }, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    {/* Header: Icon, Title & Badge */}
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                      <Box display="flex" alignItems="center" gap={1.8}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 2.5,
+                            bgcolor: `${group.color}18`,
+                            border: `1px solid ${group.color}45`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: `0 0 16px ${group.glowColor}`,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {group.icon}
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="h6"
+                            fontWeight={800}
+                            sx={{
+                              fontSize: { xs: '20px', sm: '22px' },
+                              color: '#ffffff',
+                              lineHeight: 1.25,
+                            }}
+                          >
+                            {group.title}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: '#94a3b8',
+                              fontSize: '13px',
+                              display: 'block',
+                              mt: 0.3,
+                            }}
+                          >
+                            {group.subtitle}
                           </Typography>
                         </Box>
-                      ))}
-                    </Stack>
-                  </Box>
-
-                  {/* Tech stack badges */}
-                  <Box display="flex" flexWrap="wrap" gap={0.5} mb={2.5}>
-                    {feat.techStack.map((tech, i) => (
+                      </Box>
                       <Chip
-                        key={i}
-                        label={tech}
+                        label={group.badge}
                         size="small"
                         sx={{
-                          height: 20,
-                          fontSize: '10px',
-                          bgcolor: 'rgba(255, 255, 255, 0.05)',
-                          color: '#cbd5e1',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          height: 24,
+                          fontSize: '11.5px',
+                          fontWeight: 'bold',
+                          bgcolor: `${group.color}15`,
+                          color: group.color,
+                          border: `1px solid ${group.color}40`,
+                          flexShrink: 0,
                         }}
                       />
-                    ))}
-                  </Box>
+                    </Box>
 
-                  {/* Action Button */}
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    onClick={() => handleFeatureClick(feat.tabIndex)}
-                    startIcon={!currentUser ? <Lock size={15} /> : undefined}
-                    endIcon={currentUser ? <ChevronRight size={16} /> : undefined}
-                    sx={{
-                      bgcolor: !currentUser ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255, 255, 255, 0.06)',
-                      color: !currentUser ? '#94a3b8' : '#f8fafc',
-                      border: `1px solid ${!currentUser ? 'rgba(255, 255, 255, 0.1)' : feat.badgeColor + '50'}`,
-                      fontWeight: 'bold',
-                      fontSize: '13px',
-                      borderRadius: 2,
-                      py: 1,
-                      '&:hover': {
-                        bgcolor: !currentUser ? 'rgba(51, 65, 85, 0.9)' : feat.badgeColor,
-                        color: !currentUser ? '#ffffff' : '#000000',
-                        boxShadow: !currentUser ? 'none' : `0 4px 15px ${feat.glowColor}`,
-                      },
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {!currentUser ? 'Đăng nhập để mở khóa' : feat.actionLabel}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+                    {/* Group Summary Description */}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '14.5px',
+                        lineHeight: 1.6,
+                        color: '#cbd5e1',
+                        mb: 2.5,
+                      }}
+                    >
+                      {group.description}
+                    </Typography>
+
+                    {/* Sub-Features Breakdown List */}
+                    <Box sx={{ mb: 2.5, flexGrow: 1 }}>
+                      <Typography
+                        variant="caption"
+                        fontWeight={700}
+                        sx={{
+                          color: '#e2e8f0',
+                          fontSize: '12px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          mb: 1.2,
+                          display: 'block',
+                        }}
+                      >
+                        Các phân hệ bên trong ({group.items.length} phân hệ):
+                      </Typography>
+                      <Stack spacing={1}>
+                        {group.displayItems.map((item) => (
+                          <Box
+                            key={item.id}
+                            onClick={() => handleFeatureClick(item.tabIndex)}
+                            sx={{
+                              p: 1.2,
+                              px: 1.5,
+                              borderRadius: 2,
+                              bgcolor: 'rgba(255, 255, 255, 0.03)',
+                              border: '1px solid rgba(255, 255, 255, 0.06)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: 1.5,
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                bgcolor: `${group.color}12`,
+                                borderColor: `${group.color}40`,
+                                transform: 'translateX(4px)',
+                              },
+                            }}
+                          >
+                            <Box display="flex" alignItems="flex-start" gap={1.2}>
+                              <Box sx={{ mt: 0.3, flexShrink: 0 }}>{item.icon}</Box>
+                              <Box>
+                                <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                                  <Typography
+                                    sx={{
+                                      fontSize: '15px',
+                                      fontWeight: 700,
+                                      color: '#f8fafc',
+                                      lineHeight: 1.3,
+                                    }}
+                                  >
+                                    {item.title}
+                                  </Typography>
+                                  {item.badge && (
+                                    <Chip
+                                      label={item.badge}
+                                      size="small"
+                                      sx={{
+                                        height: 18,
+                                        fontSize: '10px',
+                                        fontWeight: 600,
+                                        bgcolor: 'rgba(255, 255, 255, 0.06)',
+                                        color: '#cbd5e1',
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+                                <Typography
+                                  sx={{
+                                    fontSize: '13.5px',
+                                    color: '#94a3b8',
+                                    lineHeight: 1.5,
+                                    mt: 0.3,
+                                  }}
+                                >
+                                  {item.desc}
+                                </Typography>
+                              </Box>
+                            </Box>
+                            <ChevronRight size={16} color={group.color} style={{ flexShrink: 0 }} />
+                          </Box>
+                        ))}
+                      </Stack>
+                    </Box>
+
+                    {/* Group Main Action CTA Button */}
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={() => handleFeatureClick(group.mainActionIndex)}
+                      startIcon={!currentUser && isTeacherGroup ? <Lock size={15} /> : undefined}
+                      endIcon={<ChevronRight size={16} />}
+                      sx={{
+                        bgcolor: `${group.color}20`,
+                        color: '#ffffff',
+                        border: `1px solid ${group.color}60`,
+                        fontWeight: 700,
+                        fontSize: '14px',
+                        borderRadius: 2.5,
+                        py: 1.2,
+                        cursor: 'pointer',
+                        textTransform: 'none',
+                        boxShadow: `0 4px 14px ${group.glowColor}`,
+                        '&:hover': {
+                          bgcolor: group.color,
+                          color: '#000000',
+                          boxShadow: `0 6px 20px ${group.glowColor}`,
+                          transform: 'translateY(-1px)',
+                        },
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {!currentUser && isTeacherGroup ? 'Đăng nhập Giáo viên để mở khóa' : group.mainActionText}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       </Box>
 
@@ -1369,7 +1626,7 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
       >
         <Box display="flex" alignItems="center" gap={1.5} mb={1}>
           <Compass size={24} color="#38bdf8" />
-          <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '18px', sm: '22px' } }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '20px', sm: '24px' } }}>
             Khung Chương Trình Hóa Học THPT (Chuẩn GDPT 2018)
           </Typography>
         </Box>
@@ -1383,18 +1640,20 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Paper
                 sx={{
-                  p: 2,
+                  p: 2.5,
                   height: '100%',
-                  bgcolor: 'rgba(9, 13, 22, 0.7)',
+                  bgcolor: 'rgba(9, 13, 22, 0.75)',
+                  backdropFilter: 'blur(10px)',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 2.5,
+                  borderRadius: 3,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 1,
-                  transition: 'all 0.2s ease',
+                  gap: 1.2,
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     borderColor: ch.color,
-                    transform: 'translateY(-2px)',
+                    boxShadow: `0 8px 24px ${ch.color}25`,
+                    transform: 'translateY(-3px)',
                   },
                 }}
               >
@@ -1407,16 +1666,18 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
                       bgcolor: `${ch.color}20`,
                       color: ch.color,
                       border: `1px solid ${ch.color}40`,
-                      height: 22,
+                      height: 24,
                       fontSize: '11px',
                     }}
                   />
-                  {ch.icon}
+                  <Box sx={{ p: 0.8, borderRadius: 2, bgcolor: `${ch.color}15`, display: 'flex' }}>
+                    {ch.icon}
+                  </Box>
                 </Box>
-                <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: '14px' }}>
+                <Typography variant="subtitle2" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: '16px' }}>
                   {ch.title}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12px', lineHeight: 1.5 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 }}>
                   {ch.desc}
                 </Typography>
               </Paper>
@@ -1425,20 +1686,209 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
         </Grid>
       </Box>
 
-      {/* 5. 3-STEP USER WORKFLOW GUIDE */}
+            {/* 4.5. BÁO CÁO TÍNH KHOA HỌC, SÁNG TẠO & ĐÓNG GÓP ĐỘC LẬP DỰ ÁN */}
+      <Box
+        sx={{
+          mb: 6,
+          p: { xs: 2.5, sm: 3.5, md: 4 },
+          bgcolor: 'rgba(15, 23, 42, 0.75)',
+          borderRadius: 3.5,
+          border: '1px solid rgba(56, 189, 248, 0.22)',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+        }}
+      >
+        <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1.5} mb={2}>
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex' }}>
+              <ShieldCheck size={26} />
+            </Box>
+            <Box>
+              <Typography variant="h5" fontWeight="bold" sx={{ color: '#f8fafc', fontSize: { xs: '18px', sm: '22px' } }}>
+                Báo Cáo Sáng Tạo, Thuật Toán Mới & Thẩm Định Khoa Học
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '13px', display: 'block', mt: 0.3 }}>
+                Minh bạch giải pháp công nghệ độc lập do nhóm học sinh phát triển & Quy trình đối chuẩn khoa học GDPT 2018
+              </Typography>
+            </Box>
+          </Box>
+          <Chip
+            icon={<CheckCircle2 size={14} color="#10b981" />}
+            label="Đã Thẩm Định Chuyên Môn"
+            size="small"
+            sx={{ bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 'bold' }}
+          />
+        </Box>
+
+        <Grid container spacing={2.5}>
+          {/* Card 1: Thuật toán Cân bằng Ma trận Redox */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 2.5,
+                height: '100%',
+                bgcolor: 'rgba(9, 13, 22, 0.75)',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.2,
+                transition: 'all 0.2s ease',
+                '&:hover': { borderColor: '#38bdf8', transform: 'translateY(-2px)' },
+              }}
+            >
+              <Box display="flex" alignItems="center" gap={1.2}>
+                <Box sx={{ p: 0.8, borderRadius: 2, bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex' }}>
+                  <Atom size={20} />
+                </Box>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', fontSize: '16px' }}>
+                  1. Thuật Toán Cân Bằng Oxi Hóa - Khử Ma Trận (Độc Quyền)
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6 }}>
+                Thay vì tra cứu bảng phản ứng tĩnh hoặc phụ thuộc LLM (vốn hay bị ảo giác hệ số), nhóm đã xây dựng <strong>thuật toán giải hệ phương trình ma trận bảo toàn electron và bảo toàn nguyên tố</strong>.
+              </Typography>
+              <Box sx={{ p: 1.2, borderRadius: 2, bgcolor: 'rgba(56, 189, 248, 0.06)', border: '1px dashed rgba(56, 189, 248, 0.3)' }}>
+                <Typography variant="caption" sx={{ color: '#38bdf8', fontSize: '12px', display: 'block', fontWeight: 600 }}>
+                  ✓ Cân bằng chuẩn xác các ca phản ứng phức tạp: Cu + HNO₃ loãng/đặc, Fe + H₂SO₄ đặc nóng, phản ứng tự oxi hóa - khử của Halogen, phản ứng hữu cơ Este/Ancol.
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Card 2: Dựng hình 3D VSEPR & Động học chuẩn độ */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 2.5,
+                height: '100%',
+                bgcolor: 'rgba(9, 13, 22, 0.75)',
+                border: '1px solid rgba(168, 85, 247, 0.2)',
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.2,
+                transition: 'all 0.2s ease',
+                '&:hover': { borderColor: '#c084fc', transform: 'translateY(-2px)' },
+              }}
+            >
+              <Box display="flex" alignItems="center" gap={1.2}>
+                <Box sx={{ p: 0.8, borderRadius: 2, bgcolor: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', display: 'flex' }}>
+                  <Sparkles size={20} />
+                </Box>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', fontSize: '16px' }}>
+                  2. Mô Phỏng Không Gian 3D (VSEPR) & Đường Cong pH Động Học
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6 }}>
+                Nhóm tự lập trình <strong>Engine mô phỏng hình học phân tử 3D WebGL Three.js</strong> dựa trên thuyết đẩy cặp electron hóa trị (VSEPR) và lai hóa orbital ($sp, sp^2, sp^3$), kết hợp thuật toán tính đường cong chuẩn độ pH theo phương trình Henderson-Hasselbalch.
+              </Typography>
+              <Box sx={{ p: 1.2, borderRadius: 2, bgcolor: 'rgba(168, 85, 247, 0.06)', border: '1px dashed rgba(168, 85, 247, 0.3)' }}>
+                <Typography variant="caption" sx={{ color: '#c084fc', fontSize: '12px', display: 'block', fontWeight: 600 }}>
+                  ✓ Tự động tính bước nhảy pH, đổi màu chỉ thị thị giác và dựng tọa độ nguyên tử theo chuẩn cấu trúc IUPAC.
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Card 3: Quy trình Thẩm định Khoa học 3 Cấp */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 2.5,
+                height: '100%',
+                bgcolor: 'rgba(9, 13, 22, 0.75)',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.2,
+                transition: 'all 0.2s ease',
+                '&:hover': { borderColor: '#10b981', transform: 'translateY(-2px)' },
+              }}
+            >
+              <Box display="flex" alignItems="center" gap={1.2}>
+                <Box sx={{ p: 0.8, borderRadius: 2, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#10b981', display: 'flex' }}>
+                  <BookOpen size={20} />
+                </Box>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', fontSize: '16px' }}>
+                  3. Quy Trình Thẩm Định & Kiểm Chứng Khoa Học 3 Lớp
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6 }}>
+                Đảm bảo 100% tính chính xác khoa học, không tự suy diễn:
+              </Typography>
+              <Stack spacing={0.8}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>Lớp 1 (SGK GDPT 2018):</strong> Đối chuẩn từng thí nghiệm với 3 bộ sách Kết Nối Tri Thức, Cánh Diều, Chân Trời Sáng Tạo.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>Lớp 2 (Cơ sở dữ liệu quốc tế):</strong> Đối chiếu enthalpy (ΔᵣH°₂₉₈), độ âm điện, hằng số phân ly acid/base từ NIST Chemistry WebBook & PubChem.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>Lớp 3 (Hội đồng chuyên môn):</strong> Giáo viên THPT Chuyên (Tổ trưởng Chuyên môn Hóa học) trực tiếp duyệt đề thi và ngân hàng câu hỏi.
+                </Typography>
+              </Stack>
+            </Paper>
+          </Grid>
+
+          {/* Card 4: Đóng góp độc lập của học sinh */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              sx={{
+                p: 2.5,
+                height: '100%',
+                bgcolor: 'rgba(9, 13, 22, 0.75)',
+                border: '1px solid rgba(245, 158, 11, 0.2)',
+                borderRadius: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.2,
+                transition: 'all 0.2s ease',
+                '&:hover': { borderColor: '#f59e0b', transform: 'translateY(-2px)' },
+              }}
+            >
+              <Box display="flex" alignItems="center" gap={1.2}>
+                <Box sx={{ p: 0.8, borderRadius: 2, bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', display: 'flex' }}>
+                  <Award size={20} />
+                </Box>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', fontSize: '16px' }}>
+                  4. Mức Độ Đóng Góp Độc Lập Của Nhóm Học Sinh
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.6 }}>
+                Nhóm học sinh tự đảm nhận:
+              </Typography>
+              <Stack spacing={0.8}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>100% Giao diện & Trải nghiệm:</strong> Thiết kế phân hệ riêng biệt cho Học sinh và Giáo viên, đáp ứng chuẩn di động mượt mà.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>Ngân hàng 500+ bẫy đề thi:</strong> Phân loại theo 6 tiêu chí năng lực hóa học của Bộ GD&ĐT cấu trúc mới 2025-2026.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12.5px' }}>
+                  • <strong>Prompt Engineering có Guardrails:</strong> Bọc lớp kiểm duyệt và cơ chế failover đa nguồn AI để ngăn chặn hoàn toàn ảo giác kiến thức.
+                </Typography>
+              </Stack>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+
+{/* 5. 3-STEP USER WORKFLOW GUIDE */}
       <Box
         sx={{
           p: { xs: 2.5, sm: 3.5, md: 4 },
-          bgcolor: 'radial-gradient(ellipse at 50% 100%, rgba(2, 132, 199, 0.15) 0%, rgba(15, 23, 42, 0.8) 70%)',
+          bgcolor: '#0f172a',
           borderRadius: 3.5,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(16px)',
           mb: 4,
         }}
       >
         <Typography variant="h5" fontWeight="bold" align="center" sx={{ color: '#f8fafc', mb: 1, fontSize: { xs: '18px', sm: '22px' } }}>
           Quy Trình Khai Thác ChemAI Tối Ưu Cho Giáo Viên & Học Sinh
         </Typography>
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4, maxWidth: 650, mx: 'auto' }}>
+        <Typography variant="body2" sx={{ color: '#94a3b8', mb: 4, maxWidth: 650, mx: 'auto', textAlign: 'center' }}>
           3 bước đơn giản giúp bạn biến kiến thức hóa học trừu tượng thành trải nghiệm trực quan và đạt kết quả học tập vượt trội.
         </Typography>
 
@@ -1446,38 +1896,45 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           <Grid item xs={12} md={4}>
             <Box
               sx={{
-                p: 2.5,
+                p: 3,
                 height: '100%',
                 bgcolor: 'rgba(15, 23, 42, 0.85)',
                 border: '1px solid rgba(56, 189, 248, 0.25)',
                 borderRadius: 3,
                 textAlign: 'center',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  borderColor: '#38bdf8',
+                  boxShadow: '0 12px 30px rgba(2, 132, 199, 0.25)',
+                  transform: 'translateY(-3px)',
+                },
               }}
             >
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
                   bgcolor: 'rgba(56, 189, 248, 0.2)',
+                  border: '1px solid rgba(56, 189, 248, 0.4)',
                   color: '#38bdf8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
-                  fontWeight: 'bold',
-                  fontSize: '18px',
+                  fontWeight: 800,
+                  fontSize: '20px',
                 }}
               >
                 1
               </Box>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1 }}>
-                Khám Phá & Mô Phỏng
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1, fontSize: '16px' }}>
+                Khám Phá & Mô Phỏng 3D
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '13px', lineHeight: 1.5 }}>
-                Vào <strong>Thí Nghiệm Ảo</strong> trộn phản ứng và xoay <strong>Mô Hình 3D</strong> để hiểu bản chất
-                phân tử trước khi học lý thuyết.
+              <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 }}>
+                Vào <strong>Thí Nghiệm Ảo</strong> trộn phản ứng và xoay <strong>Mô Hình 3D</strong> để hiểu sâu cấu trúc
+                phân tử và hiện tượng hóa học trước khi học lý thuyết.
               </Typography>
             </Box>
           </Grid>
@@ -1485,38 +1942,45 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           <Grid item xs={12} md={4}>
             <Box
               sx={{
-                p: 2.5,
+                p: 3,
                 height: '100%',
                 bgcolor: 'rgba(15, 23, 42, 0.85)',
                 border: '1px solid rgba(129, 140, 248, 0.25)',
                 borderRadius: 3,
                 textAlign: 'center',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  borderColor: '#818cf8',
+                  boxShadow: '0 12px 30px rgba(99, 102, 241, 0.25)',
+                  transform: 'translateY(-3px)',
+                },
               }}
             >
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
                   bgcolor: 'rgba(129, 140, 248, 0.2)',
+                  border: '1px solid rgba(129, 140, 248, 0.4)',
                   color: '#818cf8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
-                  fontWeight: 'bold',
-                  fontSize: '18px',
+                  fontWeight: 800,
+                  fontSize: '20px',
                 }}
               >
                 2
               </Box>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1 }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1, fontSize: '16px' }}>
                 Thảo Luận Với Gia Sư AI
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '13px', lineHeight: 1.5 }}>
-                Hỏi bất cứ bài tập hoặc hiện tượng nào khó hiểu với <strong>ChemAI Buddy</strong> để nhận giải thích chi
-                tiết từng bước.
+              <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 }}>
+                Hỏi bất cứ bài tập hoặc phương trình nào khó hiểu với <strong>ChemAI Buddy</strong> để nhận giải thích bản chất
+                từng bước kèm video thí nghiệm liên quan.
               </Typography>
             </Box>
           </Grid>
@@ -1524,38 +1988,45 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
           <Grid item xs={12} md={4}>
             <Box
               sx={{
-                p: 2.5,
+                p: 3,
                 height: '100%',
                 bgcolor: 'rgba(15, 23, 42, 0.85)',
                 border: '1px solid rgba(245, 158, 11, 0.25)',
                 borderRadius: 3,
                 textAlign: 'center',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  borderColor: '#f59e0b',
+                  boxShadow: '0 12px 30px rgba(245, 158, 11, 0.25)',
+                  transform: 'translateY(-3px)',
+                },
               }}
             >
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
                   bgcolor: 'rgba(245, 158, 11, 0.2)',
+                  border: '1px solid rgba(245, 158, 11, 0.4)',
                   color: '#f59e0b',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
-                  fontWeight: 'bold',
-                  fontSize: '18px',
+                  fontWeight: 800,
+                  fontSize: '20px',
                 }}
               >
                 3
               </Box>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1 }}>
-                Luyện Tập & Soạn Bài
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#f8fafc', mb: 1, fontSize: '16px' }}>
+                Luyện Tập & Soạn Bài Giảng
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '13px', lineHeight: 1.5 }}>
-                Học sinh tham gia <strong>Đấu Trường Luyện Tập</strong>; Giáo viên tạo <strong>Giáo Án 5512</strong> và{' '}
-                <strong>Đề Thi Mới 2026</strong> trong nháy mắt.
+              <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 }}>
+                Học sinh tham gia <strong>Đấu Trường Luyện Tập</strong> tích lũy EXP; Giáo viên tạo <strong>Giáo Án 5512</strong> và{' '}
+                <strong>Đề Thi Ma Trận 2026</strong> trong nháy mắt.
               </Typography>
             </Box>
           </Grid>
@@ -1566,15 +2037,24 @@ export default function HomeDashboard({ onNavigateTab, onOpenAuthModal, currentU
       <Box
         sx={{
           textAlign: 'center',
-          pt: 3,
+          pt: 4,
+          pb: 2,
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
-        <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500 }}>
-          HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Mô Phỏng Hóa Học THPT
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+          <Chip label="Next.js 16" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
+          <Chip label="Three.js WebGL" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
+          <Chip label="Lõi ChemAI 2.0" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
+          <Chip label="Supabase Realtime" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
+          <Chip label="Chuẩn GDPT 2018" size="small" sx={{ bgcolor: 'rgba(16,185,129,0.15)', color: '#34d399', fontSize: '11px' }} />
+        </Box>
+
+        <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 600 }}>
+          HCC - ChemAI © 2026 | Nền Tảng Trợ Lý & Phòng Thí Nghiệm Hóa Học Số THPT
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-          Phát triển trên nền tảng Next.js, Material UI, Three.js và công nghệ tương tác trực tuyến hiện đại.
+        <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.8 }}>
+          Bảo lưu mọi quyền. Thiết kế theo tiêu chuẩn UI/UX quốc tế dành cho giáo dục STEM và chuyển đổi số trường học.
         </Typography>
       </Box>
     </Box>

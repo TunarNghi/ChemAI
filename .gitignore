@@ -22,6 +22,12 @@ node_modules/
 /out/
 out/
 **/out/
+.netlify/
+
+# local agent & design scratch
+.agent/
+.agents/
+design-system/
 
 # production
 /build

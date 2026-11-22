@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/api';
+import { getStoredCurrentUser, isDemoAccount } from '@/components/UserAuthModal';
+import { saveUserToDatabase } from '@/lib/userDatabase';
 import {
   Box,
   Typography,
@@ -446,6 +449,21 @@ export default function DiagnosticTestCenter() {
   const [currentQIndex, setCurrentQIndex] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [testFinished, setTestFinished] = useState<boolean>(false);
+  const [lastSavedResult, setLastSavedResult] = useState<{ scorePercentage: number; date: string } | null>(null);
+
+  // Đọc lịch sử chẩn đoán gần nhất từ LocalStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(`chemai_diagnostic_${selectedGrade}`);
+      if (stored) {
+        setLastSavedResult(JSON.parse(stored));
+      } else {
+        setLastSavedResult(null);
+      }
+    } catch {
+      setLastSavedResult(null);
+    }
+  }, [selectedGrade]);
 
   const currentData = DIAGNOSTIC_DATA[selectedGrade] || DIAGNOSTIC_DATA.grade10;
   const currentQuestions = currentData.questions || [];
@@ -503,6 +521,44 @@ export default function DiagnosticTestCenter() {
 
   const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
 
+  // Tự động lưu và đồng bộ kết quả chẩn đoán khi hoàn thành bài test
+  useEffect(() => {
+    if (!testFinished || totalQuestions === 0) return;
+
+    const resultPayload = {
+      selectedGrade,
+      scorePercentage,
+      correctCount,
+      totalQuestions,
+      wrongTopics: wrongQuestions.map((w) => w.topic),
+      date: new Date().toISOString(),
+    };
+
+    try {
+      localStorage.setItem(`chemai_diagnostic_${selectedGrade}`, JSON.stringify(resultPayload));
+      setLastSavedResult(resultPayload);
+    } catch {}
+
+    const currentUser = getStoredCurrentUser();
+    if (currentUser) {
+      const gaps = wrongQuestions.map((w) => w.topic).join(', ');
+      const evalText = `[Chẩn đoán ${currentData.title}]: Đạt ${scorePercentage}% (${correctCount}/${totalQuestions} câu). Lỗ hổng: ${gaps || 'Nắm vững kiến thức'}.`;
+      currentUser.teacherEvaluation = evalText;
+      saveUserToDatabase(currentUser);
+
+      // Lưu chi tiết vào Cloud Supabase nếu là tài khoản thực tế
+      if (!isDemoAccount(currentUser)) {
+        supabase
+          .from('experiments')
+          .upsert({
+            cache_key: `diagnostic_${currentUser.id}_${selectedGrade}`,
+            result_json: resultPayload,
+          }, { onConflict: 'cache_key' })
+          .then(() => {}, () => {});
+      }
+    }
+  }, [testFinished]);
+
   return (
     <Box sx={{ width: '100%', pb: 4 }}>
       {/* Header Banner */}
@@ -540,6 +596,23 @@ export default function DiagnosticTestCenter() {
             <Typography variant="caption" color="text.secondary">
               Dành riêng cho Học sinh: Quét 4 cấp độ (Lớp 10, 11, 12 & THPT) để chỉ điểm chính xác bẫy đề thi và lỗ hổng lý thuyết.
             </Typography>
+            {lastSavedResult && (
+              <Box mt={0.5}>
+                <Chip
+                  icon={<CheckCircle2 size={13} color="#4ade80" />}
+                  label={`Kết quả lưu gần nhất: ${lastSavedResult.scorePercentage}%`}
+                  size="small"
+                  sx={{
+                    bgcolor: 'rgba(34, 197, 94, 0.12)',
+                    color: '#4ade80',
+                    border: '1px solid rgba(34, 197, 94, 0.3)',
+                    height: 22,
+                    fontSize: '11px',
+                    fontWeight: 600,
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </Box>
 

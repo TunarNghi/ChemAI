@@ -1,12 +1,12 @@
-import { supabase } from '@/lib/api';
-import { UserProfile, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT } from '@/components/UserAuthModal';
+import { supabase, executeWithFailover } from '@/lib/api';
+import { UserProfile, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT, isDemoAccount } from '@/components/UserAuthModal';
 
 const LOCAL_USERS_KEY = 'chemai_registered_users';
 const CURRENT_USER_KEY = 'chemai_current_user';
 const DIRECTORY_CACHE_KEY = 'all_registered_users_directory';
 
 /**
- * Save or update a user profile to Supabase database (and local cache)
+ * Save or update a user profile to Supabase database (and local cache) with smart failover
  */
 export async function saveUserToDatabase(user: UserProfile): Promise<boolean> {
   if (!user || !user.id) return false;
@@ -49,66 +49,51 @@ export async function saveUserToDatabase(user: UserProfile): Promise<boolean> {
     console.warn('Local storage save error:', e);
   }
 
-  // 2. Persist to Supabase `experiments` table
-  try {
-    // Save specific user profile
-    await supabase.from('experiments').upsert({
-      cache_key: `user_profile_${user.id}`,
-      result_json: user,
-    }, { onConflict: 'cache_key' });
-
-    // Save auth index by email/phone
-    if (user.emailOrPhone) {
-      await supabase.from('experiments').upsert({
-        cache_key: `user_auth_${user.emailOrPhone.toLowerCase().trim()}`,
-        result_json: user,
-      }, { onConflict: 'cache_key' });
-    }
-
-    // Save auth index by full name
-    if (user.fullName) {
-      await supabase.from('experiments').upsert({
-        cache_key: `user_auth_${user.fullName.toLowerCase().trim()}`,
-        result_json: user,
-      }, { onConflict: 'cache_key' });
-    }
-
-    // Update the directory
-    await updateDirectoryIndex(user);
-  } catch (err) {
-    console.warn('Supabase experiments user save warning:', err);
+  // 1.1. TÀI KHOẢN MẶC ĐỊNH / THỬ NGHIỆM (Học Sinh A, Giáo Viên A):
+  // Chỉ lưu tạm thời vào LocalStorage / Memory, TUYỆT ĐỐI KHÔNG ghi đè vào Supabase Database
+  if (isDemoAccount(user)) {
+    return true;
   }
 
-  // 3. Optional sync to `user_profiles` table if created
+  // 2. Lưu trực tiếp vào bảng chuẩn `user_profiles` (có Smart Failover sang Backup)
   try {
-    await supabase.from('user_profiles').upsert({
-      user_id: user.id,
-      full_name: user.fullName,
-      auth_type: user.authType,
-      email_or_phone: user.emailOrPhone,
-      role: user.role,
-      class_name: user.className,
-      school: user.school,
-      location: user.location,
-      kahoot_exp: user.kahootExp || 0,
-      kahoot_streak: user.kahootStreak || 0,
-      login_streak: user.loginStreak || 1,
-      nickname: user.nickname || '',
-      total_questions: user.totalKahootQuestions || 0,
-      correct_questions: user.correctKahootQuestions || 0,
-      teacher_evaluation: user.teacherEvaluation || '',
-      last_active_date: user.lastActiveDate || new Date().toISOString().split('T')[0],
-      created_at: user.createdAt || new Date().toISOString(),
+    await executeWithFailover(async (client) => {
+      return await client.from('user_profiles').upsert({
+        user_id: user.id,
+        full_name: user.fullName,
+        auth_type: user.authType || 'email',
+        email_or_phone: user.emailOrPhone || '',
+        role: user.role || 'student',
+        class_name: user.className || '10A1',
+        school: user.school || '',
+        location: user.location || '',
+        kahoot_exp: user.kahootExp || 0,
+        kahoot_streak: user.kahootStreak || 0,
+        login_streak: user.loginStreak || 1,
+        nickname: user.nickname || '',
+        total_questions: user.totalKahootQuestions || 0,
+        correct_questions: user.correctKahootQuestions || 0,
+        teacher_evaluation: user.teacherEvaluation || '',
+        last_active_date: user.lastActiveDate || new Date().toISOString().split('T')[0],
+        created_at: user.createdAt || new Date().toISOString(),
+      });
     });
-  } catch {
-    // Ignore if user_profiles table is not yet created
+  } catch (err) {
+    console.warn('Supabase user_profiles save error:', err);
+  }
+
+  // 3. Cập nhật Directory Cache cho tra cứu nhanh
+  try {
+    await updateDirectoryIndex(user);
+  } catch (err) {
+    console.warn('Supabase directory cache save warning:', err);
   }
 
   return true;
 }
 
 /**
- * Fetch a single user by Email, Phone, FullName, or ID from database
+ * Fetch a single user by Email, Phone, FullName, or ID from database with failover
  */
 export async function fetchUserByIdentifierFromDatabase(identifier: string): Promise<UserProfile | null> {
   const clean = identifier.trim().toLowerCase();
@@ -122,43 +107,56 @@ export async function fetchUserByIdentifierFromDatabase(identifier: string): Pro
          (u.fullName && u.fullName.toLowerCase() === clean)
   );
 
-  // 2. Query Supabase `experiments` table
+  // 2. Query Supabase `user_profiles` table directly via Failover
   try {
-    // Query by auth key
-    const { data: authData } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .eq('cache_key', `user_auth_${clean}`)
-      .maybeSingle();
+    const { data: remoteUser } = await executeWithFailover(async (client) => {
+        // Sanitize string to prevent PostgREST syntax injection/errors
+        const safeClean = clean.replace(/[,()]/g, '');
+        const safeId = identifier.replace(/[,()]/g, '');
+        return await client
+          .from('user_profiles')
+          .select('*')
+          .or(`user_id.eq.${safeId},email_or_phone.ilike.${safeClean},full_name.ilike.${safeClean}`)
+        .maybeSingle();
+    });
 
-    if (authData && authData.result_json) {
-      const user = authData.result_json as UserProfile;
-      saveLocalUser(user);
-      return user;
+    if (remoteUser) {
+      const r = remoteUser as any;
+      const profile: UserProfile = {
+        id: r.user_id || r.id,
+        fullName: r.full_name || 'Học sinh',
+        authType: r.auth_type || 'email',
+        emailOrPhone: r.email_or_phone || '',
+        role: r.role || 'student',
+        className: r.class_name || '10A1',
+        school: r.school || '',
+        location: r.location || '',
+        createdAt: r.created_at || new Date().toISOString(),
+        kahootExp: r.kahoot_exp ?? 0,
+        kahootStreak: r.kahoot_streak ?? 0,
+        loginStreak: r.login_streak ?? 1,
+        nickname: r.nickname || '',
+        totalKahootQuestions: r.total_questions ?? 0,
+        correctKahootQuestions: r.correct_questions ?? 0,
+        teacherEvaluation: r.teacher_evaluation || '',
+        lastActiveDate: r.last_active_date || new Date().toISOString().split('T')[0],
+      };
+      saveLocalUser(profile);
+      return profile;
     }
 
-    // Query by profile ID key
-    const { data: profileData } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .eq('cache_key', `user_profile_${clean}`)
-      .maybeSingle();
+    // 3. Fallback sang directory cache nếu `user_profiles` chưa thấy
+    const { data: dirData } = await executeWithFailover(async (client) => {
+      return await client
+        .from('experiments')
+        .select('result_json')
+        .eq('cache_key', DIRECTORY_CACHE_KEY)
+        .maybeSingle();
+    });
 
-    if (profileData && profileData.result_json) {
-      const user = profileData.result_json as UserProfile;
-      saveLocalUser(user);
-      return user;
-    }
-
-    // Query directory index
-    const { data: dirData } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .eq('cache_key', DIRECTORY_CACHE_KEY)
-      .maybeSingle();
-
-    if (dirData && Array.isArray(dirData.result_json)) {
-      const found = (dirData.result_json as UserProfile[]).find(
+    const parsedDir = (dirData as any)?.result_json;
+    if (parsedDir && Array.isArray(parsedDir)) {
+      const found = (parsedDir as UserProfile[]).find(
         u => u.id === identifier ||
              (u.emailOrPhone && u.emailOrPhone.toLowerCase() === clean) ||
              (u.fullName && u.fullName.toLowerCase() === clean)
@@ -172,7 +170,7 @@ export async function fetchUserByIdentifierFromDatabase(identifier: string): Pro
     console.warn('Database fetch user error:', e);
   }
 
-  // 3. Fallback to local
+  // 4. Fallback to local
   return localMatched || null;
 }
 
@@ -238,45 +236,19 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
   const local = getLocalRegisteredUsers();
   local.forEach(u => addOrMergeUser(u));
 
-  // Load from Supabase `experiments` (directory cache)
+  // 1. Tải trước từ bảng chuẩn `user_profiles` với Smart Failover
+  let loadedFromProfiles = false;
   try {
-    const { data: dirData } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .eq('cache_key', DIRECTORY_CACHE_KEY)
-      .maybeSingle();
+    const { data: remoteProfiles } = await executeWithFailover(async (client) => {
+      return await client
+        .from('user_profiles')
+        .select('*')
+        .limit(2000);
+    });
 
-    if (dirData && Array.isArray(dirData.result_json)) {
-      (dirData.result_json as UserProfile[]).forEach(u => addOrMergeUser(u));
-    }
-
-    // Also scan all individual user profile records (up to 2000)
-    const { data: allProfiles } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .like('cache_key', 'user_profile_%')
-      .limit(2000);
-
-    if (allProfiles && allProfiles.length > 0) {
-      allProfiles.forEach(row => {
-        if (row.result_json && typeof row.result_json === 'object') {
-          addOrMergeUser(row.result_json as UserProfile);
-        }
-      });
-    }
-  } catch (e) {
-    console.warn('Supabase fetch directory warning:', e);
-  }
-
-  // Load from `user_profiles` table if available
-  try {
-    const { data: remoteProfiles } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .limit(2000);
-
-    if (remoteProfiles && remoteProfiles.length > 0) {
-      remoteProfiles.forEach(r => {
+    if (remoteProfiles && Array.isArray(remoteProfiles) && remoteProfiles.length > 0) {
+      loadedFromProfiles = true;
+      (remoteProfiles as any[]).forEach((r: any) => {
         const uid = r.user_id || r.id;
         if (uid) {
           addOrMergeUser({
@@ -301,7 +273,29 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
         }
       });
     }
-  } catch {}
+  } catch (err) {
+    console.warn('Query user_profiles failed, attempting fallback to directory cache:', err);
+  }
+
+  // 2. Chỉ fallback sang directory cache nếu `user_profiles` chưa có dữ liệu
+  if (!loadedFromProfiles) {
+    try {
+      const { data: dirData } = await executeWithFailover(async (client) => {
+        return await client
+          .from('experiments')
+          .select('result_json')
+          .eq('cache_key', DIRECTORY_CACHE_KEY)
+          .maybeSingle();
+      });
+
+      const dirList = (dirData as any)?.result_json;
+      if (dirList && Array.isArray(dirList)) {
+        (dirList as UserProfile[]).forEach(u => addOrMergeUser(u));
+      }
+    } catch (e) {
+      console.warn('Supabase fetch directory warning:', e);
+    }
+  }
 
   const mergedList = Array.from(usersMap.values());
 
@@ -319,6 +313,7 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
  * Internal helper to update central directory
  */
 async function updateDirectoryIndex(newUser: UserProfile) {
+  if (isDemoAccount(newUser)) return;
   try {
     const { data } = await supabase
       .from('experiments')

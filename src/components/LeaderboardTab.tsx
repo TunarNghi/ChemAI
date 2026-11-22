@@ -27,6 +27,8 @@ import {
   Tabs,
   Tab,
   Alert,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Trophy,
@@ -115,6 +117,9 @@ const PRESET_CITIES = [
 ];
 
 export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   // Category tabs: 0 = EXP, 1 = Kahoot Streak, 2 = Login Streak
   const [activeCategory, setActiveCategory] = useState<number>(0);
 
@@ -883,7 +888,121 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
           />
         </Box>
 
-        <TableContainer sx={{ maxHeight: 650 }}>
+        {isMobile ? (
+          filteredStudents.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 5, px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.2 }}>
+              <GraduationCap size={40} color="#64748b" />
+              <Typography variant="subtitle2" fontWeight="bold" color="#94a3b8" textAlign="center">
+                {students.length === 0
+                  ? 'Chưa có tài khoản học sinh nào đăng ký trên hệ thống'
+                  : 'Không tìm thấy học sinh nào phù hợp với bộ lọc!'}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ maxWidth: 300, textAlign: 'center', lineHeight: 1.5 }}>
+                {students.length === 0
+                  ? 'Dữ liệu xếp hạng sẽ tự động cập nhật ngay khi học sinh tham gia thi đấu tại Đấu Trường Luyện Tập.'
+                  : 'Hãy thử đổi sang phạm vi Toàn Quốc hoặc chọn "Tất cả lớp".'}
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={1.5} sx={{ p: 1.5 }}>
+              {filteredStudents.map((std, idx) => {
+                const rankNum = idx + 1;
+                const isTop1 = rankNum === 1;
+                const isTop2 = rankNum === 2;
+                const isTop3 = rankNum === 3;
+                const isSelf = currentUser?.id === std.id;
+                const comp = calculateCompetencyRank(std.kahootExp, std.totalKahootQuestions, std.correctKahootQuestions);
+
+                return (
+                  <Paper
+                    key={std.id}
+                    sx={{
+                      p: 1.5,
+                      bgcolor: isSelf ? 'rgba(2, 132, 199, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                      border: isSelf ? '1.5px solid #38bdf8' : isTop1 ? '1.5px solid #f59e0b' : '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: 2.5,
+                    }}
+                  >
+                    <Box display="flex" alignItems="center" gap={1.2} mb={1}>
+                      <Box
+                        sx={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          bgcolor: isTop1 ? 'rgba(245, 158, 11, 0.2)' : isTop2 ? 'rgba(148, 163, 184, 0.2)' : isTop3 ? 'rgba(217, 119, 6, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                          border: isTop1 ? '1px solid #f59e0b' : isTop2 ? '1px solid #94a3b8' : isTop3 ? '1px solid #d97706' : '1px solid rgba(255, 255, 255, 0.12)',
+                          color: isTop1 ? '#fbbf24' : isTop2 ? '#cbd5e1' : isTop3 ? '#f59e0b' : '#94a3b8',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: '900',
+                          fontSize: 12,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {isTop1 ? '👑1' : rankNum}
+                      </Box>
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: isTop1 ? '#f59e0b' : '#0284c7', fontSize: 13, fontWeight: 'bold' }}>
+                        {std.fullName.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Box display="flex" alignItems="center" gap={0.8}>
+                          <Typography variant="body2" fontWeight="bold" color="white" noWrap sx={{ fontSize: 13.5 }}>
+                            {std.fullName}
+                          </Typography>
+                          {isSelf && (
+                            <Chip label="Bạn" size="small" sx={{ bgcolor: '#0284c7', color: '#fff', fontWeight: 'bold', height: 16, fontSize: 9 }} />
+                          )}
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: 11 }}>
+                          {std.className} • {std.school}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={
+                          activeCategory === 0 ? `⚡ ${std.kahootExp.toLocaleString()} EXP` :
+                          activeCategory === 1 ? `🔥 ${std.kahootStreak} trận` :
+                          `📅 ${std.loginStreak} ngày`
+                        }
+                        size="small"
+                        sx={{
+                          bgcolor: activeCategory === 0 ? 'rgba(234, 179, 8, 0.15)' : activeCategory === 1 ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                          color: activeCategory === 0 ? '#fbbf24' : activeCategory === 1 ? '#f43f5e' : '#34d399',
+                          fontWeight: 'bold',
+                          fontSize: 11,
+                        }}
+                      />
+                    </Box>
+                    <Box display="flex" alignItems="center" justifyContent="space-between" pt={0.8} borderTop="1px solid rgba(255, 255, 255, 0.05)" flexWrap="wrap" gap={0.8}>
+                      <Stack direction="row" spacing={0.8} alignItems="center">
+                        {std.nickname && (
+                          <Chip icon={<Tag size={10} color="#f59e0b" />} label={std.nickname} size="small" sx={{ height: 20, fontSize: 10, bgcolor: 'rgba(245, 158, 11, 0.08)', color: '#fbbf24' }} />
+                        )}
+                        {std.location && (
+                          <Chip icon={<MapPin size={10} color="#38bdf8" />} label={std.location} size="small" sx={{ height: 20, fontSize: 10, bgcolor: 'rgba(56, 189, 248, 0.08)', color: '#38bdf8' }} />
+                        )}
+                      </Stack>
+                      <Chip
+                        icon={comp.icon}
+                        label={comp.shortRank}
+                        size="small"
+                        sx={{
+                          height: 20,
+                          bgcolor: `${comp.badgeColor}18`,
+                          color: comp.badgeColor,
+                          border: `1px solid ${comp.badgeColor}40`,
+                          fontWeight: 'bold',
+                          fontSize: 10,
+                        }}
+                      />
+                    </Box>
+                  </Paper>
+                );
+              })}
+            </Stack>
+          )
+        ) : (
+          <TableContainer sx={{ maxHeight: 650 }}>
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
@@ -1164,6 +1283,7 @@ export default function LeaderboardTab({ currentUser }: LeaderboardTabProps) {
             </TableBody>
           </Table>
         </TableContainer>
+        )}
       </Paper>
     </Box>
   );

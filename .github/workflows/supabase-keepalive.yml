@@ -1,0 +1,32 @@
+name: Supabase Dual Database Keep-Alive
+
+on:
+  schedule:
+    # Chạy tự động 3 ngày 1 lần vào lúc 04:00 AM UTC (11:00 AM VN)
+    # Đảm bảo reset bộ đếm 7 ngày cho CẢ HAI database Primary & Backup
+    - cron: '0 4 */3 * *'
+  workflow_dispatch: # Cho phép bấm chạy thủ công trên GitHub UI bất cứ lúc nào
+
+jobs:
+  keepalive:
+    name: Ping Primary and Backup Supabase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Primary Database (xgmwmexfyzgnkcrljdki)
+        run: |
+          echo "Pinging Primary Supabase..."
+          curl -s -o /dev/null -w "Primary HTTP Code: %{http_code}\n" \
+            -X GET "https://xgmwmexfyzgnkcrljdki.supabase.co/rest/v1/system_heartbeat?select=*" \
+            -H "apikey: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_sA51KcVjh0PJDDmgsSQbKw_0hvknAD5' }}" \
+            -H "Authorization: Bearer ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_sA51KcVjh0PJDDmgsSQbKw_0hvknAD5' }}"
+
+      - name: Ping Backup Database (tedfcnxmxijzbedizagi)
+        run: |
+          echo "Pinging Backup Supabase..."
+          curl -s -o /dev/null -w "Backup HTTP Code: %{http_code}\n" \
+            -X GET "https://tedfcnxmxijzbedizagi.supabase.co/rest/v1/system_heartbeat?select=*" \
+            -H "apikey: ${{ secrets.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY || 'sb_publishable_r_twQh_RNqy-QI8i6SDhEg_O8WIBVsU' }}" \
+            -H "Authorization: Bearer ${{ secrets.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY || 'sb_publishable_r_twQh_RNqy-QI8i6SDhEg_O8WIBVsU' }}"
+
+      - name: Report Status
+        run: echo "Dual Keep-Alive completed successfully."

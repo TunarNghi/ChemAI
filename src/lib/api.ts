@@ -25,9 +25,9 @@ const _VAULT = {
   B_URL: "MhMA8f2hh5q6qLGem2Zoe1NNIz81CArp+PvH0OiglZ2bZXVSSxUrOg==",
   B_KEY: "KQUr8fv5xNyxp72LmmZPbmsCdRo9PRLtos/m/YK+h56pVnZqWWR4PRQEEsjSlg==",
   D_URL: "MhMA8f2hh5qjv7XHkmp2ZARWLX4oWg==",
-  D_KEY: "OxcErOfX3ta6qomkjEtKc0hTFQsULyr/++7v1Q==",
+  D_KEY: "OxcErP/akOWypKmRmHN7UHBtEhQ0BD3r/fbWyA==",
   G_EP: "MhMA8f2hh5qlqrKMhGJkdFxSKDAwDA3k9fqC3qm8h4GfZmRIXRUrOg9ACrj0xsTc5bqLlZtnaw==",
-  K1: "GzZawOyj+vv0g6qeh0dyL1wAKz0HOU7NpM7E05GFtq+sQ1JIW1wJHDAHSM/Ex/rMuoWOg5k=",
+  K1: "GzZawOyj+vv0g5+Ez095SkFQKmcSXTnr4qj0/a+Zj6/MUH0YHFQ/Mg41NPnim+/pv42RsK8=",
   K2: "GzZawOyj+vv0heSRwVdSUX9CcxppJkH31NnUjLSltd2cM2ZVfHB7LCoBNL2ukN72iZGWm68=",
   K3: "GzZawOyj+vv0hO+im21ecHxyABY/BR3hoKf60Iq1ooK2NWdzZQI6YBZWF8jO09LzopzTk4k=",
   M1: "PQIZ6ODyhYbs+fGPmmJjdQ==",
@@ -47,13 +47,44 @@ const PRIMARY_KEY =
 export const supabase = createClient(PRIMARY_URL, PRIMARY_KEY);
 
 // 2. Backup Data Provider
-const BACKUP_URL = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL || _secDecode(_VAULT.B_URL);
+const BACKUP_URL =
+  process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL ||
+  process.env.BACKUP_SUPABASE_URL ||
+  _secDecode(_VAULT.B_URL);
 const BACKUP_KEY =
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.BACKUP_SUPABASE_PUBLISHABLE_KEY ||
   _secDecode(_VAULT.B_KEY);
 
 export const backupSupabase = createClient(BACKUP_URL, BACKUP_KEY);
+
+/**
+ * Smart Failover Engine:
+ * Thực thi truy vấn trên Primary Supabase. Nếu gặp sự cố mạng hoặc Primary không phản hồi,
+ * tự động chuyển tiếp truy vấn sang Standby Backup Supabase hoàn toàn trong suốt.
+ */
+export async function executeWithFailover<T = any>(
+  operation: (client: any) => Promise<{ data: T | null; error: any }>
+): Promise<{ data: T | null; error: any; usedBackup?: boolean }> {
+  try {
+    const primaryResult = await operation(supabase);
+    if (!primaryResult.error) {
+      return primaryResult;
+    }
+    console.warn('[Supabase Failover] Primary gặp lỗi, kích hoạt Backup Supabase...', primaryResult.error?.message || primaryResult.error);
+    const backupResult = await operation(backupSupabase);
+    return { ...backupResult, usedBackup: true };
+  } catch (err: any) {
+    console.warn('[Supabase Failover] Lỗi kết nối Primary, tự động thử lại trên Backup...', err?.message || err);
+    try {
+      const backupResult = await operation(backupSupabase);
+      return { ...backupResult, usedBackup: true };
+    } catch (backupErr: any) {
+      return { data: null, error: backupErr };
+    }
+  }
+}
 
 // 3. Neural Assistant Configuration
 const ASSISTANT_GATEWAY = process.env.NEXT_PUBLIC_DIFY_API_URL || _secDecode(_VAULT.D_URL);
@@ -71,6 +102,8 @@ function decodeApiKey(key: string): string {
 
 const ENV_DIFY_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
 export const DIFY_API_KEY = ENV_DIFY_KEY;
+export const DIFY_WEB_CHAT_URL = process.env.NEXT_PUBLIC_DIFY_WEB_CHAT_URL || "https://udify.app/chat/Dv8nEBNo7oMFoZjm";
+export const DIFY_MCP_URL = process.env.NEXT_PUBLIC_DIFY_MCP_URL || "https://api.dify.ai/mcp/server/L2LM6Bf0PDNpxTsL/mcp";
 
 export interface DifyChatMessage {
   query: string;
@@ -101,8 +134,18 @@ II. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU
 III. TIẾN TRÌNH DẠY HỌC (Hoạt động 1: Mở đầu -> Hoạt động 2: Hình thành kiến thức -> Hoạt động 3: Luyện tập -> Hoạt động 4: Vận dụng & STEM).
 Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
 
-  const activeKey = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
+  // 1. Primary AI Pipeline: Google Gemini AI Engine
+  try {
+    const geminiResult = await callGeminiAPI(finalPrompt);
+    if (geminiResult && geminiResult.trim()) {
+      return geminiResult;
+    }
+  } catch (geminiErr) {
+    console.warn("[LessonPlan] Gemini AI gặp sự cố, tự động kích hoạt Dify AI dự phòng...", geminiErr);
+  }
 
+  // 2. Standby Backup Pipeline: Dify AI Gateway
+  const activeKey = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
   if (activeKey) {
     try {
       const res = await fetch(`${ASSISTANT_GATEWAY}/chat-messages`, {
@@ -131,11 +174,34 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
     }
   }
 
-  // Fallback to secondary pipeline
-  return await callGeminiAPI(finalPrompt);
+  throw new Error("Không thể khởi tạo giáo án lúc này. Vui lòng thử lại sau ít giây.");
 }
 
 export async function sendDifyMessage({ query, user = "chemai_student", conversation_id, inputs = {} }: DifyChatMessage): Promise<DifyChatResponse> {
+  // 1. Client-Side Secure Shield: Forward through Server Proxy (Zero API Key Leak in F12)
+  if (typeof window !== "undefined") {
+    try {
+      const proxyRes = await fetch("/api/ai/dify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, user, conversation_id, inputs }),
+      });
+      if (proxyRes.ok) {
+        const proxyData = await proxyRes.json();
+        if (proxyData.success && proxyData.answer) {
+          return {
+            answer: proxyData.answer,
+            conversation_id: proxyData.conversation_id,
+            message_id: proxyData.message_id,
+          };
+        }
+      }
+    } catch {
+      // Server proxy unreachable, fall through to direct fallback
+    }
+  }
+
+  // 2. Direct Fallback Execution
   const activeKey = process.env.NEXT_PUBLIC_DIFY_API_KEY ? decodeApiKey(process.env.NEXT_PUBLIC_DIFY_API_KEY) : DEFAULT_ASSISTANT_KEY;
   
   if (!activeKey) {
@@ -185,9 +251,9 @@ export async function sendDifyMessage({ query, user = "chemai_student", conversa
 
 // 4. Secondary Inference Pipeline
 const DEFAULT_SECONDARY_KEYS = [
-  _secDecode(_VAULT.K1),
   _secDecode(_VAULT.K2),
-  _secDecode(_VAULT.K3)
+  _secDecode(_VAULT.K3),
+  _secDecode(_VAULT.K1)
 ];
 
 const ENV_SECONDARY_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
@@ -195,18 +261,45 @@ const ENV_SECONDARY_KEYS = process.env.NEXT_PUBLIC_GEMINI_API_KEYS
   : DEFAULT_SECONDARY_KEYS;
 
 const DEFAULT_INFERENCE_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-flash-latest"
+  "gemini-3.5-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-3.8-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-lite-latest"
 ];
 
 const INFERENCE_MODELS = process.env.NEXT_PUBLIC_GEMINI_MODEL
   ? [process.env.NEXT_PUBLIC_GEMINI_MODEL.trim(), ...DEFAULT_INFERENCE_MODELS]
   : DEFAULT_INFERENCE_MODELS;
 
-export async function callGeminiAPI(prompt: string, keys: string[] = ENV_SECONDARY_KEYS): Promise<string> {
+export async function callGeminiAPI(
+  prompt: string,
+  keys: string[] = ENV_SECONDARY_KEYS,
+  options: { maxOutputTokens?: number; temperature?: number } = {}
+): Promise<string> {
+  const maxOutputTokens = options.maxOutputTokens || 8192;
+  const temperature = typeof options.temperature === 'number' ? options.temperature : 0.35;
+
+  // 1. Client-Side Secure Shield: Forward through Server Proxy (Zero API Key Leak in F12)
+  if (typeof window !== "undefined") {
+    try {
+      const proxyRes = await fetch("/api/ai/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, maxOutputTokens, temperature }),
+      });
+      if (proxyRes.ok) {
+        const proxyData = await proxyRes.json();
+        if (proxyData.success && proxyData.text) {
+          return proxyData.text;
+        }
+      }
+    } catch {
+      // Server proxy unreachable, fall through to direct fallback
+    }
+  }
+
+  // 2. Direct Fallback Execution (Server-side or offline execution)
   const keyList = Array.isArray(keys) ? keys : [keys];
   let lastError: any = null;
   const endpointBase = _secDecode(_VAULT.G_EP);
@@ -214,7 +307,7 @@ export async function callGeminiAPI(prompt: string, keys: string[] = ENV_SECONDA
   for (const apiKey of keyList) {
     for (const model of INFERENCE_MODELS) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
       try {
         const url = `${endpointBase}/${model}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
@@ -222,7 +315,11 @@ export async function callGeminiAPI(prompt: string, keys: string[] = ENV_SECONDA
           signal: controller.signal,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              maxOutputTokens,
+              temperature,
+            },
           })
         });
 

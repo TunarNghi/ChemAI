@@ -38,13 +38,40 @@ import {
   Trash2,
   Sparkles,
   Zap,
+  Download,
+  FileText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import StudentProgressManager from "@/components/StudentProgressManager";
 import { PRESET_HIGH_SCHOOL_QUIZ_BANK } from "@/lib/quizBank";
+import { isDemoAccount, getStoredCurrentUser } from "@/components/UserAuthModal";
 
 export function cleanChemicalLatex(text: string): string {
   if (!text) return "";
+
+  // Helper to peel LaTeX commands with balanced braces (e.g. \ce{...}, \text{...}) without breaking on nested braces
+  const stripBalancedCommand = (str: string, cmd: string): string => {
+    const prefix = `\\${cmd}{`;
+    let idx = str.indexOf(prefix);
+    while (idx !== -1) {
+      let depth = 1;
+      let end = idx + prefix.length;
+      while (end < str.length && depth > 0) {
+        if (str[end] === "{") depth++;
+        else if (str[end] === "}") depth--;
+        end++;
+      }
+      if (depth === 0) {
+        const inner = str.slice(idx + prefix.length, end - 1);
+        str = str.slice(0, idx) + inner + str.slice(end);
+        idx = str.indexOf(prefix, idx + inner.length);
+      } else {
+        str = str.slice(0, idx) + str.slice(idx + prefix.length);
+        idx = str.indexOf(prefix, idx);
+      }
+    }
+    return str;
+  };
 
   const makeOverset = (above: string, base: string) => {
     const cleanAbove = (above || "")
@@ -54,17 +81,32 @@ export function cleanChemicalLatex(text: string): string {
       .trim();
     const cleanBase = (base || "").replace(/\\text\{([^}]+)\}/g, "$1").trim();
     if (cleanAbove === "0") return cleanBase;
-    return `<span style="display:inline-block;text-align:center;vertical-align:baseline;line-height:1.1;margin:0 1px;"><span style="display:block;font-size:0.65em;font-weight:bold;color:#38bdf8;line-height:1;margin-bottom:-0.12em;">${cleanAbove}</span><span>${cleanBase}</span></span>`;
+    return `<ruby style="ruby-position:over;font-style:normal;margin:0 1px;">${cleanBase}<rt style="font-size:0.7em;font-weight:700;color:#38bdf8;line-height:1;user-select:none;font-style:normal;">${cleanAbove}</rt></ruby>`;
+  };
+
+  const isPhysicalState = (text: string): boolean => {
+    if (!text) return false;
+    const clean = text.replace(/<[^>]+>/g, "").trim().toLowerCase();
+    // Exclude if it contains reaction condition indicators like t°, °C, xt, as, đp...
+    if (/[tT][\^˚\circ0o°]|°C|xt|xúc tác|as|ánh sáng|đpdd|đpnc|men\b/i.test(clean)) {
+      return false;
+    }
+    return /^(?:s|l|g|aq|r|k|dd|khan|lỏng|rắn|khí|hơi|đặc|loãng)(?:[\s,]+(?:s|l|g|aq|r|k|dd|khan|lỏng|rắn|khí|hơi|đặc|loãng|nóng|nguội|bột|tinh khiết|ẩm|khô|\d+[%M]|(?:đặc,\s*nóng)))*$/i.test(clean);
   };
 
   const formatCondition = (cond: string) => {
     if (!cond) return "";
-    let c = cond
+    if (isPhysicalState(cond)) return "";
+    const c = cond
       .replace(/\\text\{([^}]+)\}/g, "$1")
       .replace(/\\mathrm\{([^}]+)\}/g, "$1")
-      .replace(/t\^?[0o\circ˚]|t0|to|t\^\circ/gi, "t°")
-      .replace(/\^0|\^\circ|\^o/g, "°")
+      .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?\s*(?:\\text\{C\}|\\mathrm\{C\}|\{C\}|C)\b/gi, "°C")
+      .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?\s*(?:\\text\{K\}|\\mathrm\{K\}|\{K\}|K)\b/gi, " K")
+      .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?/gi, "°")
+      .replace(/\\?(?:circ|degree)\b/gi, "°")
+      .replace(/t\^?[0o\circ˚°]|t0|to|t\^\circ/gi, "t°")
       .replace(/\^\{?([0-9]*[\+\-]|[\+\-][0-9]*)\}?/g, "<sup>$1</sup>")
+      .replace(/([A-Z][a-z]?|\))_\{?([a-z0-9\+\-]+)\}?/g, "$1<sub>$2</sub>")
       .replace(/_\{?([0-9]+)\}?/g, "<sub>$1</sub>")
       .replace(/([A-Z][a-z]?|\))([0-9]+)(?![<0-9\+\-])/g, "$1<sub>$2</sub>")
       .replace(/([⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (match) => {
@@ -75,10 +117,94 @@ export function cleanChemicalLatex(text: string): string {
     return c;
   };
 
-  let res = text
+  // Realistic ChemDraw-grade vector chemical arrows & indicators
+  const getCleanTextLength = (str: string) => {
+    if (!str) return 0;
+    return str.replace(/<[^>]+>/g, "").replace(/&[a-z0-9#]+;/gi, " ").trim().length;
+  };
+
+  const calculateArrowWidthNumber = (above?: string, below?: string) => {
+    const visibleAbove = getCleanTextLength(above || "");
+    const visibleBelow = getCleanTextLength(below || "");
+    const maxVisible = Math.max(visibleAbove, visibleBelow);
+
+    if (maxVisible === 0) {
+      return 30;
+    }
+    if (maxVisible <= 3) {
+      return 34;
+    }
+    return Math.min(Math.max(maxVisible * 6 + 14, 34), 68);
+  };
+
+  const renderChemFwdArrow = (above?: string, below?: string) => {
+    let cleanAbove = (above || "").trim();
+    let cleanBelow = (below || "").trim();
+    if (cleanAbove && isPhysicalState(cleanAbove)) cleanAbove = "";
+    if (cleanBelow && isPhysicalState(cleanBelow)) cleanBelow = "";
+    const W = calculateArrowWidthNumber(cleanAbove, cleanBelow);
+    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 6px;">${cleanAbove ? `<span style="font-size:0.72em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span>` : ""}<svg width="${W}" height="12" viewBox="0 0 ${W} 12" style="display:block;overflow:visible;"><line x1="2" y1="6" x2="${W - 3}" y2="6" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/><polygon points="${W - 9},2 ${W - 1.5},6 ${W - 9},10" fill="#38bdf8"/></svg>${cleanBelow ? `<span style="font-size:0.68em;color:#94a3b8;line-height:1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : ""}</span>`;
+  };
+
+  const renderChemRevArrow = (above?: string, below?: string) => {
+    let cleanAbove = (above || "").trim();
+    let cleanBelow = (below || "").trim();
+    if (cleanAbove && isPhysicalState(cleanAbove)) cleanAbove = "";
+    if (cleanBelow && isPhysicalState(cleanBelow)) cleanBelow = "";
+    const W = calculateArrowWidthNumber(cleanAbove, cleanBelow);
+    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 6px;">${cleanAbove ? `<span style="font-size:0.72em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span>` : ""}<svg width="${W}" height="15" viewBox="0 0 ${W} 15" style="display:block;overflow:visible;"><line x1="2" y1="5" x2="${W - 2}" y2="5" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/><polygon points="${W - 11},1 ${W - 1.5},5 ${W - 11},5" fill="#38bdf8"/><line x1="2" y1="10" x2="${W - 2}" y2="10" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/><polygon points="11,14 1.5,10 11,10" fill="#38bdf8"/></svg>${cleanBelow ? `<span style="font-size:0.68em;color:#94a3b8;line-height:1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : ""}</span>`;
+  };
+
+  let res = text;
+
+  // 0a. Strip LaTeX math environments and leftover artifacts: \begin{aligned}, \end{aligned}, beginaligned, endaligned, etc.
+  res = res
+    .replace(/\\begin\s*\{?\s*(?:aligned|align\*?|equation\*?|split|gather\*?)\s*\}?/gi, "")
+    .replace(/\\end\s*\{?\s*(?:aligned|align\*?|equation\*?|split|gather\*?)\s*\}?/gi, "")
+    .replace(/\b(?:beginaligned|endaligned|beginequation|endequation|beginsplit|endsplit|begingather|endgather)\b/gi, "");
+
+  // Strip LaTeX alignment ampersands (e.g. & \xrightarrow{...} or A & \rightarrow B)
+  res = res.replace(/(?<!&[a-z0-9#]{1,10})\s*&\s*(?![a-z0-9#]+;)/g, " ");
+
+  // Join chemical equations split across multiple lines by \\ or newlines right before an arrow
+  res = res.replace(/(\S[^\n\\]*?)\s*(?:\\\\|\n)\s*(&?\s*(?:\\xrightarrow|\\rightarrow|\\to|->|→|➔|\\overset|\\stackrel))/g, "$1 $2");
+
+  // Pre-strip balanced commands that wrap chemical formulas or text
+  res = stripBalancedCommand(res, "ce");
+  res = stripBalancedCommand(res, "text");
+  res = stripBalancedCommand(res, "mathrm");
+  res = stripBalancedCommand(res, "mathbf");
+  res = stripBalancedCommand(res, "textit");
+  res = stripBalancedCommand(res, "textbf");
+
+  // Fix common typo artifacts
+  res = res
     .replace(/H_?\{?20\}?/g, "H<sub>2</sub>O")
     .replace(/3Fe\+\}/g, "Fe<sup>3+</sup>")
     .replace(/reduse\s*\(khử\)/gi, "khử");
+
+  // Convert raw state subscripts like _{(aq)}, _{(aq, đặc, nóng)}, _{(s)}, _{(l)}, _{(g)}, _{(aq, t°, ...)} into clean states
+  res = res
+    .replace(/_\{?\s*(\([^}]+\))\s*\}?/g, " $1")
+    .replace(/(?<=[\w\>])_\{((?:s|l|g|aq|r|k)(?:,\s*[^}]+)?)\}/gi, " ($1)");
+
+  // 0. Dedicated thermodynamic enthalpy replacement (\Delta_r H^\circ_{298}, \Delta_r H_{298}^\circ, Delta_r H°_298, \Delta_f H^\circ_{298}, \Delta_c H^\circ_{298}, \Delta_r H, \Delta H)
+  res = res.replace(
+    /\\?(?:Delta|\\Delta)\s*(?:_\{?([a-zA-Z0-9]+)\}?)?\s*H(?=(?:\^|\_|[°o0]|\s|<|>|=|$))(?:(?:\^\{?(?:\\circ|circ|degree|[o0°])\}?|°)(?:\s*_\{?([0-9]+)\}?)?|(?:\s*_\{?([0-9]+)\}?)(?:\^\{?(?:\\circ|circ|degree|[o0°])\}?|°)?)/gi,
+    (match, sub1, num1, num2) => {
+      const s1 = sub1 ? `<sub>${sub1}</sub>` : "";
+      const s2 = (num1 || num2) ? `<sub>${num1 || num2}</sub>` : "";
+      const hasDeg =
+        match.includes("circ") ||
+        match.includes("degree") ||
+        match.includes("°") ||
+        match.includes("^o") ||
+        match.includes("^0") ||
+        /H[°o0]/i.test(match);
+      const sup = hasDeg ? "°" : "";
+      return `Δ${s1}H${sup}${s2}`;
+    }
+  );
 
   // 1. Remove LaTeX spacing and annotations
   res = res
@@ -91,19 +217,36 @@ export function cleanChemicalLatex(text: string): string {
     .replace(/\\(?:le|leq)\b/gi, "≤")
     .replace(/\\(?:ge|geq)\b/gi, "≥")
     .replace(/\\pm\b/gi, "±")
-    .replace(/\\alpha\b/gi, "α")
-    .replace(/\\beta\b/gi, "β")
-    .replace(/\\gamma\b/gi, "γ")
-    .replace(/\\pi\b/gi, "π")
-    .replace(/\\Delta\b/gi, "Δ")
-    .replace(/\\(?:degree|circ)\b/gi, "°")
+    .replace(/\\alpha(?![a-zA-Z])/gi, "α")
+    .replace(/\\beta(?![a-zA-Z])/gi, "β")
+    .replace(/\\gamma(?![a-zA-Z])/gi, "γ")
+    .replace(/\\pi(?![a-zA-Z])/gi, "π")
+    .replace(/\\chi(?![a-zA-Z])/gi, "χ")
+    .replace(/\\sum(?![a-zA-Z])/gi, "∑")
+    .replace(/\\?(?:Delta|\\Delta)(?![a-zA-Z])/gi, "Δ")
+    .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?\s*(?:\\text\{C\}|\\mathrm\{C\}|\{C\}|C)\b/gi, "°C")
+    .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?\s*(?:\\text\{K\}|\\mathrm\{K\}|\{K\}|K)\b/gi, " K")
+    .replace(/\^\{?\\?(?:circ|degree|o|0|°)\}?/gi, "°")
+    .replace(/\\?(?:degree|circ)(?![a-zA-Z])/gi, "°")
     .replace(/\\text\{([^}]+)\}/g, "$1")
     .replace(/\\ce\{([^}]+)\}/g, "$1")
     .replace(/\\mathrm\{([^}]+)\}/g, "$1")
-    .replace(/\\(?:left|right|big|Big|gt|lt)/g, "");
+    .replace(/\\(?:left|right|big|Big|bigg|Bigg)(?=[()\[\]{}|.\/\\]|\s|$)/g, "")
+    .replace(/\\(?:gt|lt)\b/g, "");
 
   // 2. Process Arrows with nested braces support
-  res = res.replace(/\\xrightleftharpoons(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_, below, above) => {
+  // 2a. Overset / Stackrel arrows: \overset{t^\circ}{\rightarrow}, \stackrel{t°}{\longrightarrow}, \overset{xt}{\rightleftharpoons}
+  res = res.replace(/\\(?:overset|stackrel)\{([^}]+)\}\{\\?(?:rightarrow|longrightarrow|leftarrow|longleftarrow|to|\-{1,4}>|={1,4}>|→|➔)\}/gi, (_, above) => {
+    const cleanAbove = formatCondition(above);
+    return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
+  });
+
+  res = res.replace(/\\(?:overset|stackrel)\{([^}]+)\}\{\\?(?:x?rightleftharpoons|x?leftrightharpoons|x?leftharpoons|x?rightharpoons|x?leftharpoons|x?rightharpoon|x?leftharpoon|leftrightarrow|⇌|<={1,4}>|<\-{1,4}>)\}/gi, (_, above) => {
+    const cleanAbove = formatCondition(above);
+    return ` @@@CHEMREVSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMREVEND@@@ `;
+  });
+
+  res = res.replace(/\\?(?:xrightleftharpoons|xleftrightharpoons)(?:\[((?:[^{}]|\{[^{}]*\})*)\])?\{((?:[^{}]|\{[^{}]*\})*)\}/gi, (_, below, above) => {
     const cleanAbove = formatCondition(above);
     const cleanBelow = formatCondition(below);
     return ` @@@CHEMREVSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMREVEND@@@ `;
@@ -115,11 +258,37 @@ export function cleanChemicalLatex(text: string): string {
     return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@${cleanBelow}@@@CHEMARREND@@@ `;
   });
 
-  res = res.replace(/(?:--\s*\(?([^->]+)\)?\s*-->|-\s*\(([^->]+)\)\s*->|➔\s*\(([^)]+)\)|->\s*\(([^)]+)\)|([tT][\^˚\circ0o]+)\s*➔|➔\s*([tT][\^˚\circ0o]+))/g, (_, c1, c2, c3, c4, c5, c6) => {
-    const rawAbove = c1 || c2 || c3 || c4 || c5 || c6 || "t°";
-    const cleanAbove = formatCondition(rawAbove);
+  // 2b. Match arrows with bracketed conditions immediately before or after: "-> [t°]", "➔ [t°]", "-> (t°)", "➔ (as)", "[t°] ->"
+  // IMPORTANT: Do NOT treat physical states of matter (s, l, g, aq, r, k...) as arrow conditions!
+  res = res.replace(/(?:➔|\-{1,4}>|={1,4}>|\\rightarrow|\\to)\s*(?:\[([^\]\n]+)\]|\(([^\)\n]+)\))/g, (_, c1, c2) => {
+    const raw = (c1 || c2 || "").trim();
+    if (isPhysicalState(raw)) {
+      return ` ${renderChemFwdArrow()} <span style="font-size:0.82em;color:#94a3b8;font-style:italic;">(${raw})</span> `;
+    }
+    const cond = formatCondition(raw);
+    return ` @@@CHEMARRSTART@@@${cond}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
+  });
+
+  res = res.replace(/(?:\[([^\]\n]+)\]|\(([^\)\n]+)\))\s*(?:➔|\-{1,4}>|={1,4}>|\\rightarrow|\\to)/g, (_, c1, c2) => {
+    const raw = (c1 || c2 || "").trim();
+    if (isPhysicalState(raw)) {
+      return ` <span style="font-size:0.82em;color:#94a3b8;font-style:italic;">(${raw})</span> ${renderChemFwdArrow()} `;
+    }
+    const cond = formatCondition(raw);
+    return ` @@@CHEMARRSTART@@@${cond}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
+  });
+
+  res = res.replace(/(?:\-{2,4}\s*\(?([^->\n]+)\)?\s*\-{2,4}>|\-\s*\(([^->\n]+)\)\s*\->|\-{1,4}>\s*\(([^)\n]+)\)|([tT][\^˚\circ0o°]+|[tT]°)\s*(?:➔|\-{1,4}>)|(?:➔|\-{1,4}>)\s*([tT][\^˚\circ0o°]+|[tT]°))/g, (_, c1, c2, c3, c4, c5) => {
+    const rawAbove = (c1 || c2 || c3 || c4 || c5 || "").trim();
+    if (isPhysicalState(rawAbove)) {
+      return ` ${renderChemFwdArrow()} <span style="font-size:0.82em;color:#94a3b8;font-style:italic;">(${rawAbove})</span> `;
+    }
+    const cleanAbove = rawAbove ? formatCondition(rawAbove) : "";
     return ` @@@CHEMARRSTART@@@${cleanAbove}@@@CHEMSEP@@@@@@CHEMARREND@@@ `;
   });
+
+  // Join chemical equations split across multiple lines by \\ or newlines right before arrow markers
+  res = res.replace(/(\S[^\n\\]*?)\s*(?:\\\\|\n)\s*(&?\s*(?:@@@CHEMARRSTART@@@|@@@CHEMREVSTART@@@))/g, "$1 $2");
 
   // 3. Mathematical fractions
   res = res.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, den) => {
@@ -145,7 +314,7 @@ export function cleanChemicalLatex(text: string): string {
       return makeOverset(num, elem);
     });
 
-  // 5. Polyatomic and Monatomic ions
+  // 5. Polyatomic and Monatomic ions & Oxidation states
   const unicodeSuperMap: Record<string, string> = {
     "⁺": "+", "⁻": "-", "⁰": "0", "¹": "1", "²": "2", "³": "3",
     "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
@@ -156,12 +325,13 @@ export function cleanChemicalLatex(text: string): string {
   });
 
   res = res
+    .replace(/\b(Cu|Fe|Cr|Mn|S|N|C|Cl|Br|O|H|P|Al|Zn|Mg|Ca|Ba|Na|K|Ag)\s*\^?\{?([\+\-][1-7]|[1-7][\+\-])\}?(?!\w)/g, "$1<sup>$2</sup>")
     .replace(/\b(SO4|SO3|CO3|Cr2O7|CrO4|SiO3|S2O3)\s*(\^?\{?(?:2-|2\+|-2|\+2)\}?|2-|2\+)(?!\d)/g, "$1<sup>2-</sup>")
     .replace(/\b(PO4|PO3)\s*(\^?\{?(?:3-|3\+|-3|\+3)\}?|3-|3\+)(?!\d)/g, "$1<sup>3-</sup>")
     .replace(/\b(NO3|NO2|OH|HCO3|HSO4|H2PO4|CH3COO|ClO|ClO2|ClO3|ClO4|MnO4|F|Cl|Br|I)\s*(\^?\{?(?:-|\+|-1|\+1)\}?|-|\+)(?!\d)/g, "$1<sup>$2</sup>")
-    .replace(/\b(NH4|H3O)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
-    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(2\+|\+2)(?!\d)/g, "$1<sup>2+</sup>")
-    .replace(/\b(Al|Cr|Fe)\s*(3\+|\+3)(?!\d)/g, "$1<sup>3+</sup>");
+    .replace(/\b(NH4|H3O|H)\s*(\^?\{?(?:\+|\+1)\}?|\+)(?!\d)/g, "$1<sup>+</sup>")
+    .replace(/\b(Fe|Cu|Zn|Mg|Ca|Ba|Pb|Sn|Mn|Ni|Hg|Sr|Pt|Co)\s*(\^?\{?(?:2\+|\+2)\}?|2\+|\+2)(?!\d)/g, "$1<sup>2+</sup>")
+    .replace(/\b(Al|Cr|Fe)\s*(\^?\{?(?:3\+|\+3)\}?|3\+|\+3)(?!\d)/g, "$1<sup>3+</sup>");
 
   // 6. LaTeX Array table environment (Electron balance)
   res = res.replace(/\\begin\{array\}\{?[^}]*\}?([\s\S]*?)\\end\{array\}/gi, (_, content) => {
@@ -180,43 +350,85 @@ export function cleanChemicalLatex(text: string): string {
     return `<table style="margin:8px 0;border-collapse:collapse;"><tbody>${tableRowsHTML}</tbody></table>`;
   });
 
-  // 7. Gas (↑) and Precipitate (↓) symbols ONLY (Exact symbols, never match caret '^' or letter 'v'!)
+  // 7. Gas (↑) and Precipitate (↓) symbols (High-definition chemical vector icons)
   res = res
-    .replace(/\\uparrow|\s*\(\s*↑\s*\)|(?<=[A-Za-z0-9\)])\s*↑/g, ' <span style="display:inline-block;color:#34d399;font-weight:bold;" title="Khí bay lên">↑</span> ')
-    .replace(/\\downarrow|\s*\(\s*↓\s*\)|(?<=[A-Za-z0-9\)])\s*↓/g, ' <span style="display:inline-block;color:#f87171;font-weight:bold;" title="Kết tủa">↓</span> ');
+    .replace(/\\uparrow|\s*\(\s*↑\s*\)|(?<=[A-Za-z0-9\)])\s*↑/g, ' <span style="display:inline-flex;align-items:center;vertical-align:middle;margin:0 2px;" title="Chất khí thoát ra"><svg width="11" height="13" viewBox="0 0 11 13" style="display:inline-block;vertical-align:middle;"><path d="M5.5,1 L10,5.5 L7,5.5 L7,12 L4,12 L4,5.5 L1,5.5 Z" fill="#34d399"/></svg></span> ')
+    .replace(/\\downarrow|\s*\(\s*↓\s*\)|(?<=[A-Za-z0-9\)])\s*↓/g, ' <span style="display:inline-flex;align-items:center;vertical-align:middle;margin:0 2px;" title="Chất kết tủa lắng xuống"><svg width="11" height="13" viewBox="0 0 11 13" style="display:inline-block;vertical-align:middle;"><path d="M5.5,12 L1,7.5 L4,7.5 L4,1 L7,1 L7,7.5 L10,7.5 Z" fill="#f87171"/></svg></span> ');
 
-  // 8. Plain Arrows (including 'arrow' keyword from AI)
+  // 8. Plain Arrows (including LaTeX commands and AI text keywords)
   res = res
-    .replace(/\\rightleftharpoons|\\leftrightarrow|\\Leftrightarrow|<=>|<==>|<->|<-->|⇌/g, ' <span style="display:inline-block;margin:0 6px;font-size:1.15em;vertical-align:middle;color:#f1f5f9;">⇌</span> ')
-    .replace(/\\rightarrow|\\longrightarrow|\\to|->|-->|=>|==>|→|➔|\barrow\b|\\arrow\b|\brightarrow\b/gi, ' <span style="display:inline-block;margin:0 6px;font-size:1.2em;vertical-align:middle;color:#f1f5f9;">➔</span> ');
+    .replace(/\\?(?:x?rightleftharpoons|x?leftrightharpoons|x?leftharpoons|x?rightharpoons|x?leftharpoon(?:up|down)?|x?rightharpoon(?:up|down)?)\b|\\leftrightarrow|\\Leftrightarrow|<={1,4}>|<\-{1,4}>|⇌/gi, ` ${renderChemRevArrow()} `)
+    .replace(/\\?(?:rightarrow|longrightarrow|leftarrow|longleftarrow)\b|\\to\b|\-{1,4}>|={1,4}>|→|➔|\barrow\b/gi, ` ${renderChemFwdArrow()} `);
 
   // 9. Superscripts and Subscripts
   res = res
-    .replace(/\$([^\$]+)\$/g, "$1")
+    .replace(/\${1,2}([^$]+)\${1,2}/g, "$1")
+    .replace(/\$+/g, "")
     .replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>")
     .replace(/\^([0-9\+\-°]+|[a-zA-Z]+)/g, (_, val) => {
-      if (val === "0" || val === "o" || val === "circ") return "°";
+      if (val === "0" || val === "o" || val === "circ" || val === "degree") return "°";
+      if (/^(?:circ|degree|o|0)C$/i.test(val)) return "°C";
       return `<sup>${val}</sup>`;
     })
     .replace(/_\{([^}]+)\}/g, "<sub>$1</sub>")
-    .replace(/_([a-zA-Z0-9+\-]+)/g, "<sub>$1</sub>")
+    .replace(/([A-Z][a-z]?|\))_\{?([a-z0-9\+\-]+)\}?/g, "$1<sub>$2</sub>")
+    .replace(/_([0-9]+)/g, "<sub>$1</sub>")
+    .replace(/_([a-zA-Z])(?![a-zA-Z0-9])/g, "<sub>$1</sub>")
     .replace(/\\\\/g, "<br/>")
     .replace(/\\/g, "");
 
-  // 10. Automatic subscripts on chemical formulas
-  res = res.replace(/([A-Z][a-z]?|\))([0-9]+)(?![<0-9\+\-])/g, "$1<sub>$2</sub>");
+  // 10. Automatic subscripts on chemical formulas & complex groups (strictly adjacent, NO SPACES)
+  // e.g. H2SO4 -> H<sub>2</sub>SO<sub>4</sub>, Fe2(SO4)3 -> Fe<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>
+  // Excludes Vietnamese diacritic letters so words like PHẦN 1 / PHẦN1 aren't matched,
+  // while allowing consecutive element symbols in formulas (like 'S' before 'O4' in H2SO4)
+  const vnDiacritics = "[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]";
+  const elemSubscriptRegex = new RegExp(`(?<!${vnDiacritics})([A-Z][a-z]?|\\))([0-9]+)(?![<0-9\\+\\-])`, "g");
+  res = res.replace(elemSubscriptRegex, "$1<sub>$2</sub>");
 
-  // 11. Restore condition arrows (Flawless textbook appearance)
+  // General chemical formulas with variable indices (x, y, z, n, m):
+  // Alkane / alkene / alkyne: CnH2n+2, CnH2n, CnH2n-2, CnH2n-6, CnH2n+1OH, CmH2m+2
+  res = res.replace(/\b([C])([nm])([H])(2[nm](?:[\+\-][0-9]+)?)/g, "$1<sub>$2</sub>$3<sub>$4</sub>");
+
+  // Hydrocarbon general formulas: CxHy, CxHyOz, CxHyOzNt, CxHyClz
+  res = res.replace(/\b([C])([xynm])([H])([yznm]|[0-9]+[a-z]?)/g, "$1<sub>$2</sub>$3<sub>$4</sub>");
+
+  // Oxide & salt general formulas: FexOy, Fe_xOy, CxHyOz, MxOy, NxOy, SxOy, M2On, Al2Ox
+  res = res.replace(/(<sub>[a-z0-9\+\-]+<\/sub>)\s*([O])([xyznm])\b/g, "$1$2<sub>$3</sub>");
+  res = res.replace(/\b(Fe|M|N|S|Cl|P|Cr)([xynm])([O])([xynm])\b/g, "$1<sub>$2</sub>$3<sub>$4</sub>");
+  res = res.replace(/\b([A-Z][a-z]?)([0-9]+)([O])([xynm])\b/g, "$1<sub>$2</sub>$3<sub>$4</sub>");
+
+  // Polymer and acid general groups: R(COOH)n, (C6H10O5)n, M(OH)n, (-NH-...-CO-)n, [-NH-...-CO-]n
+  res = res.replace(/\(\s+(\-[A-Za-z])/g, "($1").replace(/([A-Za-z]\-)\s+\)/g, "$1)");
+  res = res.replace(/([\)\]])\s*_\{?([nmx0-9]+)\}?/gi, "$1<sub>$2</sub>");
+  res = res.replace(/([\)\]])\s*([nmx])(?![a-zA-Z0-9])/g, "$1<sub>$2</sub>");
+
+  // Ensure space between stoichiometric coefficient and chemical formula: 18HNO3 -> 18 HNO3, 2H2SO4 -> 2 H2SO4
+  res = res.replace(/(^|[\s\+\=\(])([0-9]+)(?=[A-Z][a-z]?(?:[0-9]|_|\(|\)|\[|\]|[A-Z]))/g, "$1$2 ");
+
+  // Format physical states cleanly with subtle spacing: (s), (l), (g), (aq), (aq, đặc), (aq, loãng)
+  res = res.replace(/(?<=[\w\>])\s*\(((?:s|l|g|aq|r|k)(?:,\s*[^)]+)?)\)/gi, ' <span style="font-size:0.82em;color:#94a3b8;font-style:italic;">($1)</span>');
+
+  // Space around '+' in chemical equations
+  res = res.replace(/([a-zA-Z0-9\)])\s*\+\s*([0-9]*[A-Z])/g, "$1 + $2");
+
+  // Format calculations: Convert double round parentheses to square brackets for clarity
+  // e.g. 2 · (6 - (-1)) -> 2 · [6 - (-1)]
+  res = res.replace(/\(\s*([0-9\s\+\-\*·\.\/]+)\s*\(\s*([\+\-]?[0-9]+)\s*\)\s*\)/g, "[$1($2)]");
+  res = res.replace(/\(\s*([0-9\s\+\-\*·\.\/]*[-+*·]\s*\([-+][0-9]+\)[^)]*)\)/g, "[$1]");
+
+  // Clean up stray closing parenthesis before period or comma: e.g. "15e⁻)." -> "15e⁻."
+  res = res.replace(/(?<=[0-9a-zA-Z⁻⁺°])\)\s*(\.|\;|\:|\,)/g, "$1");
+
+  // Strip ALL remaining unparsed curly braces { or } completely (solves stray '}' at end of reactions)
+  res = res.replace(/[\{\}]/g, "");
+
+  // 11. Restore condition arrows (Flawless textbook publication appearance with dynamic vector length)
   res = res.replace(/@@@CHEMARRSTART@@@([\s\S]*?)@@@CHEMSEP@@@([\s\S]*?)@@@CHEMARREND@@@/g, (_, above, below) => {
-    const cleanAbove = (above || "").trim();
-    const cleanBelow = (below || "").trim();
-    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 8px;min-width:38px;"><span style="font-size:0.75em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1.1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span><span style="font-size:1.25em;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;color:#f1f5f9;">➔</span>${cleanBelow ? `<span style="font-size:0.7em;color:#94a3b8;line-height:1.1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : "" }</span>`;
+    return renderChemFwdArrow(above, below);
   });
 
   res = res.replace(/@@@CHEMREVSTART@@@([\s\S]*?)@@@CHEMSEP@@@([\s\S]*?)@@@CHEMREVEND@@@/g, (_, above, below) => {
-    const cleanAbove = (above || "").trim();
-    const cleanBelow = (below || "").trim();
-    return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 8px;min-width:38px;"><span style="font-size:0.75em;font-style:italic;font-weight:600;color:#38bdf8;line-height:1.1;margin-bottom:2px;white-space:nowrap;">${cleanAbove}</span><span style="font-size:1.15em;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;color:#f1f5f9;">⇌</span>${cleanBelow ? `<span style="font-size:0.7em;color:#94a3b8;line-height:1.1;margin-top:2px;white-space:nowrap;">${cleanBelow}</span>` : "" }</span>`;
+    return renderChemRevArrow(above, below);
   });
 
   return res;
@@ -225,11 +437,14 @@ export function cleanChemicalLatex(text: string): string {
 export function formatMarkdownToHTML(text: string): string {
   if (!text) return "";
 
-  const cleanedText = cleanChemicalLatex(text);
+  // Prevent double cleaning if text was already processed by cleanChemicalLatex
+  const cleanedText = text.includes('viewBox="0 0') ? text : cleanChemicalLatex(text);
 
-  let html = cleanedText
+  const html = cleanedText
     // Replace <br> strings or newlines
     .replace(/<br\s*\/?>/gi, "\n")
+    // Dividers: ---, ***, ___, - - -
+    .replace(/^\s*(?:-{3,}|\*{3,}|_{3,}|(?:\-\s*){3,})\s*$/gm, '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:14px 0;"/>')
     // Bold **text**
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     // Italic *text*
@@ -237,28 +452,28 @@ export function formatMarkdownToHTML(text: string): string {
     // Headings ###
     .replace(
       /^#### (.*$)/gim,
-      '<h4 style="color:#38bdf8;font-size:13px;margin:8px 0 4px;">$1</h4>',
+      '<h4 style="color:#38bdf8;font-size:14px;font-weight:700;margin:12px 0 4px;">$1</h4>',
     )
     .replace(
       /^### (.*$)/gim,
-      '<h3 style="color:#38bdf8;font-size:14px;margin:10px 0 4px;">$1</h3>',
+      '<h3 style="color:#fbbf24;font-size:15px;font-weight:700;margin:14px 0 6px;">$1</h3>',
     )
     .replace(
       /^## (.*$)/gim,
-      '<h2 style="color:#38bdf8;font-size:16px;margin:12px 0 6px;">$1</h2>',
+      '<h2 style="color:#38bdf8;font-size:16px;font-weight:700;margin:16px 0 6px;">$1</h2>',
     )
     .replace(
       /^# (.*$)/gim,
-      '<h1 style="color:#38bdf8;font-size:18px;margin:14px 0 8px;">$1</h1>',
+      '<h1 style="color:#38bdf8;font-size:17.5px;font-weight:700;margin:18px 0 8px;">$1</h1>',
     );
 
-  // Convert markdown tables & lists
+  // Convert markdown tables, equation blocks & lists
   const lines = html.split("\n");
   let inTable = false;
   let tableHTML = "";
   const resultLines: string[] = [];
 
-  for (let line of lines) {
+  for (const line of lines) {
     const trimmed = line.trim();
     if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
       if (trimmed.includes("---")) continue;
@@ -294,16 +509,51 @@ export function formatMarkdownToHTML(text: string): string {
         tableHTML = "";
         inTable = false;
       }
-      if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
+
+      if (trimmed === "") {
+        resultLines.push('<div style="height:8px;"></div>');
+      } else if (trimmed.startsWith("<hr")) {
+        resultLines.push(trimmed);
+      } else if (trimmed.startsWith("<h1") || trimmed.startsWith("<h2") || trimmed.startsWith("<h3") || trimmed.startsWith("<h4")) {
+        resultLines.push(trimmed);
+      } else if (trimmed.startsWith("* ") || trimmed.startsWith("- ") || trimmed.startsWith("+ ") || trimmed.startsWith("• ")) {
+        const itemContent = trimmed.replace(/^[\*\-\+•]\s*/, "");
         resultLines.push(
-          `<div style="padding-left:14px;margin:2px 0;">• ${trimmed.substring(2)}</div>`,
+          `<div style="margin:4px 0;padding-left:16px;position:relative;line-height:1.75;font-size:14.5px;"><span style="position:absolute;left:2px;color:#38bdf8;font-size:1.1em;line-height:1.4;">•</span>${itemContent}</div>`,
         );
       } else if (/^\d+\.\s/.test(trimmed)) {
         resultLines.push(
-          `<div style="padding-left:14px;margin:2px 0;">${trimmed}</div>`,
+          `<div style="margin:4px 0;padding-left:18px;line-height:1.75;font-size:14.5px;">${trimmed}</div>`,
         );
       } else {
-        resultLines.push(line);
+        const plainText = trimmed.replace(/<[^>]+>/g, "").trim();
+        const hasArrowSvg = trimmed.includes('<svg width=') && (trimmed.includes('<polygon') || trimmed.includes('<line'));
+        const isLongProse = plainText.length > 120 || plainText.startsWith("(") || plainText.includes("Kiểm tra") || plainText.includes("hoàn toàn") || plainText.includes("bảo toàn");
+        
+        if (hasArrowSvg && !isLongProse) {
+          let equationContent = trimmed;
+          // If the line starts with an arrow SVG (reactants were placed on the preceding line), merge with preceding line
+          if (
+            trimmed.startsWith('<span style="display:inline-flex;flex-direction:column') &&
+            resultLines.length > 0
+          ) {
+            const prev = resultLines[resultLines.length - 1];
+            if (prev.startsWith('<div style="line-height:1.75')) {
+              const prevText = prev.replace(/^<div[^>]*>|<\/div>$/g, "").trim();
+              if (prevText && !prevText.startsWith("•") && !prevText.startsWith("<h") && !prevText.startsWith("<hr")) {
+                resultLines.pop();
+                equationContent = `${prevText} ${trimmed}`;
+              }
+            }
+          }
+
+          // Genuine chemical equation block: highlight in a clean, elegant card with prominent straight accent line
+          resultLines.push(
+            `<div style="margin:10px 0;padding:8px 14px;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.22);border-left:3.5px solid #38bdf8;border-radius:6px;overflow-x:auto;font-size:15px;line-height:1.8;letter-spacing:0.01em;">${equationContent}</div>`
+          );
+        } else {
+          resultLines.push(`<div style="line-height:1.75;margin:4px 0;font-size:14.5px;">${trimmed}</div>`);
+        }
       }
     }
   }
@@ -313,7 +563,7 @@ export function formatMarkdownToHTML(text: string): string {
     resultLines.push(tableHTML);
   }
 
-  return resultLines.join("<br/>");
+  return resultLines.join("\n");
 }
 
 export default function AuditTab() {
@@ -338,10 +588,6 @@ export default function AuditTab() {
   const [kahootHistory, setKahootHistory] = useState<any[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
 
-  useEffect(() => {
-    fetchKahootHistory();
-  }, []);
-
   const fetchKahootHistory = async () => {
     try {
       const { data } = await supabase
@@ -357,6 +603,10 @@ export default function AuditTab() {
       console.warn("Fetch Kahoot history error:", e);
     }
   };
+
+  useEffect(() => {
+    fetchKahootHistory();
+  }, []);
 
   const handleVerify = () => {
     const expectedPassword =
@@ -396,6 +646,11 @@ export default function AuditTab() {
   };
 
   const handleClearAllChatLogs = async () => {
+    const currentUser = getStoredCurrentUser();
+    if (isDemoAccount(currentUser)) {
+      alert("⚠️ Tài khoản thử nghiệm (Demo) chỉ hoạt động ở chế độ xem và lưu tạm thời. Không thể xóa dữ liệu trên hệ thống chính.");
+      return;
+    }
     if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu lịch sử hội thoại trên cơ sở dữ liệu không? Thao tác này không thể hoàn tác.")) {
       return;
     }
@@ -412,7 +667,58 @@ export default function AuditTab() {
     }
   };
 
+  const handleExportChatLogsCSV = () => {
+    const dataToExport = filteredChatLogs.length > 0 ? filteredChatLogs : chatLogs;
+    if (dataToExport.length === 0) {
+      alert("Chưa có dữ liệu nhật ký hội thoại để trích xuất.");
+      return;
+    }
+    const headers = ["STT", "Thời gian", "Session ID", "Câu hỏi Học sinh", "Lời giải của Gia sư AI"];
+    const rows = dataToExport.map((row, idx) => {
+      const timeStr = `"${new Date(row.created_at).toLocaleString("vi-VN").replace(/"/g, '""')}"`;
+      const sessionStr = `"${(row.session_id || "").replace(/"/g, '""')}"`;
+      const userMsg = `"${(row.user_message || "").replace(/"/g, '""')}"`;
+      const aiResp = `"${(row.ai_response || "").replace(/"/g, '""')}"`;
+      return [idx + 1, timeStr, sessionStr, userMsg, aiResp].join(",");
+    });
+
+    // UTF-8 BOM (\uFEFF) ensures Excel opens Vietnamese accents without garbled text
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Nhat_Ky_Gia_Su_ChemAI_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportChatLogsJSON = () => {
+    const dataToExport = filteredChatLogs.length > 0 ? filteredChatLogs : chatLogs;
+    if (dataToExport.length === 0) {
+      alert("Chưa có dữ liệu nhật ký hội thoại để trích xuất.");
+      return;
+    }
+    const jsonStr = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Nhat_Ky_Gia_Su_ChemAI_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handleSeed50PresetQuestions = async () => {
+    const currentUser = getStoredCurrentUser();
+    if (isDemoAccount(currentUser)) {
+      alert("⚠️ Tài khoản thử nghiệm (Demo): Thao tác ghi nạp dữ liệu câu hỏi vào Cloud DB chỉ dành cho tài khoản quản trị viên chính.");
+      return;
+    }
     setIsLoading(true);
     try {
       const recordsToInsert = PRESET_HIGH_SCHOOL_QUIZ_BANK.map((q) => ({
@@ -515,15 +821,45 @@ export default function AuditTab() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+    let channel: any = null;
+
     if (hostPin && (gameStatus === "waiting" || gameStatus === "active")) {
-      // Immediate poll
-      pollParticipants(hostPin);
-      // Auto poll every 2 seconds
+      const cleanHostPin = hostPin.trim();
+
+      // 1. Immediate query
+      pollParticipants(cleanHostPin);
+
+      // 2. Kích hoạt Supabase Realtime WebSocket cho Danh sách thí sinh & Điểm số
+      try {
+        channel = supabase
+          .channel(`audit_participants_${cleanHostPin}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'room_participants',
+              filter: `room_pin=eq.${cleanHostPin}`,
+            },
+            () => {
+              pollParticipants(cleanHostPin);
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.warn("Realtime participants subscription fallback to polling:", err);
+      }
+
+      // 3. Polling dự phòng nhịp tim
       interval = setInterval(() => {
-        pollParticipants(hostPin);
-      }, 2000);
+        pollParticipants(cleanHostPin);
+      }, 3500);
     }
+
     return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
       if (interval) clearInterval(interval);
     };
   }, [hostPin, gameStatus]);
@@ -667,23 +1003,46 @@ export default function AuditTab() {
               </Stack>
 
               {subTab !== "kahoot" && (
-                <Stack direction="row" spacing={1}>
-                  {subTab === "chat" && (
-                    <Button
-                      size="small"
-                      color="error"
-                      variant="outlined"
-                      onClick={handleClearAllChatLogs}
-                      startIcon={<Trash2 size={14} />}
-                      sx={{ textTransform: "none", fontWeight: "bold" }}
-                    >
-                      Xóa Toàn Bộ Chat Logs
-                    </Button>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {subTab === "chat" && chatLogs.length > 0 && (
+                    <>
+                      <Button
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        onClick={handleExportChatLogsCSV}
+                        startIcon={<Download size={14} />}
+                        sx={{ textTransform: "none", fontWeight: "bold" }}
+                      >
+                        Trích Xuất CSV (Excel)
+                      </Button>
+                      <Button
+                        size="small"
+                        color="info"
+                        variant="outlined"
+                        onClick={handleExportChatLogsJSON}
+                        startIcon={<FileText size={14} />}
+                        sx={{ textTransform: "none", fontWeight: "bold" }}
+                      >
+                        Trích Xuất JSON
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        variant="outlined"
+                        onClick={handleClearAllChatLogs}
+                        startIcon={<Trash2 size={14} />}
+                        sx={{ textTransform: "none", fontWeight: "bold" }}
+                      >
+                        Xóa Toàn Bộ Chat Logs
+                      </Button>
+                    </>
                   )}
                   <Button
                     size="small"
                     onClick={() => fetchCurrentSubData()}
                     startIcon={<RefreshCw size={14} />}
+                    sx={{ textTransform: "none" }}
                   >
                     Tải Lại CSDL
                   </Button>

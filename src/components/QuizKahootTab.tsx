@@ -337,28 +337,69 @@ Trả về DUY NHẤT một chuỗi JSON hợp lệ theo đúng cấu trúc (kh�
   const [timeLeft, setTimeLeft] = useState<number>(20);
   const [showResult, setShowResult] = useState<boolean>(false);
 
+  // Supabase Realtime WebSocket + Fallback Polling for Live Kahoot Room
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+    let channel: any = null;
+
     if (isJoined && pin && roomState.status !== 'finished') {
+      const cleanPin = pin.trim();
+
+      const handleRoomUpdate = (room: any) => {
+        if (!room) return;
+        const finalStatus = room.status === 'finished' ? 'finished' : roomState.status === 'finished' ? 'finished' : room.status;
+        setRoomState({ status: finalStatus, current_question: room.current_question, timer_sec: room.timer_sec || 20 });
+        if (room.status === 'active' && !kahootQuiz) {
+          setTimeLeft(room.timer_sec || 20);
+          fetchKahootQuestion();
+        }
+      };
+
       const checkRoom = async () => {
         try {
-          const { data: room } = await supabase.from("rooms").select("*").eq("room_pin", pin.trim()).maybeSingle();
+          const { data: room } = await supabase.from("rooms").select("*").eq("room_pin", cleanPin).maybeSingle();
           if (room) {
-            const finalStatus = room.status === 'finished' ? 'finished' : roomState.status === 'finished' ? 'finished' : room.status;
-            setRoomState({ status: finalStatus, current_question: room.current_question, timer_sec: room.timer_sec || 20 });
-            if (room.status === 'active' && !kahootQuiz) {
-              setTimeLeft(room.timer_sec || 20);
-              fetchKahootQuestion();
-            }
+            handleRoomUpdate(room);
           }
         } catch (e) {
           console.warn("Check room status error:", e);
         }
       };
+
+      // 1. Initial query
       checkRoom();
-      interval = setInterval(checkRoom, 2000);
+
+      // 2. Kích hoạt Supabase Realtime WebSocket Channel
+      try {
+        channel = supabase
+          .channel(`kahoot_room_${cleanPin}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'rooms',
+              filter: `room_pin=eq.${cleanPin}`,
+            },
+            (payload) => {
+              if (payload.new) {
+                handleRoomUpdate(payload.new);
+              }
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.warn("Realtime subscription fallback to polling:", err);
+      }
+
+      // 3. Polling dự phòng (fallback nếu mất kết nối socket)
+      interval = setInterval(checkRoom, 3500);
     }
+
     return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
       if (interval) clearInterval(interval);
     };
   }, [isJoined, pin, kahootQuiz, roomState.status]);

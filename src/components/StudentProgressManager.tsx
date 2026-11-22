@@ -67,8 +67,8 @@ import {
   Send,
   X,
 } from 'lucide-react';
-import { callGeminiAPI, supabase } from '@/lib/api';
-import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
+import { callGeminiAPI } from '@/lib/api';
+import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser, isDemoAccount } from '@/components/UserAuthModal';
 import { fetchAllUsersFromDatabase, saveUserToDatabase } from '@/lib/userDatabase';
 
 export interface StudentProgressData extends UserProfile {
@@ -245,12 +245,17 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
   const persistStudentsList = (updatedList: StudentProgressData[]) => {
     setStudents(updatedList);
     try {
+      const currentStored = getStoredCurrentUser();
+      const isTeacherDemo = isDemoAccount(currentStored);
+
       updatedList.forEach((std) => {
+        if (isTeacherDemo) {
+          std.isDemo = true;
+        }
         saveUserToDatabase(std).catch(() => {});
       });
 
       // If current logged-in user is one of updated students, update current_user
-      const currentStored = getStoredCurrentUser();
       if (currentStored) {
         const matched = updatedList.find((s) => s.id === currentStored.id);
         if (matched) {

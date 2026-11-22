@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Montserrat, JetBrains_Mono } from "next/font/google";
+import AntiPausePulse from "@/components/AntiPausePulse";
 import "./globals.css";
 
-const inter = Inter({
+const montserrat = Montserrat({
   variable: "--font-sans",
   subsets: ["latin", "vietnamese"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -39,10 +41,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="vi"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-[#090d16] text-[#f8fafc] overflow-x-hidden w-full selection:bg-cyan-500 selection:text-white font-sans">
+        <AntiPausePulse />
         {children}
       </body>
     </html>

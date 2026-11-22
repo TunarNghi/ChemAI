@@ -1,6 +1,7 @@
 "use client";
 
 import { callGeminiAPI, generateParamHash, playBubbleSoundEffect, supabase } from '@/lib/api';
+import { isDemoAccount, getStoredCurrentUser } from '@/components/UserAuthModal';
 import {
   Box,
   Button,
@@ -86,23 +87,23 @@ interface ChemicalMItem {
 }
 
 const CHEMICAL_COMPOUNDS_DATA: ChemicalMItem[] = [
-  { formula: "HCl", mVal: "36.5", color: "#fbbf24", nameVi: "Axit clohiđric" },
-  { formula: "H2SO4", displayFormula: "H₂SO₄", mVal: "98.0", color: "#fbbf24", nameVi: "Axit sunfuric" },
-  { formula: "HNO3", displayFormula: "HNO₃", mVal: "63.0", color: "#fbbf24", nameVi: "Axit nitric" },
-  { formula: "NaOH", mVal: "40.0", color: "#34d399", nameVi: "Natri hiđroxit" },
-  { formula: "KOH", mVal: "56.1", color: "#34d399", nameVi: "Kali hiđroxit" },
-  { formula: "AgNO3", displayFormula: "AgNO₃", mVal: "170.0", color: "#c084fc", nameVi: "Bạc nitrat" },
-  { formula: "CuSO4", displayFormula: "CuSO₄", mVal: "160.0", color: "#38bdf8", nameVi: "Đồng(II) sunfat" },
-  { formula: "KMnO4", displayFormula: "KMnO₄", mVal: "158.0", color: "#c084fc", nameVi: "Thuốc tím" },
-  { formula: "CH3COOH", displayFormula: "CH₃COOH", mVal: "60.0", color: "#fde047", nameVi: "Axit axetic (Giấm ăn)" },
+  { formula: "HCl", mVal: "36.5", color: "#fbbf24", nameVi: "Hydrochloric acid (Acid clohydric)" },
+  { formula: "H2SO4", displayFormula: "H₂SO₄", mVal: "98.0", color: "#fbbf24", nameVi: "Sulfuric acid (Acid sunfuric)" },
+  { formula: "HNO3", displayFormula: "HNO₃", mVal: "63.0", color: "#fbbf24", nameVi: "Nitric acid (Acid nitric)" },
+  { formula: "NaOH", mVal: "40.0", color: "#34d399", nameVi: "Sodium hydroxide (Xút)" },
+  { formula: "KOH", mVal: "56.1", color: "#34d399", nameVi: "Potassium hydroxide" },
+  { formula: "AgNO3", displayFormula: "AgNO₃", mVal: "170.0", color: "#c084fc", nameVi: "Silver nitrate (Bạc nitrat)" },
+  { formula: "CuSO4", displayFormula: "CuSO₄", mVal: "160.0", color: "#38bdf8", nameVi: "Copper(II) sulfate (Đồng(II) sunfat)" },
+  { formula: "KMnO4", displayFormula: "KMnO₄", mVal: "158.0", color: "#c084fc", nameVi: "Potassium permanganate (Thuốc tím)" },
+  { formula: "CH3COOH", displayFormula: "CH₃COOH", mVal: "60.0", color: "#fde047", nameVi: "Acetic acid (Acid axetic / Giấm ăn)" },
   { formula: "C2H5OH", displayFormula: "C₂H₅OH", mVal: "46.0", color: "#fde047", nameVi: "Ethanol (Cồn 96°)" },
-  { formula: "C6H12O6", displayFormula: "Glucose", mVal: "180.0", color: "#fb7185", nameVi: "Glucozơ" },
-  { formula: "CaCO3", displayFormula: "CaCO₃", mVal: "100.0", color: "#f8fafc", nameVi: "Đá vôi" },
-  { formula: "BaCl2", displayFormula: "BaCl₂", mVal: "208.2", color: "#38bdf8", nameVi: "Bari clorua" },
-  { formula: "KI", displayFormula: "KI", mVal: "166.0", color: "#a855f7", nameVi: "Kali iotua" },
-  { formula: "FeCl3", displayFormula: "FeCl₃", mVal: "162.2", color: "#f59e0b", nameVi: "Sắt(III) clorua" },
-  { formula: "AlCl3", displayFormula: "AlCl₃", mVal: "133.3", color: "#94a3b8", nameVi: "Nhôm clorua" },
-  { formula: "H2O2", displayFormula: "H₂O₂", mVal: "34.0", color: "#38bdf8", nameVi: "Oxi già" },
+  { formula: "C6H12O6", displayFormula: "Glucose", mVal: "180.0", color: "#fb7185", nameVi: "Glucose (Đường nho)" },
+  { formula: "CaCO3", displayFormula: "CaCO₃", mVal: "100.0", color: "#f8fafc", nameVi: "Calcium carbonate (Đá vôi)" },
+  { formula: "BaCl2", displayFormula: "BaCl₂", mVal: "208.2", color: "#38bdf8", nameVi: "Barium chloride" },
+  { formula: "KI", displayFormula: "KI", mVal: "166.0", color: "#a855f7", nameVi: "Potassium iodide" },
+  { formula: "FeCl3", displayFormula: "FeCl₃", mVal: "162.2", color: "#f59e0b", nameVi: "Iron(III) chloride" },
+  { formula: "AlCl3", displayFormula: "AlCl₃", mVal: "133.3", color: "#94a3b8", nameVi: "Aluminium chloride" },
+  { formula: "H2O2", displayFormula: "H₂O₂", mVal: "34.0", color: "#38bdf8", nameVi: "Hydrogen peroxide (Nước oxy già)" },
 ];
 
 export interface SimulationResult {
@@ -364,7 +365,15 @@ export default function VirtualLab() {
     }
 
     // 3. Call Gemini AI API
-    const prompt = `Phân tích định lượng phản ứng Hóa học THPT:
+    const prompt = `Bạn là chuyên gia mô phỏng phản ứng Hóa học THPT bám sát 100% SGK GDPT 2018 (Cánh Diều, Kết Nối Tri Thức, Chân Trời Sáng Tạo).
+QUY TẮC BẮT BUỘC CHUẨN KHOA HỌC:
+1. TUYỆT ĐỐI KHÔNG BỊA ĐẶT phản ứng không xảy ra trong thực tế (Ví dụ: Cu + HCl loãng không phản ứng ở điều kiện thường vì E°(Cu2+/Cu) = +0.34V > 0.00V; nếu không phản ứng hãy ghi rõ "Không xảy ra phản ứng ở điều kiện thường").
+2. Sử dụng danh pháp IUPAC chính thức: Hydrochloric acid, Sulfuric acid, Nitric acid, Sodium hydroxide, Copper(II) sulfate...
+3. Khí đo ở điều kiện chuẩn (đkc: 25°C, 1 bar): 1 mol khí chiếm 24.79 L (tuyệt đối KHÔNG dùng 22.4 L/mol cũ).
+4. Định lượng mol chính xác: n = C * V, xác định chất hết, chất dư và nồng độ mol các chất/ion sau phản ứng chia cho tổng thể tích V_total = ${totalVol} ml.
+5. Cân bằng phương trình phải bảo toàn tuyệt đối nguyên tố và điện tích.
+
+Phân tích định lượng phản ứng Hóa học THPT:
 - Chất A: ${sA} (${vA} ml, nồng độ ${cA} M)
 - Chất B: ${sB} (${vB} ml, nồng độ ${cB} M)
 - Nhiệt độ: ${t} °C
@@ -401,7 +410,10 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
       const resData: SimulationResult = JSON.parse(match[0]);
 
       localStorage.setItem(hashKey, JSON.stringify(resData));
-      supabase.from("experiments").upsert({ cache_key: hashKey, result_json: resData }).then();
+      const currentUser = getStoredCurrentUser();
+      if (!isDemoAccount(currentUser)) {
+        supabase.from("experiments").upsert({ cache_key: hashKey, result_json: resData }).then();
+      }
 
       renderResult(resData, sA, sB, t);
       setStatusText(`Đã mô phỏng xong | Thể tích: ${totalVol} ml (${t}°C)`);
@@ -543,33 +555,69 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
         <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
           <Button
             variant={activeLabModule === 'reaction' ? 'contained' : 'outlined'}
-            color="primary"
             size="small"
             startIcon={<FlaskConical size={16} />}
             onClick={() => setActiveLabModule('reaction')}
-            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
+            sx={{
+              fontWeight: 'bold',
+              borderRadius: 2,
+              textTransform: 'none',
+              cursor: 'pointer',
+              bgcolor: activeLabModule === 'reaction' ? '#0284c7' : 'transparent',
+              borderColor: activeLabModule === 'reaction' ? '#38bdf8' : 'rgba(56, 189, 248, 0.3)',
+              color: activeLabModule === 'reaction' ? '#fff' : '#38bdf8',
+              boxShadow: activeLabModule === 'reaction' ? '0 0 12px rgba(2, 132, 199, 0.4)' : 'none',
+              '&:hover': {
+                bgcolor: activeLabModule === 'reaction' ? '#0369a1' : 'rgba(56, 189, 248, 0.1)',
+                borderColor: '#38bdf8',
+              },
+            }}
           >
             Phản Ứng Động Học Ảo
           </Button>
 
           <Button
             variant={activeLabModule === 'titration' ? 'contained' : 'outlined'}
-            color="info"
             size="small"
             startIcon={<Pipette size={16} />}
             onClick={() => setActiveLabModule('titration')}
-            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
+            sx={{
+              fontWeight: 'bold',
+              borderRadius: 2,
+              textTransform: 'none',
+              cursor: 'pointer',
+              bgcolor: activeLabModule === 'titration' ? '#0891b2' : 'transparent',
+              borderColor: activeLabModule === 'titration' ? '#06b6d4' : 'rgba(6, 182, 212, 0.3)',
+              color: activeLabModule === 'titration' ? '#fff' : '#06b6d4',
+              boxShadow: activeLabModule === 'titration' ? '0 0 12px rgba(6, 182, 212, 0.4)' : 'none',
+              '&:hover': {
+                bgcolor: activeLabModule === 'titration' ? '#0e7490' : 'rgba(6, 182, 212, 0.1)',
+                borderColor: '#06b6d4',
+              },
+            }}
           >
             Trạm Chuẩn Độ Axit - Bazơ
           </Button>
 
           <Button
             variant={activeLabModule === 'redox' ? 'contained' : 'outlined'}
-            color="warning"
             size="small"
             startIcon={<Zap size={16} />}
             onClick={() => setActiveLabModule('redox')}
-            sx={{ fontWeight: 'bold', borderRadius: 2, textTransform: 'none' }}
+            sx={{
+              fontWeight: 'bold',
+              borderRadius: 2,
+              textTransform: 'none',
+              cursor: 'pointer',
+              bgcolor: activeLabModule === 'redox' ? '#d97706' : 'transparent',
+              borderColor: activeLabModule === 'redox' ? '#f59e0b' : 'rgba(245, 158, 11, 0.3)',
+              color: activeLabModule === 'redox' ? '#fff' : '#f59e0b',
+              boxShadow: activeLabModule === 'redox' ? '0 0 12px rgba(245, 158, 11, 0.4)' : 'none',
+              '&:hover': {
+                bgcolor: activeLabModule === 'redox' ? '#b45309' : 'rgba(245, 158, 11, 0.1)',
+                borderColor: '#f59e0b',
+              },
+            }}
           >
             Cân Bằng Oxi Hóa - Khử (4 Bước)
           </Button>
@@ -585,6 +633,12 @@ Trả về DUY NHẤT một chuỗi JSON theo cấu trúc (không dùng markdown
             color: '#38bdf8',
             textTransform: 'none',
             fontSize: '12px',
+            cursor: 'pointer',
+            borderRadius: 2,
+            '&:hover': {
+              borderColor: '#38bdf8',
+              bgcolor: 'rgba(56, 189, 248, 0.1)',
+            },
           }}
         >
           Bảng tuần hoàn / M

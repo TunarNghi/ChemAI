@@ -24,7 +24,7 @@ export const getAppTheme = (mode: 'light' | 'dark' = 'dark') => {
       },
     },
     typography: {
-      fontFamily: ['Inter', 'var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'].join(','),
+      fontFamily: ['Montserrat', 'var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'].join(','),
       h1: { fontWeight: 800, letterSpacing: '-0.025em' },
       h2: { fontWeight: 800, letterSpacing: '-0.025em' },
       h3: { fontWeight: 800, letterSpacing: '-0.02em' },

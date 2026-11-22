@@ -5,6 +5,7 @@ import { Box, Typography, Card, CardContent, Grid, Button, TextField, MenuItem, 
 import { Sparkles, BookOpen, Download, Save, History } from 'lucide-react';
 import { supabase, generateLessonPlanWithDify } from '@/lib/api';
 import { formatMarkdownToHTML } from '@/components/AuditTab';
+import { isDemoAccount, getStoredCurrentUser } from '@/components/UserAuthModal';
 
 interface SavedLessonPlan {
   id?: string;
@@ -98,7 +99,10 @@ Trả về nội dung trình bày sạch sẽ dưới dạng Markdown.`;
     const cacheKey = `lesson_plan_${t.replace(/[^a-zA-Z0-9]/g, "")}_${Date.now()}`;
 
     try {
-      await supabase.from("experiments").upsert({ cache_key: cacheKey, result_json: planObj });
+      const currentUser = getStoredCurrentUser();
+      if (!isDemoAccount(currentUser)) {
+        await supabase.from("experiments").upsert({ cache_key: cacheKey, result_json: planObj });
+      }
       setSavedPlans(prev => [planObj, ...prev]);
     } catch (e) {
       console.warn("Save to DB error:", e);

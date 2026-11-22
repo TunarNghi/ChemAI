@@ -1,6 +1,7 @@
 "use client";
 
 import { supabase, callGeminiAPI } from "@/lib/api";
+import { isDemoAccount, getStoredCurrentUser } from "@/components/UserAuthModal";
 import {
   Box,
   Button,
@@ -201,16 +202,23 @@ export default function StemProjects() {
     const cacheKey = `stem_project_${newTitle.replace(/[^a-zA-Z0-9]/g, "")}_${Date.now()}`;
 
     try {
-      const { error } = await supabase.from("experiments").upsert({
-        cache_key: cacheKey,
-        result_json: proj,
-      });
+      const currentUser = getStoredCurrentUser();
+      if (!isDemoAccount(currentUser)) {
+        const { error } = await supabase.from("experiments").upsert({
+          cache_key: cacheKey,
+          result_json: proj,
+        });
 
-      if (error) {
-        console.error("Supabase upsert error:", error);
+        if (error) {
+          console.error("Supabase upsert error:", error);
+        }
+
+        await fetchStemProjectsFromDB();
+      } else {
+        // Tài khoản thử nghiệm: lưu tạm vào state để trải nghiệm ngay
+        setProjects((prev) => [proj, ...prev]);
       }
 
-      await fetchStemProjectsFromDB();
       setOpenModal(false);
       setNewTitle("");
       setNewDesc("");

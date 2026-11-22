@@ -9,8 +9,6 @@ import {
   Toolbar,
   Typography,
   Container,
-  Tabs,
-  Tab,
   IconButton,
   Chip,
   Paper,
@@ -29,6 +27,7 @@ import {
   Tooltip,
   Dialog,
   Grid,
+  Menu,
 } from '@mui/material';
 import {
   FlaskConical,
@@ -39,9 +38,7 @@ import {
   FileCheck2,
   Sparkles,
   UserCheck,
-  Menu,
   X,
-  Layers,
   Home,
   User,
   Lock,
@@ -49,12 +46,14 @@ import {
   GraduationCap,
   Award,
   Atom,
+  Zap,
+  ChevronDown,
+  Menu as MenuIcon,
 } from 'lucide-react';
 import { theme } from '@/theme/theme';
 import HomeDashboard from '@/components/HomeDashboard';
 import VirtualLab from '@/components/VirtualLab';
 import DifyChatTutor from '@/components/DifyChatTutor';
-import ChemicalBondViewer3D from '@/components/ChemicalBondViewer3D';
 import SafetyTab from '@/components/SafetyTab';
 import QuizKahootTab from '@/components/QuizKahootTab';
 import AuditTab from '@/components/AuditTab';
@@ -68,8 +67,8 @@ import PeriodicTableTab from '@/components/PeriodicTableTab';
 import TeacherWhiteboard from '@/components/TeacherWhiteboard';
 import DiagnosticTestCenter from '@/components/DiagnosticTestCenter';
 import MobileViewManager from '@/components/MobileViewManager';
-import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser } from '@/components/UserAuthModal';
-import { Grid2X2, Brain, Pen, Compass } from 'lucide-react';
+import UserAuthModal, { UserProfile, getStoredCurrentUser, saveStoredCurrentUser, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT } from '@/components/UserAuthModal';
+import { Grid2X2, Brain, Pen } from 'lucide-react';
 
 interface NavItem {
   index: number;
@@ -99,6 +98,163 @@ const NAV_ITEMS: NavItem[] = [
   { index: 10, label: "Giáo Viên Audit", shortLabel: "Audit", category: 'teacher', icon: <UserCheck size={20} />, isAudit: true, teacherOnly: true },
 ];
 
+export interface NavGroupItem {
+  index: number;
+  label: string;
+  desc: string;
+  icon: React.ReactNode;
+  badge?: string;
+  teacherOnly?: boolean;
+  isAudit?: boolean;
+}
+
+export interface NavGroup {
+  id: string;
+  title: string;
+  shortTitle: string;
+  color: string;
+  icon: React.ReactNode;
+  teacherOnly?: boolean;
+  items: NavGroupItem[];
+}
+
+export const NAV_GROUPS: NavGroup[] = [
+  {
+    id: 'lab',
+    title: 'Thực Nghiệm Ảo & 3D',
+    shortTitle: 'Thực Nghiệm 3D',
+    color: '#38bdf8',
+    icon: <FlaskConical size={18} />,
+    items: [
+      {
+        index: 1,
+        label: 'Phòng Thí Nghiệm & Chuẩn Độ',
+        desc: 'Mô phỏng 11+ phản ứng hóa học WebGL, đổi màu chỉ thị pH',
+        icon: <FlaskConical size={18} color="#38bdf8" />,
+        badge: 'Mô phỏng ảo'
+      },
+      {
+        index: 12,
+        label: 'Bảng Tuần Hoàn 4D',
+        desc: '118 nguyên tố IUPAC tương tác, tra cứu khối lượng & tính chất',
+        icon: <Atom size={18} color="#06b6d4" />,
+        badge: 'IUPAC'
+      },
+      {
+        index: 4,
+        label: '3D Liên Kết & An Toàn PTN',
+        desc: 'Mô hình quả cầu - que nối 3D và cẩm nang an toàn hóa chất',
+        icon: <ShieldCheck size={18} color="#10b981" />,
+        badge: '3D WebGL'
+      },
+    ]
+  },
+  {
+    id: 'tutor',
+    title: 'Gia Sư AI & Đánh Giá',
+    shortTitle: 'Gia Sư AI',
+    color: '#818cf8',
+    icon: <Bot size={18} />,
+    items: [
+      {
+        index: 2,
+        label: 'Gia Sư Hóa Học ChemAI',
+        desc: 'Trợ lý học tập thông minh giải đáp 24/7 chuẩn GDPT 2018',
+        icon: <Bot size={18} color="#818cf8" />,
+        badge: 'Trợ Lý ChemAI 2.0'
+      },
+      {
+        index: 14,
+        label: 'Chẩn Đoán Lỗ Hổng Kiến Thức',
+        desc: 'Trắc nghiệm ma trận phát hiện lỗ hổng và gợi ý lộ trình bù',
+        icon: <Brain size={18} color="#a855f7" />,
+        badge: 'Test Center'
+      },
+      {
+        index: 8,
+        label: 'Video Bài Giảng Thí Nghiệm',
+        desc: 'Kho học liệu video thực nghiệm trực quan sinh động theo SGK',
+        icon: <Video size={18} color="#ec4899" />,
+        badge: 'Video'
+      },
+    ]
+  },
+  {
+    id: 'arena',
+    title: 'Đấu Trường & Luyện Thi',
+    shortTitle: 'Đấu Trường',
+    color: '#f59e0b',
+    icon: <Trophy size={18} />,
+    items: [
+      {
+        index: 3,
+        label: 'Đấu Trường Trắc Nghiệm Realtime',
+        desc: 'Thi đấu đối kháng thời gian thực theo mã PIN cùng cả lớp',
+        icon: <Trophy size={18} color="#f59e0b" />,
+        badge: 'Realtime'
+      },
+      {
+        index: 11,
+        label: 'Bảng Vàng Xếp Hạng',
+        desc: 'Vinh danh Top học sinh xuất sắc, chuỗi ngày Streak và EXP',
+        icon: <Award size={18} color="#eab308" />,
+        badge: 'Leaderboard'
+      },
+    ]
+  },
+  {
+    id: 'teacher',
+    title: 'Không Gian Giáo Viên',
+    shortTitle: 'Góc Giáo Viên',
+    color: '#10b981',
+    icon: <BookOpen size={18} />,
+    teacherOnly: true,
+    items: [
+      {
+        index: 5,
+        label: 'Soạn Kế Hoạch Bài Dạy (5512)',
+        desc: 'Tự động tạo giáo án chuẩn mẫu Công văn 5512 của Bộ GD&ĐT',
+        icon: <BookOpen size={18} color="#10b981" />,
+        badge: 'CV 5512',
+        teacherOnly: true
+      },
+      {
+        index: 6,
+        label: 'Ngân Hàng Đề Thi Ma Trận 2026',
+        desc: 'Xuất đề trắc nghiệm Đúng/Sai, Trả lời ngắn cấu trúc mới 2025-2026',
+        icon: <FileCheck2 size={18} color="#34d399" />,
+        badge: 'Ma trận mới',
+        teacherOnly: true
+      },
+      {
+        index: 13,
+        label: 'Bảng Trắng Studio & STEM',
+        desc: 'Phấn điện tử, vẽ cấu tạo phân tử và tổ chức bài học STEM',
+        icon: <Pen size={18} color="#06b6d4" />,
+        badge: 'Studio',
+        teacherOnly: true
+      },
+      {
+        index: 9,
+        label: 'Sổ Theo Dõi & Đánh Giá Học Sinh',
+        desc: 'Quản lý điểm số, tiến trình và sổ nhận xét đánh giá năng lực',
+        icon: <GraduationCap size={18} color="#f59e0b" />,
+        badge: 'Sổ điểm',
+        teacherOnly: true
+      },
+      {
+        index: 10,
+        label: 'Kiểm Duyệt Nội Dung & Audit',
+        desc: 'Kiểm tra độ chính xác khoa học và nhật ký dữ liệu hệ thống',
+        icon: <UserCheck size={18} color="#818cf8" />,
+        badge: 'Audit',
+        isAudit: true,
+        teacherOnly: true
+      },
+    ]
+  }
+];
+
 export default function AppContainer() {
   const [currentTab, setCurrentTab] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -107,21 +263,57 @@ export default function AppContainer() {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authInitialRole, setAuthInitialRole] = useState<'student' | 'teacher'>('student');
+  const [roleViewMode, setRoleViewMode] = useState<'all' | 'student' | 'teacher'>('all');
+  const [featuresMenuAnchorEl, setFeaturesMenuAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleOpenFeaturesMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setFeaturesMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseFeaturesMenu = () => {
+    setFeaturesMenuAnchorEl(null);
+  };
 
   const isTeacher = currentUser?.role === 'teacher';
-  const visibleNavItems = NAV_ITEMS.filter(item => !item.teacherOnly || isTeacher);
+  const isStudent = currentUser?.role === 'student';
+
+  const handleQuickDemoLogin = (role: 'student' | 'teacher') => {
+    const acc = role === 'teacher' ? DEFAULT_TEACHER_ACCOUNT : DEFAULT_STUDENT_ACCOUNT;
+    saveStoredCurrentUser(acc);
+    setCurrentUser(acc);
+    setRoleViewMode(role === 'student' ? 'student' : 'teacher');
+  };
 
   useEffect(() => {
     setMounted(true);
     const stored = getStoredCurrentUser();
     if (stored) {
       setCurrentUser(stored);
+      if (stored.role === 'student') {
+        setRoleViewMode('student');
+      } else if (stored.role === 'teacher') {
+        setRoleViewMode('teacher');
+      }
     }
   }, []);
+
+  useEffect(() => {
+    if (currentUser?.role === 'student') {
+      setRoleViewMode('student');
+      const teacherTabs = [5, 6, 9, 10, 13];
+      if (teacherTabs.includes(currentTab)) {
+        setCurrentTab(0);
+      }
+    }
+  }, [currentUser]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     if (newValue !== 0 && !currentUser) {
       setAuthModalOpen(true);
+      return;
+    }
+    const teacherTabs = [5, 6, 9, 10, 13];
+    if (isStudent && teacherTabs.includes(newValue)) {
       return;
     }
     setCurrentTab(newValue);
@@ -130,6 +322,12 @@ export default function AppContainer() {
   const handleSelectTab = (idx: number) => {
     if (idx !== 0 && !currentUser) {
       setAuthModalOpen(true);
+      setDrawerOpen(false);
+      setHubModalOpen(false);
+      return;
+    }
+    const teacherTabs = [5, 6, 9, 10, 13];
+    if (isStudent && teacherTabs.includes(idx)) {
       setDrawerOpen(false);
       setHubModalOpen(false);
       return;
@@ -163,141 +361,408 @@ export default function AppContainer() {
           }}
         >
           <Container maxWidth="xl" sx={{ px: { xs: 1.5, sm: 2, md: 3 } }}>
-            <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 }, justifyContent: 'space-between', gap: 1 }}>
-              {/* Brand Logo, Fast Home Button & Title */}
-              <Box display="flex" alignItems="center" gap={{ xs: 1, sm: 1.2 }} sx={{ minWidth: 0, flexShrink: 0 }}>
-                {/* Fast Home Button */}
-                <Tooltip title="Về Trang Chủ Ngay (1 Chạm)">
-                  <IconButton
-                    edge="start"
-                    color="primary"
-                    onClick={() => handleSelectTab(0)}
-                    sx={{
-                      bgcolor: currentTab === 0 ? 'rgba(2, 132, 199, 0.3)' : 'rgba(2, 132, 199, 0.15)',
-                      border: currentTab === 0 ? '1.5px solid #38bdf8' : '1px solid rgba(56, 189, 248, 0.3)',
-                      boxShadow: currentTab === 0 ? '0 0 12px rgba(56, 189, 248, 0.4)' : 'none',
-                      p: { xs: 0.8, sm: 1 },
-                      '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.3)', borderColor: '#38bdf8' }
-                    }}
-                  >
-                    <Home size={21} color="#38bdf8" />
-                  </IconButton>
-                </Tooltip>
-
-                <Box sx={{ minWidth: 0, cursor: 'pointer' }} onClick={() => handleSelectTab(0)}>
-                  <Box display="flex" alignItems="center" gap={0.8}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      noWrap
-                      sx={{
-                        fontSize: { xs: '16px', sm: '19px', md: '21px' },
-                        background: 'linear-gradient(45deg, #38bdf8, #818cf8)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        letterSpacing: '-0.02em',
-                      }}
-                    >
-                      HCC - ChemAI
-                    </Typography>
-                    <Chip
-                      label="BIG UPDATE 2.0"
-                      size="small"
-                      sx={{
-                        height: 18,
-                        fontSize: 9.5,
-                        fontWeight: 900,
-                        bgcolor: 'rgba(56, 189, 248, 0.15)',
-                        color: '#38bdf8',
-                        border: '1px solid rgba(56, 189, 248, 0.3)',
-                        display: { xs: 'none', sm: 'inline-flex' }
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    noWrap
-                    sx={{
-                      display: { xs: 'none', sm: 'block' },
-                      fontSize: '11px',
-                      opacity: 0.85
-                    }}
-                  >
-                    Hệ Thống Trợ Lý & Mô Phỏng Hóa Học THPT (GDPT 2018)
-                  </Typography>
-                </Box>
-
-                {/* All Features Hub Trigger Button */}
-                <Button
-                  size="small"
-                  variant="outlined"
-                  startIcon={<Grid2X2 size={16} />}
-                  onClick={() => setHubModalOpen(true)}
-                  sx={{
-                    ml: { xs: 0.5, md: 1.5 },
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '12px',
-                    borderRadius: 2,
-                    color: '#38bdf8',
-                    bgcolor: 'rgba(2, 132, 199, 0.1)',
-                    borderColor: 'rgba(56, 189, 248, 0.35)',
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.25)', borderColor: '#38bdf8' }
-                  }}
-                >
-                  Tất Cả Tính Năng
-                </Button>
-              </Box>
-
-              {/* Desktop/Tablet Horizontal Tabs */}
-              <Tabs
-                value={visibleNavItems.some(i => i.index === currentTab && !i.isAudit) ? currentTab : false}
-                onChange={handleTabChange}
-                textColor="primary"
-                indicatorColor="primary"
-                variant="scrollable"
-                scrollButtons="auto"
+            <Toolbar
+              disableGutters
+              sx={{
+                minHeight: { xs: 58, sm: 62 },
+                height: { xs: 58, sm: 62 },
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: { xs: 1, sm: 1.5, lg: 2 },
+              }}
+            >
+              {/* BRAND LOGO & TITLE (Clean 1-touch Home Navigation) */}
+              <Box
+                onClick={() => handleSelectTab(0)}
                 sx={{
-                  display: { xs: 'none', lg: 'flex' },
-                  flexGrow: 1,
-                  mx: 1.5,
-                  '& .MuiTabs-indicator': {
-                    height: 3,
-                    borderRadius: '3px 3px 0 0',
-                    bgcolor: '#38bdf8',
-                    boxShadow: '0 0 10px rgba(56, 189, 248, 0.7)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.2,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  userSelect: 'none',
+                  textDecoration: 'none',
+                  '&:hover .brand-logo-mark': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '0 0 16px rgba(56, 189, 248, 0.6)',
                   },
-                  '& .MuiTab-root': {
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '12.5px',
-                    minHeight: 64,
-                    px: 1.3,
-                    color: '#94a3b8',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      color: '#e0f2fe',
-                      bgcolor: 'rgba(255, 255, 255, 0.03)',
-                    },
-                    '&.Mui-selected': {
-                      color: '#38bdf8',
-                      fontWeight: 700,
-                      bgcolor: 'rgba(56, 189, 248, 0.06)',
-                    }
-                  }
                 }}
               >
-                {visibleNavItems
-                  .filter(item => !item.isAudit)
-                  .map(item => (
-                    <Tab key={item.index} value={item.index} label={item.shortLabel || item.label} />
-                  ))}
-              </Tabs>
+                <Box
+                  className="brand-logo-mark"
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 2.2,
+                    background: 'linear-gradient(135deg, #0284c7 0%, #6366f1 100%)',
+                    border: '1px solid rgba(56, 189, 248, 0.45)',
+                    boxShadow: '0 0 12px rgba(2, 132, 199, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                >
+                  <FlaskConical size={20} color="#ffffff" />
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                  <Typography
+                    sx={{
+                      fontSize: { xs: '18px', sm: '20px' },
+                      fontWeight: 900,
+                      letterSpacing: '-0.03em',
+                      whiteSpace: 'nowrap',
+                      background: 'linear-gradient(90deg, #38bdf8 0%, #818cf8 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    ChemAI
+                  </Typography>
+                  <Chip
+                    label="2.0"
+                    size="small"
+                    sx={{
+                      height: 18,
+                      fontSize: '10px',
+                      fontWeight: 800,
+                      bgcolor: 'rgba(56, 189, 248, 0.12)',
+                      color: '#38bdf8',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                    }}
+                  />
+                </Box>
+              </Box>
 
-              {/* Action Buttons */}
-              <Box display="flex" alignItems="center" gap={1}>
+              {/* RIGHT CONTROLS: FEATURES DROPDOWN, ROLE TOGGLE, PROFILE & MOBILE DRAWER */}
+              <Box display="flex" alignItems="center" gap={{ xs: 0.8, sm: 1.2 }} flexShrink={0}>
+                {/* SINGLE COMPACT FEATURES DROPDOWN BUTTON (Desktop & Tablet) */}
+                <Box
+                  component="nav"
+                  sx={{
+                    display: { xs: 'none', sm: 'flex' },
+                    alignItems: 'center',
+                    bgcolor: 'rgba(15, 23, 42, 0.7)',
+                    backdropFilter: 'blur(16px)',
+                    p: '3px 6px',
+                    borderRadius: 3,
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Button
+                    size="small"
+                    onClick={handleOpenFeaturesMenu}
+                    startIcon={<Grid2X2 size={16} color="#38bdf8" />}
+                    endIcon={
+                      <ChevronDown
+                        size={14}
+                        style={{
+                          opacity: 0.7,
+                          transform: Boolean(featuresMenuAnchorEl) ? 'rotate(180deg)' : 'none',
+                          transition: 'transform 0.2s ease',
+                        }}
+                      />
+                    }
+                    sx={{
+                      textTransform: 'none',
+                      whiteSpace: 'nowrap',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      px: 1.5,
+                      py: 0.5,
+                      height: 30,
+                      borderRadius: 2,
+                      color: Boolean(featuresMenuAnchorEl) ? '#ffffff' : '#f8fafc',
+                      bgcolor: Boolean(featuresMenuAnchorEl) ? 'rgba(56, 189, 248, 0.22)' : 'rgba(56, 189, 248, 0.1)',
+                      border: Boolean(featuresMenuAnchorEl)
+                        ? '1px solid #38bdf8'
+                        : '1px solid rgba(56, 189, 248, 0.3)',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        bgcolor: 'rgba(56, 189, 248, 0.25)',
+                        borderColor: '#38bdf8',
+                        color: '#ffffff',
+                      },
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    Các chức năng
+                  </Button>
+
+                  {/* MEGA DROPDOWN MENU CONTAINING ALL FEATURES */}
+                  <Menu
+                    anchorEl={featuresMenuAnchorEl}
+                    open={Boolean(featuresMenuAnchorEl)}
+                    onClose={handleCloseFeaturesMenu}
+                    PaperProps={{
+                      sx: {
+                        bgcolor: '#090d16',
+                        backgroundImage: 'linear-gradient(180deg, #0d1527 0%, #080c14 100%)',
+                        border: '1px solid rgba(56, 189, 248, 0.25)',
+                        borderRadius: 3.5,
+                        boxShadow: '0 24px 60px rgba(0,0,0,0.92), 0 0 25px rgba(56, 189, 248, 0.12)',
+                        backdropFilter: 'blur(20px)',
+                        width: { xs: '92vw', sm: 660, md: 780 },
+                        maxHeight: '85vh',
+                        p: 2.2,
+                        overflowY: 'auto',
+                      }
+                    }}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  >
+                    {/* Top Header: Quick Access to Home */}
+                    <Box sx={{ mb: 2 }}>
+                      <Paper
+                        onClick={() => {
+                          handleCloseFeaturesMenu();
+                          handleSelectTab(0);
+                        }}
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 2.5,
+                          bgcolor: currentTab === 0 ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                          border: currentTab === 0 ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.15s ease',
+                          '&:hover': {
+                            bgcolor: 'rgba(56, 189, 248, 0.22)',
+                            borderColor: '#38bdf8',
+                          },
+                        }}
+                      >
+                        <Box display="flex" alignItems="center" gap={1.5}>
+                          <Box
+                            sx={{
+                              p: 1,
+                              borderRadius: 2,
+                              bgcolor: 'rgba(56, 189, 248, 0.15)',
+                              color: '#38bdf8',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Home size={20} />
+                          </Box>
+                          <Box>
+                            <Typography variant="body2" fontWeight={800} sx={{ color: '#fff', fontSize: '14px' }}>
+                              Trang Chủ ChemAI
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '11.5px' }}>
+                              Bảng điều khiển tổng quan, lối tắt nhanh & thống kê học tập
+                            </Typography>
+                          </Box>
+                        </Box>
+                        {currentTab === 0 && (
+                          <Chip
+                            label="Đang mở"
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: '10.5px',
+                              fontWeight: 800,
+                              bgcolor: 'rgba(56, 189, 248, 0.2)',
+                              color: '#38bdf8',
+                              border: '1px solid rgba(56, 189, 248, 0.4)',
+                            }}
+                          />
+                        )}
+                      </Paper>
+                    </Box>
+
+                    {/* All 4 Main Function Categories in a 2-Column Grid */}
+                    <Grid container spacing={2}>
+                      {NAV_GROUPS
+                        .filter(group => !group.teacherOnly || (!isStudent && (isTeacher || roleViewMode === 'teacher')))
+                        .map((group) => {
+                          return (
+                            <Grid item xs={12} sm={6} key={group.id}>
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: 2.5,
+                                  bgcolor: 'rgba(15, 23, 42, 0.6)',
+                                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                                  height: '100%',
+                                }}
+                              >
+                                {/* Group Header */}
+                                <Box display="flex" alignItems="center" gap={1} mb={1.2} pb={0.8} borderBottom={`1px solid ${group.color}25`}>
+                                  {React.cloneElement(group.icon as React.ReactElement<any>, { size: 16, color: group.color })}
+                                  <Typography
+                                    variant="subtitle2"
+                                    fontWeight={800}
+                                    sx={{
+                                      color: group.color,
+                                      fontSize: '12px',
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.04em',
+                                    }}
+                                  >
+                                    {group.title}
+                                  </Typography>
+                                </Box>
+
+                                {/* Group Items */}
+                                <Stack spacing={0.8}>
+                                  {group.items.map((item) => {
+                                    const isSelected = currentTab === item.index;
+                                    return (
+                                      <Box
+                                        key={item.index}
+                                        onClick={() => {
+                                          handleCloseFeaturesMenu();
+                                          handleSelectTab(item.index);
+                                        }}
+                                        sx={{
+                                          p: 1,
+                                          borderRadius: 2,
+                                          bgcolor: isSelected ? `${group.color}20` : 'transparent',
+                                          border: isSelected ? `1.5px solid ${group.color}80` : '1px solid transparent',
+                                          cursor: 'pointer',
+                                          display: 'flex',
+                                          alignItems: 'flex-start',
+                                          gap: 1.2,
+                                          transition: 'all 0.15s ease',
+                                          '&:hover': {
+                                            bgcolor: `${group.color}18`,
+                                            border: `1px solid ${group.color}40`,
+                                            transform: 'translateX(3px)',
+                                          },
+                                        }}
+                                      >
+                                        <Box sx={{ mt: 0.2, flexShrink: 0 }}>
+                                          {item.icon}
+                                        </Box>
+                                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                                          <Box display="flex" alignItems="center" gap={0.8} flexWrap="wrap">
+                                            <Typography
+                                              variant="body2"
+                                              fontWeight={isSelected ? 800 : 700}
+                                              sx={{
+                                                color: isSelected ? group.color : '#f8fafc',
+                                                fontSize: '13px',
+                                                lineHeight: 1.3,
+                                              }}
+                                            >
+                                              {item.label}
+                                            </Typography>
+                                            {item.badge && (
+                                              <Chip
+                                                label={item.badge}
+                                                size="small"
+                                                sx={{
+                                                  height: 17,
+                                                  fontSize: '9px',
+                                                  fontWeight: 800,
+                                                  bgcolor: `${group.color}15`,
+                                                  color: group.color,
+                                                  border: `1px solid ${group.color}35`,
+                                                }}
+                                              />
+                                            )}
+                                          </Box>
+                                          <Typography
+                                            variant="caption"
+                                            sx={{
+                                              color: '#94a3b8',
+                                              fontSize: '11px',
+                                              display: '-webkit-box',
+                                              WebkitLineClamp: 2,
+                                              WebkitBoxOrient: 'vertical',
+                                              overflow: 'hidden',
+                                              mt: 0.3,
+                                              lineHeight: 1.25,
+                                            }}
+                                          >
+                                            {item.desc}
+                                          </Typography>
+                                        </Box>
+                                      </Box>
+                                    );
+                                  })}
+                                </Stack>
+                              </Box>
+                            </Grid>
+                          );
+                        })}
+                    </Grid>
+                  </Menu>
+                </Box>
+
+                {/* Role-Based Mode Switcher (Visible on both Mobile & Desktop) */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    bgcolor: 'rgba(15, 23, 42, 0.75)',
+                    p: { xs: '2px', sm: '3px' },
+                    borderRadius: 2.5,
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  <Tooltip title="Chế độ học tập tinh gọn dành riêng cho Học sinh">
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        if (!isStudent) {
+                          setRoleViewMode(roleViewMode === 'student' ? 'all' : 'student');
+                        }
+                      }}
+                      startIcon={<GraduationCap size={12} />}
+                      sx={{
+                        textTransform: 'none',
+                        whiteSpace: 'nowrap',
+                        fontSize: { xs: '11px', sm: '11.5px' },
+                        fontWeight: 700,
+                        py: { xs: 0.3, sm: 0.4 },
+                        px: { xs: 0.8, sm: 1.1 },
+                        height: { xs: 26, sm: 28 },
+                        borderRadius: 2,
+                        cursor: isStudent ? 'default' : 'pointer',
+                        color: roleViewMode === 'student' || isStudent ? '#38bdf8' : '#94a3b8',
+                        bgcolor: roleViewMode === 'student' || isStudent ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                        border: roleViewMode === 'student' || isStudent ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+                        '&:hover': { bgcolor: isStudent ? 'rgba(56, 189, 248, 0.2)' : 'rgba(56, 189, 248, 0.15)', color: '#fff' }
+                      }}
+                    >
+                      Học Sinh
+                    </Button>
+                  </Tooltip>
+                  {!isStudent && (
+                    <Tooltip title="Chế độ sư phạm dành cho Thầy/Cô (Giáo án 5512, Đề thi, Sổ điểm)">
+                      <Button
+                        size="small"
+                        onClick={() => setRoleViewMode(roleViewMode === 'teacher' ? 'all' : 'teacher')}
+                        startIcon={<BookOpen size={12} />}
+                        sx={{
+                          textTransform: 'none',
+                          whiteSpace: 'nowrap',
+                          fontSize: { xs: '11px', sm: '11.5px' },
+                          fontWeight: 700,
+                          py: { xs: 0.3, sm: 0.4 },
+                          px: { xs: 0.8, sm: 1.1 },
+                          height: { xs: 26, sm: 28 },
+                          borderRadius: 2,
+                          cursor: 'pointer',
+                          color: roleViewMode === 'teacher' ? '#34d399' : '#94a3b8',
+                          bgcolor: roleViewMode === 'teacher' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                          border: roleViewMode === 'teacher' ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid transparent',
+                          '&:hover': { bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#fff' }
+                        }}
+                      >
+                        Giáo Viên
+                      </Button>
+                    </Tooltip>
+                  )}
+                </Box>
+
                 {/* User Account / Profile Button */}
                 {currentUser ? (
                   <Chip
@@ -307,62 +772,122 @@ export default function AppContainer() {
                           bgcolor: isTeacher ? '#f59e0b' : '#0284c7',
                           color: isTeacher ? '#000' : '#fff',
                           fontWeight: 'bold',
-                          width: 26,
-                          height: 26,
-                          fontSize: '11px'
+                          width: 24,
+                          height: 24,
+                          fontSize: '10.5px'
                         }}
                       >
                         {isTeacher ? 'GV' : 'HS'}
                       </Avatar>
                     }
-                    label={isTeacher ? `[GV] ${currentUser.fullName}` : `[HS] ${currentUser.fullName} (${currentUser.className || 'Lớp 10'})`}
+                    label={isTeacher ? `${currentUser.title || (currentUser.gender === 'male' ? 'Thầy' : 'Cô')} ${(currentUser.fullName || 'Giáo Viên A').replace(/^(Cô|Thầy)\s+/i, '').trim() || 'Giáo Viên A'}` : currentUser.fullName}
                     onClick={() => setAuthModalOpen(true)}
                     variant="outlined"
                     sx={{
                       display: { xs: 'none', sm: 'inline-flex' },
-                      fontWeight: '600',
+                      fontWeight: 700,
+                      fontSize: '12px',
+                      whiteSpace: 'nowrap',
                       borderColor: isTeacher ? 'rgba(245, 158, 11, 0.5)' : 'rgba(56, 189, 248, 0.4)',
-                      color: isTeacher ? '#f59e0b' : '#38bdf8',
+                      color: isTeacher ? '#fbbf24' : '#38bdf8',
                       bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.08)' : 'rgba(56, 189, 248, 0.08)',
                       cursor: 'pointer',
                       height: 32,
+                      maxWidth: { sm: 160, md: 220 },
+                      '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis' },
                       '&:hover': { bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.2)' : 'rgba(56, 189, 248, 0.2)' }
                     }}
                   />
                 ) : (
-                  <Chip
-                    icon={<User size={15} color="#38bdf8" />}
-                    label="Đăng nhập / Đăng ký"
-                    onClick={() => setAuthModalOpen(true)}
-                    variant="outlined"
-                    sx={{
-                      display: { xs: 'none', sm: 'inline-flex' },
-                      fontWeight: 'bold',
-                      borderColor: 'rgba(56, 189, 248, 0.5)',
-                      color: '#38bdf8',
-                      bgcolor: 'rgba(2, 132, 199, 0.1)',
-                      cursor: 'pointer',
-                      height: 32,
-                      '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.25)' }
-                    }}
-                  />
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+                    <Tooltip title="Thử nghiệm nhanh quyền Giáo viên (Giáo Viên A)">
+                      <Chip
+                        icon={<Zap size={13} color="#f59e0b" />}
+                        label="Thử Quyền GV"
+                        size="small"
+                        onClick={() => handleQuickDemoLogin('teacher')}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '11px',
+                          cursor: 'pointer',
+                          bgcolor: 'rgba(245, 158, 11, 0.15)',
+                          color: '#fbbf24',
+                          border: '1px solid rgba(245, 158, 11, 0.4)',
+                          height: 30,
+                          '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.3)' }
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Thử nghiệm nhanh quyền Học sinh (Học Sinh A)">
+                      <Chip
+                        icon={<Zap size={13} color="#38bdf8" />}
+                        label="Thử Quyền HS"
+                        size="small"
+                        onClick={() => handleQuickDemoLogin('student')}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '11px',
+                          cursor: 'pointer',
+                          bgcolor: 'rgba(56, 189, 248, 0.15)',
+                          color: '#38bdf8',
+                          border: '1px solid rgba(56, 189, 248, 0.4)',
+                          height: 30,
+                          '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.3)' }
+                        }}
+                      />
+                    </Tooltip>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => setAuthModalOpen(true)}
+                      startIcon={<User size={14} />}
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: '12.5px',
+                        textTransform: 'none',
+                        whiteSpace: 'nowrap',
+                        bgcolor: '#0284c7',
+                        color: '#ffffff',
+                        height: 32,
+                        px: 1.8,
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 10px rgba(2, 132, 199, 0.4)',
+                        '&:hover': { bgcolor: '#0369a1' }
+                      }}
+                    >
+                      Đăng Nhập
+                    </Button>
+                  </Stack>
                 )}
 
-                {/* Mobile Menu & Hub Trigger */}
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  edge="end"
-                  onClick={() => setHubModalOpen(true)}
-                  sx={{
-                    display: { xs: 'flex', lg: 'none' },
-                    bgcolor: 'rgba(2, 132, 199, 0.15)',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
-                    p: 0.9,
-                  }}
-                >
-                  <Grid2X2 size={20} color="#38bdf8" />
-                </IconButton>
+                {/* Mobile Menu & Hub Triggers */}
+                <Box sx={{ display: { xs: 'flex', lg: 'none' }, alignItems: 'center', gap: 0.8 }}>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open hub"
+                    onClick={() => setHubModalOpen(true)}
+                    sx={{
+                      bgcolor: 'rgba(2, 132, 199, 0.15)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      p: 0.8,
+                    }}
+                  >
+                    <Grid2X2 size={18} color="#38bdf8" />
+                  </IconButton>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={() => setDrawerOpen(true)}
+                    sx={{
+                      bgcolor: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      p: 0.8,
+                    }}
+                  >
+                    <MenuIcon size={18} color="#f8fafc" />
+                  </IconButton>
+                </Box>
               </Box>
             </Toolbar>
           </Container>
@@ -447,67 +972,148 @@ export default function AppContainer() {
             )}
           </Box>
 
-          {/* Drawer Nav Items List */}
-          <List sx={{ p: 0 }}>
-            {visibleNavItems.map((item) => {
-              const isSelected = currentTab === item.index;
-              const isLocked = !currentUser && item.index !== 0;
-              return (
-                <ListItem key={item.index} disablePadding sx={{ mb: 0.5 }}>
-                  <ListItemButton
-                    onClick={() => handleSelectTab(item.index)}
-                    selected={isSelected}
+          {/* Quick Role Mode Switcher in Drawer */}
+          <Box sx={{ mb: 2, p: 1, borderRadius: 2.2, bgcolor: 'rgba(15, 23, 42, 0.75)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '11px', fontWeight: 800, mb: 0.8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Chế độ hiển thị vai trò:
+            </Typography>
+            <Stack direction="row" spacing={0.8}>
+              <Button
+                fullWidth
+                size="small"
+                onClick={() => {
+                  if (!isStudent) {
+                    setRoleViewMode(roleViewMode === 'student' ? 'all' : 'student');
+                  }
+                }}
+                startIcon={<GraduationCap size={13} />}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  py: 0.5,
+                  borderRadius: 2,
+                  cursor: isStudent ? 'default' : 'pointer',
+                  color: roleViewMode === 'student' || isStudent ? '#38bdf8' : '#94a3b8',
+                  bgcolor: roleViewMode === 'student' || isStudent ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255,255,255,0.04)',
+                  border: roleViewMode === 'student' || isStudent ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+                  '&:hover': { bgcolor: isStudent ? 'rgba(56, 189, 248, 0.2)' : 'rgba(56, 189, 248, 0.15)' }
+                }}
+              >
+                Học Sinh
+              </Button>
+              {!isStudent && (
+                <Button
+                  fullWidth
+                  size="small"
+                  onClick={() => setRoleViewMode(roleViewMode === 'teacher' ? 'all' : 'teacher')}
+                  startIcon={<BookOpen size={13} />}
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    py: 0.5,
+                    borderRadius: 2,
+                    color: roleViewMode === 'teacher' ? '#34d399' : '#94a3b8',
+                    bgcolor: roleViewMode === 'teacher' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.04)',
+                    border: roleViewMode === 'teacher' ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid transparent',
+                    '&:hover': { bgcolor: 'rgba(16, 185, 129, 0.15)' }
+                  }}
+                >
+                  Giáo Viên
+                </Button>
+              )}
+            </Stack>
+          </Box>
+
+          {/* Drawer Grouped Nav Items (Organized into 4 Core Categories) */}
+          <Box sx={{ overflowY: 'auto', flexGrow: 1, pr: 0.5 }}>
+            {/* Quick Home Item */}
+            <ListItemButton
+              onClick={() => handleSelectTab(0)}
+              selected={currentTab === 0}
+              sx={{
+                borderRadius: 2,
+                mb: 1.5,
+                py: 1,
+                bgcolor: currentTab === 0 ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255,255,255,0.03)',
+                border: currentTab === 0 ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 36, color: '#38bdf8' }}>
+                <Home size={19} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Trang Chủ Dashboard"
+                primaryTypographyProps={{ fontSize: '14.5px', fontWeight: 700, color: '#fff' }}
+              />
+            </ListItemButton>
+
+            {NAV_GROUPS
+              .filter(group => !group.teacherOnly || (!isStudent && (isTeacher || roleViewMode === 'teacher')))
+              .map((group) => (
+                <Box key={group.id} sx={{ mb: 2 }}>
+                  <Typography
+                    variant="caption"
                     sx={{
-                      borderRadius: 2,
-                      py: 1,
-                      px: 1.5,
-                      bgcolor: isSelected
-                        ? (item.isAudit ? 'rgba(245, 158, 11, 0.15)' : 'rgba(2, 132, 199, 0.15)')
-                        : 'transparent',
-                      border: isSelected
-                        ? (item.isAudit ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(56, 189, 248, 0.4)')
-                        : '1px solid transparent',
-                      '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.05)',
-                      },
+                      color: group.color,
+                      fontWeight: 800,
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      px: 1,
+                      mb: 0.8,
+                      display: 'block'
                     }}
                   >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 36,
-                        color: isSelected
-                          ? (item.isAudit ? '#f59e0b' : '#38bdf8')
-                          : 'text.secondary'
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        fontSize: '14px',
-                        fontWeight: isSelected ? 'bold' : '500',
-                        color: isSelected
-                          ? (item.isAudit ? '#f59e0b' : '#38bdf8')
-                          : 'text.primary',
-                      }}
-                    />
-                    {isLocked && (
-                      <Lock size={14} color="#64748b" style={{ marginLeft: 'auto' }} />
-                    )}
-                    {item.isAudit && !isLocked && (
-                      <Chip
-                        label="Admin"
-                        size="small"
-                        color="warning"
-                        sx={{ height: 18, fontSize: 10, fontWeight: 'bold' }}
-                      />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
+                    {group.title}
+                  </Typography>
+                  <List sx={{ p: 0 }}>
+                    {group.items.map((item) => {
+                      const isSelected = currentTab === item.index;
+                      const isLocked = !currentUser && item.index !== 0;
+                      return (
+                        <ListItem key={item.index} disablePadding sx={{ mb: 0.5 }}>
+                          <ListItemButton
+                            onClick={() => handleSelectTab(item.index)}
+                            selected={isSelected}
+                            sx={{
+                              borderRadius: 2,
+                              py: 0.9,
+                              px: 1.2,
+                              bgcolor: isSelected ? `${group.color}20` : 'transparent',
+                              border: isSelected ? `1px solid ${group.color}50` : '1px solid transparent',
+                              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' },
+                            }}
+                          >
+                            <ListItemIcon sx={{ minWidth: 32, color: isSelected ? group.color : 'text.secondary' }}>
+                              {item.icon}
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={item.label}
+                              primaryTypographyProps={{
+                                fontSize: '13.5px',
+                                fontWeight: isSelected ? 700 : 500,
+                                color: isSelected ? group.color : '#e2e8f0',
+                              }}
+                            />
+                            {isLocked && <Lock size={13} color="#64748b" style={{ marginLeft: 'auto' }} />}
+                            {item.isAudit && !isLocked && (
+                              <Chip
+                                label="Admin"
+                                size="small"
+                                color="warning"
+                                sx={{ height: 18, fontSize: 10, fontWeight: 'bold' }}
+                              />
+                            )}
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Box>
+              ))}
+          </Box>
 
           <Box mt="auto" pt={2}>
             <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
@@ -544,6 +1150,9 @@ export default function AppContainer() {
                   setCurrentUser(null);
                   setCurrentTab(0);
                 }}
+                roleViewMode={roleViewMode}
+                onRoleViewModeChange={setRoleViewMode}
+                onQuickLogin={handleQuickDemoLogin}
               />
             )}
             {currentUser && currentTab === 1 && <VirtualLab />}
@@ -799,7 +1408,14 @@ export default function AppContainer() {
           open={authModalOpen}
           onClose={() => setAuthModalOpen(false)}
           currentUser={currentUser}
-          onLoginSuccess={(user) => setCurrentUser(user)}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            if (user.role === 'student') {
+              setRoleViewMode('student');
+            } else if (user.role === 'teacher') {
+              setRoleViewMode('teacher');
+            }
+          }}
           onLogout={() => setCurrentUser(null)}
           initialRole={authInitialRole}
         />

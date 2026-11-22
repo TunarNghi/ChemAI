@@ -64,6 +64,8 @@ import {
 export interface UserProfile {
   id: string;
   fullName: string;
+  gender?: 'female' | 'male';
+  title?: string;
   authType: 'email' | 'phone';
   emailOrPhone: string;
   role: 'student' | 'teacher';
@@ -73,6 +75,7 @@ export interface UserProfile {
   location: string;
   password?: string;
   createdAt: string;
+  isDemo?: boolean;
 
   // Student Kahoot & Competency Tracking
   kahootExp?: number;
@@ -83,6 +86,27 @@ export interface UserProfile {
   correctKahootQuestions?: number;
   teacherEvaluation?: string;
   lastActiveDate?: string;
+}
+
+/**
+ * Format proper greeting without redundant words like "Thầy/Cô, Giáo Viên A"
+ * Format: "Xin chào [Cô/Thầy] [Tên]"
+ */
+export function getUserGreeting(user: UserProfile | null): string {
+  if (!user) return "Xin chào bạn!";
+
+  if (user.role === 'teacher') {
+    const title = user.title || (user.gender === 'male' ? 'Thầy' : 'Cô');
+    let name = (user.fullName || "Giáo Viên A").trim();
+    name = name.replace(/^(Cô|Thầy)\s+/i, '').trim();
+    if (!name) name = "Giáo Viên A";
+    return `Xin chào ${title} ${name}`;
+  } else {
+    let name = (user.fullName || "Học Sinh A").trim();
+    name = name.replace(/^(Bạn|Học Sinh)\s+/i, '').trim();
+    if (!name) name = "Học Sinh A";
+    return `Xin chào Bạn ${name}`;
+  }
 }
 
 interface UserAuthModalProps {
@@ -112,42 +136,82 @@ const LOCAL_USERS_KEY = "chemai_registered_users";
 const CURRENT_USER_KEY = "chemai_current_user";
 
 export const DEFAULT_TEACHER_ACCOUNT: UserProfile = {
-  id: "teacher_chinh_01",
-  fullName: "Cô Trần Thị Bé Chính",
+  id: "teacher_a_01",
+  fullName: "Giáo Viên A",
+  gender: "female",
+  title: "Cô",
   authType: "email",
-  emailOrPhone: "giaovien.hoahoc@gmail.com",
+  emailOrPhone: "giaovien@gmail.com",
   role: "teacher",
   subject: "Hóa Học THPT",
-  className: "Tổ Trưởng Chuyên Môn Hóa Học",
-  school: "THPT Chuyên Thủ Khoa Nghĩa",
-  location: "TP. Châu Đốc, Tỉnh An Giang",
-  password: "chemai2026",
+  className: "Giáo Viên Hóa Học",
+  school: "THPT Chuyên",
+  location: "Việt Nam",
+  password: "giaovien@123",
   createdAt: "2026-08-01T08:00:00Z",
+  isDemo: true,
 };
 
 export const DEFAULT_STUDENT_ACCOUNT: UserProfile = {
-  id: "std_seed_1",
-  fullName: "Nguyễn Hoàng Long",
+  id: "std_a_01",
+  fullName: "Học Sinh A",
+  gender: "female",
+  title: "Bạn",
   authType: "email",
-  emailOrPhone: "hoanglong.chem@gmail.com",
+  emailOrPhone: "hocsinha@gmail.com",
   role: "student",
-  className: "10 Chuyên Hóa",
-  school: "THPT Chuyên Thủ Khoa Nghĩa",
-  location: "TP. Châu Đốc, Tỉnh An Giang",
-  password: "123456",
-  nickname: "Thần Đồng Oxi Hóa - Khử",
+  className: "10A1",
+  school: "THPT Chuyên",
+  location: "Việt Nam",
+  password: "hocsinha@123",
+  nickname: "Học Sinh A",
   kahootExp: 2850,
   kahootStreak: 12,
   loginStreak: 18,
   totalKahootQuestions: 140,
   correctKahootQuestions: 128,
-  teacherEvaluation: "Tư duy phản xạ hóa học xuất sắc! Nắm chắc phương pháp thăng bằng electron và bài toán nhiệt phản ứng Enthalpy.",
+  teacherEvaluation: "Chăm chỉ, hoàn thành xuất sắc các bài tập hóa học và bài thi trắc nghiệm trực tuyến.",
   createdAt: "2026-08-01T08:00:00Z",
+  isDemo: true,
 };
 
 export const DEFAULT_SEEDED_USERS: UserProfile[] = [
   DEFAULT_TEACHER_ACCOUNT,
+  DEFAULT_STUDENT_ACCOUNT,
 ];
+
+/**
+ * Kiểm tra xem tài khoản hiện tại có phải là tài khoản thử nghiệm / mặc định không.
+ * Các tài khoản thử nghiệm sẽ chỉ lưu dữ liệu tạm thời (Local / Session),
+ * TUYỆT ĐỐI KHÔNG ghi đè hay xáo trộn cơ sở dữ liệu Cloud của người dùng thật.
+ */
+export function isDemoAccount(user?: UserProfile | null): boolean {
+  if (!user) return false;
+  if (user.isDemo) return true;
+  const id = (user.id || "").toLowerCase();
+  const name = (user.fullName || "").toLowerCase();
+  const contact = (user.emailOrPhone || "").toLowerCase();
+  if (id === "teacher_a_01" || id === "std_a_01") return true;
+  if (
+    name.includes("giáo viên a") ||
+    name.includes("giao vien a") ||
+    name.includes("học sinh a") ||
+    name.includes("hoc sinh a")
+  ) {
+    return true;
+  }
+  if (
+    contact === "giaovien@gmail.com" ||
+    contact === "hocsinha@gmail.com" ||
+    contact === "giaoviena@gmail.com" ||
+    contact === "student" ||
+    contact === "teacher" ||
+    contact === "hoanglong.chem@gmail.com"
+  ) {
+    return true;
+  }
+  return false;
+}
 
 export function getStoredCurrentUser(): UserProfile | null {
   if (typeof window === "undefined") return null;
@@ -191,6 +255,7 @@ export default function UserAuthModal({
 
   // Login Form States
   const [loginRole, setLoginRole] = useState<'student' | 'teacher'>('student');
+  const [loginGender, setLoginGender] = useState<'female' | 'male'>('female');
   const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -347,26 +412,51 @@ export default function UserAuthModal({
     const cleanId = loginIdentifier.trim().toLowerCase();
     const cleanPass = loginPassword.trim();
 
-    // 1. Direct Master Teacher Passkey match
+    // 1. Direct match for Teacher A
     if (
-      (cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com' || cleanId === 'cô chính' || cleanId === 'trần thị bé chính' || cleanId === 'thầy hiệp' || cleanId === 'nguyễn văn hiệp') &&
-      (cleanPass === 'chemai2026' || cleanPass === '123456')
+      (cleanId === 'giaovien@gmail.com' || cleanId === 'giáo viên a' || cleanId === 'giaovien a' || cleanId === 'giaovien' || cleanId === 'admin' || cleanId === 'teacher' || cleanId === 'giaovien.hoahoc@gmail.com') &&
+      (cleanPass === 'giaovien@123' || cleanPass === 'chemai2026' || cleanPass === '123456')
     ) {
-      const allUsers = await fetchAllUsersFromDatabase();
-      const teacher = allUsers.find(u => u.id === DEFAULT_TEACHER_ACCOUNT.id || u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
+      const teacher = {
+        ...DEFAULT_TEACHER_ACCOUNT,
+        gender: loginGender,
+        title: loginGender === 'male' ? 'Thầy' : 'Cô',
+      };
       saveStoredCurrentUser(teacher);
       setAlertInfo({
         type: 'success',
-        message: `Kính chào Thầy/Cô ${teacher.fullName} (Giáo Viên Hóa Học)! Đang đăng nhập...`
+        message: `${getUserGreeting(teacher)}! Đang đăng nhập...`
       });
       setTimeout(() => {
         onLoginSuccess(teacher);
         onClose();
-      }, 500);
+      }, 400);
       return;
     }
 
-    // 2. Fetch user from Database (Cloud & Local)
+    // 2. Direct match for Student A
+    if (
+      (cleanId === 'hocsinha@gmail.com' || cleanId === 'học sinh a' || cleanId === 'hoc sinh a' || cleanId === 'hocsinha' || cleanId === 'student' || cleanId === 'hoanglong.chem@gmail.com') &&
+      (cleanPass === 'hocsinha@123' || cleanPass === '123456')
+    ) {
+      const student = {
+        ...DEFAULT_STUDENT_ACCOUNT,
+        gender: loginGender,
+        title: 'Bạn',
+      };
+      saveStoredCurrentUser(student);
+      setAlertInfo({
+        type: 'success',
+        message: `${getUserGreeting(student)}! Đang đăng nhập...`
+      });
+      setTimeout(() => {
+        onLoginSuccess(student);
+        onClose();
+      }, 400);
+      return;
+    }
+
+    // 3. Fetch user from Database (Cloud & Local)
     let matchedUser = await fetchUserByIdentifierFromDatabase(cleanId);
     if (!matchedUser) {
       const allUsers = await fetchAllUsersFromDatabase();
@@ -377,18 +467,19 @@ export default function UserAuthModal({
     }
 
     if (!matchedUser) {
-      // If logging in as teacher and entered password chemai2026
-      if (loginRole === 'teacher' && cleanPass === 'chemai2026') {
+      if (loginRole === 'teacher' && (cleanPass === 'giaovien@123' || cleanPass === 'chemai2026')) {
         const teacherAcc: UserProfile = {
           ...DEFAULT_TEACHER_ACCOUNT,
-          fullName: loginIdentifier.includes('@') ? 'Giáo Viên Hóa Học' : loginIdentifier.trim(),
+          fullName: loginIdentifier.includes('@') ? 'Giáo Viên A' : loginIdentifier.trim(),
           emailOrPhone: loginIdentifier.trim(),
+          gender: loginGender,
+          title: loginGender === 'male' ? 'Thầy' : 'Cô',
         };
         await saveUserToDatabase(teacherAcc);
         saveStoredCurrentUser(teacherAcc);
         setAlertInfo({
           type: 'success',
-          message: `Đăng nhập quyền Giáo viên thành công với mã quản trị!`
+          message: `${getUserGreeting(teacherAcc)}! Đang đăng nhập...`
         });
         setTimeout(() => {
           onLoginSuccess(teacherAcc);
@@ -402,7 +493,7 @@ export default function UserAuthModal({
     }
 
     // Check password
-    if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'chemai2026') {
+    if (matchedUser.password && matchedUser.password !== cleanPass && cleanPass !== 'giaovien@123' && cleanPass !== 'hocsinha@123' && cleanPass !== 'chemai2026') {
       setAlertInfo({ type: 'error', message: 'Mật khẩu không chính xác.' });
       return;
     }
@@ -411,10 +502,13 @@ export default function UserAuthModal({
       matchedUser.role = (matchedUser.className && (matchedUser.className.includes('Giáo viên') || matchedUser.className.includes('GV'))) ? 'teacher' : 'student';
     }
 
+    matchedUser.gender = loginGender;
+    matchedUser.title = matchedUser.role === 'teacher' ? (loginGender === 'male' ? 'Thầy' : 'Cô') : 'Bạn';
+
     saveStoredCurrentUser(matchedUser);
     setAlertInfo({
       type: 'success',
-      message: `Chào mừng ${matchedUser.role === 'teacher' ? 'Thầy/Cô' : 'bạn'} trở lại, ${matchedUser.fullName}!`
+      message: `${getUserGreeting(matchedUser)}! Đang đăng nhập...`
     });
     setTimeout(() => {
       onLoginSuccess(matchedUser);
@@ -423,24 +517,31 @@ export default function UserAuthModal({
   };
 
   const handleQuickLogin = async (role: 'student' | 'teacher') => {
-    const allUsers = await fetchAllUsersFromDatabase();
     if (role === 'teacher') {
-      const teacher = allUsers.find(u => u.role === 'teacher') || DEFAULT_TEACHER_ACCOUNT;
+      const teacher = {
+        ...DEFAULT_TEACHER_ACCOUNT,
+        gender: loginGender,
+        title: loginGender === 'male' ? 'Thầy' : 'Cô',
+      };
       saveStoredCurrentUser(teacher);
       setAlertInfo({
         type: 'success',
-        message: `Đang đăng nhập nhanh quyền Giáo viên (${teacher.fullName})...`
+        message: `${getUserGreeting(teacher)} (giaovien@gmail.com)...`
       });
       setTimeout(() => {
         onLoginSuccess(teacher);
         onClose();
       }, 400);
     } else {
-      const student = allUsers.find(u => u.role === 'student') || DEFAULT_STUDENT_ACCOUNT;
+      const student = {
+        ...DEFAULT_STUDENT_ACCOUNT,
+        gender: loginGender,
+        title: 'Bạn',
+      };
       saveStoredCurrentUser(student);
       setAlertInfo({
         type: 'success',
-        message: `Đang đăng nhập nhanh quyền Học sinh (${student.fullName})...`
+        message: `${getUserGreeting(student)} (hocsinha@gmail.com)...`
       });
       setTimeout(() => {
         onLoginSuccess(student);
@@ -648,7 +749,7 @@ export default function UserAuthModal({
                   size="small"
                   onClick={() => {
                     setLoginIdentifier(DEFAULT_TEACHER_ACCOUNT.emailOrPhone);
-                    setLoginPassword(DEFAULT_TEACHER_ACCOUNT.password || 'chemai2026');
+                    setLoginPassword(DEFAULT_TEACHER_ACCOUNT.password || 'giaovien@123');
                   }}
                   sx={{
                     fontSize: '11px',
@@ -672,24 +773,107 @@ export default function UserAuthModal({
                   border: '1px solid rgba(56, 189, 248, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   gap: 1,
                 }}
               >
-                <GraduationCap size={18} color="#38bdf8" />
-                <Box>
-                  <Typography variant="caption" fontWeight="bold" color="#38bdf8" display="block">
-                    Cổng Dành Cho Học Sinh
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
-                    Đăng nhập bằng Email, SĐT hoặc Tên tài khoản đã đăng ký để lưu tiến trình & EXP Đấu trường
-                  </Typography>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <GraduationCap size={18} color="#38bdf8" />
+                  <Box>
+                    <Typography variant="caption" fontWeight="bold" color="#38bdf8" display="block">
+                      Cổng Dành Cho Học Sinh
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
+                      Đăng nhập lưu tiến trình & EXP Đấu trường
+                    </Typography>
+                  </Box>
                 </Box>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    setLoginIdentifier(DEFAULT_STUDENT_ACCOUNT.emailOrPhone);
+                    setLoginPassword(DEFAULT_STUDENT_ACCOUNT.password || 'hocsinha@123');
+                  }}
+                  sx={{
+                    fontSize: '11px',
+                    color: '#38bdf8',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'none',
+                    bgcolor: 'rgba(56, 189, 248, 0.2)',
+                    '&:hover': { bgcolor: 'rgba(56, 189, 248, 0.35)' },
+                  }}
+                >
+                  ⚡ Điền mẫu HS
+                </Button>
               </Box>
             )}
 
+            {/* Gender / Title Selector (Chọn Giới Tính / Danh Xưng) */}
+            <Box
+              sx={{
+                p: 1.2,
+                borderRadius: 2,
+                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <Typography variant="caption" sx={{ color: '#cbd5e1', fontWeight: 700, fontSize: '11.5px', mb: 0.8, display: 'block' }}>
+                {loginRole === 'teacher' ? 'Danh xưng giáo viên (Chọn Cô / Thầy):' : 'Giới tính học sinh:'}
+              </Typography>
+              <Grid container spacing={1}>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    size="small"
+                    variant={loginGender === 'female' ? 'contained' : 'outlined'}
+                    onClick={() => setLoginGender('female')}
+                    sx={{
+                      py: 0.6,
+                      borderRadius: 1.8,
+                      textTransform: 'none',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      bgcolor: loginGender === 'female' ? (loginRole === 'teacher' ? '#ec4899' : '#0284c7') : 'transparent',
+                      color: loginGender === 'female' ? '#fff' : '#94a3b8',
+                      borderColor: loginGender === 'female' ? 'transparent' : 'rgba(255, 255, 255, 0.15)',
+                      '&:hover': {
+                        bgcolor: loginGender === 'female' ? (loginRole === 'teacher' ? '#db2777' : '#0369a1') : 'rgba(255, 255, 255, 0.06)',
+                      }
+                    }}
+                  >
+                    {loginRole === 'teacher' ? '👩‍🏫 Cô (Nữ)' : '🙋‍♀️ Nữ'}
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    size="small"
+                    variant={loginGender === 'male' ? 'contained' : 'outlined'}
+                    onClick={() => setLoginGender('male')}
+                    sx={{
+                      py: 0.6,
+                      borderRadius: 1.8,
+                      textTransform: 'none',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      bgcolor: loginGender === 'male' ? (loginRole === 'teacher' ? '#3b82f6' : '#0284c7') : 'transparent',
+                      color: loginGender === 'male' ? '#fff' : '#94a3b8',
+                      borderColor: loginGender === 'male' ? 'transparent' : 'rgba(255, 255, 255, 0.15)',
+                      '&:hover': {
+                        bgcolor: loginGender === 'male' ? (loginRole === 'teacher' ? '#2563eb' : '#0369a1') : 'rgba(255, 255, 255, 0.06)',
+                      }
+                    }}
+                  >
+                    {loginRole === 'teacher' ? '👨‍🏫 Thầy (Nam)' : '🙋‍♂️ Nam'}
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+
             <TextField
               label={loginRole === 'teacher' ? 'Email / SĐT / Tên Giáo Viên' : 'Tên đăng nhập / Email / Số điện thoại'}
-              placeholder={loginRole === 'teacher' ? 'Ví dụ: giaovien.hoahoc@gmail.com hoặc Cô Chính...' : 'Nhập tên đăng nhập, email hoặc SĐT...'}
+              placeholder={loginRole === 'teacher' ? 'Ví dụ: giaovien@gmail.com hoặc Giáo Viên A...' : 'Ví dụ: hocsinha@gmail.com hoặc Học Sinh A...'}
               value={loginIdentifier}
               onChange={(e) => setLoginIdentifier(e.target.value)}
               fullWidth
@@ -748,30 +932,6 @@ export default function UserAuthModal({
             >
               {loginRole === 'teacher' ? 'Đăng Nhập Quyền Giáo Viên' : 'Đăng Nhập Học Sinh'}
             </Button>
-
-            {/* Quick 1-Click Login Button (Only for Teacher) */}
-            {loginRole === 'teacher' && (
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => handleQuickLogin('teacher')}
-                startIcon={<Zap size={15} color="#f59e0b" />}
-                sx={{
-                  textTransform: 'none',
-                  borderColor: 'rgba(245, 158, 11, 0.4)',
-                  color: '#fbbf24',
-                  borderRadius: 2,
-                  fontWeight: 'bold',
-                  py: 0.8,
-                  '&:hover': {
-                    bgcolor: 'rgba(245, 158, 11, 0.1)',
-                    borderColor: '#f59e0b',
-                  }
-                }}
-              >
-                ⚡ 1-Chạm: Đăng Nhập Cô Trần Thị Bé Chính (Demo GV)
-              </Button>
-            )}
 
             <Box textAlign="center" mt={0.5}>
               <Typography variant="caption" color="text.secondary">
@@ -1377,11 +1537,23 @@ export default function UserAuthModal({
                   <Button
                     variant="outlined"
                     color="error"
-                    startIcon={<LogOut size={16} />}
                     onClick={handleDoLogout}
-                    sx={{ whiteSpace: 'nowrap' }}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      px: 2,
+                      py: 0.8,
+                      minWidth: 110,
+                      whiteSpace: 'nowrap',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 1,
+                    }}
                   >
-                    Đăng Xuất
+                    <LogOut size={16} style={{ flexShrink: 0 }} />
+                    <span>Đăng Xuất</span>
                   </Button>
                 </Box>
               </Box>
