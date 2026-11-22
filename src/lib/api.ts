@@ -36,13 +36,13 @@ const _VAULT = {
   M4: "PQIZ6ODyhdOurq+B229xaU9EMA=="
 };
 
-// 1. Primary Data Provider
-const PRIMARY_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || _secDecode(_VAULT.P_URL);
+// 1. Primary Data Provider (Active Live Supabase Project: xgmwmexfyzgnkcrljdki.supabase.co)
+const PRIMARY_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || _secDecode(_VAULT.B_URL);
 const PRIMARY_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.SUPABASE_PUBLISHABLE_KEY ||
-  _secDecode(_VAULT.P_KEY);
+  _secDecode(_VAULT.B_KEY);
 
 export const supabase = createClient(PRIMARY_URL, PRIMARY_KEY);
 
@@ -50,12 +50,12 @@ export const supabase = createClient(PRIMARY_URL, PRIMARY_KEY);
 const BACKUP_URL =
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL ||
   process.env.BACKUP_SUPABASE_URL ||
-  _secDecode(_VAULT.B_URL);
+  _secDecode(_VAULT.P_URL);
 const BACKUP_KEY =
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_BACKUP_SUPABASE_PUBLISHABLE_KEY ||
   process.env.BACKUP_SUPABASE_PUBLISHABLE_KEY ||
-  _secDecode(_VAULT.B_KEY);
+  _secDecode(_VAULT.P_KEY);
 
 export const backupSupabase = createClient(BACKUP_URL, BACKUP_KEY);
 

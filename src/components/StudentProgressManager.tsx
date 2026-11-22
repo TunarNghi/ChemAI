@@ -69,7 +69,7 @@ import {
 } from 'lucide-react';
 import { callGeminiAPI } from '@/lib/api';
 import { UserProfile, getStoredCurrentUser, saveStoredCurrentUser, isDemoAccount } from '@/components/UserAuthModal';
-import { fetchAllUsersFromDatabase, saveUserToDatabase } from '@/lib/userDatabase';
+import { fetchAllUsersFromDatabase, saveUserToDatabase, deleteUserFromDatabase, getLocalRegisteredUsers } from '@/lib/userDatabase';
 
 export interface StudentProgressData extends UserProfile {
   kahootExp: number;
@@ -248,6 +248,10 @@ export default function StudentProgressManager({ currentUser }: StudentProgressM
       const currentStored = getStoredCurrentUser();
       const isTeacherDemo = isDemoAccount(currentStored);
 
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('chemai_registered_users', JSON.stringify(updatedList));
+      }
+
       updatedList.forEach((std) => {
         if (isTeacherDemo) {
           std.isDemo = true;
@@ -331,11 +335,31 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
   };
 
   // Delete student
-  const handleDeleteStudent = (id: string, name: string) => {
+  const handleDeleteStudent = async (id: string, name: string) => {
     if (confirm(`Thầy/Cô có chắc chắn muốn xóa học sinh "${name}" khỏi danh sách theo dõi?`)) {
-      const updated = students.filter((s) => s.id !== id);
-      persistStudentsList(updated);
-      setNotification({ type: 'info', message: `Đã xóa học sinh ${name}.` });
+      try {
+        // 1. Immediately update UI state
+        setStudents((prev) => prev.filter((s) => s.id !== id));
+
+        // 2. Remove from local storage immediately
+        if (typeof window !== 'undefined') {
+          const currentLocal = getLocalRegisteredUsers().filter((u) => u.id !== id);
+          localStorage.setItem('chemai_registered_users', JSON.stringify(currentLocal));
+        }
+
+        // 3. Call deleteUserFromDatabase to remove from DB and directory cache
+        await deleteUserFromDatabase(id);
+
+        setNotification({ type: 'info', message: `Đã xóa học sinh ${name} thành công.` });
+
+        // 4. Dispatch event so any other components update
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('chemai_user_updated'));
+        }
+      } catch (err) {
+        console.error('Lỗi khi xóa học sinh:', err);
+        setNotification({ type: 'error', message: `Có lỗi khi xóa học sinh ${name}.` });
+      }
     }
   };
 
@@ -763,8 +787,8 @@ Yêu cầu: Lời nhận xét bằng tiếng Việt chuẩn mực, chỉ xuất 
           <Tooltip title="Làm mới và đồng bộ danh sách từ cơ sở dữ liệu">
             <Button
               size="small"
-              onClick={() => {
-                loadStudents();
+              onClick={async () => {
+                await loadStudents();
                 setNotification({ type: 'success', message: 'Đã đồng bộ lại danh sách từ cơ sở dữ liệu!' });
               }}
               startIcon={<RefreshCw size={14} />}

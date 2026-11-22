@@ -4,6 +4,19 @@ import { UserProfile, DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT, isDemoAc
 const LOCAL_USERS_KEY = 'chemai_registered_users';
 const CURRENT_USER_KEY = 'chemai_current_user';
 const DIRECTORY_CACHE_KEY = 'all_registered_users_directory';
+const DELETED_USERS_KEY = 'chemai_deleted_user_ids';
+
+export function getDeletedUserIds(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_USERS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    }
+  } catch {}
+  return new Set();
+}
 
 /**
  * Save or update a user profile to Supabase database (and local cache) with smart failover
@@ -89,6 +102,90 @@ export async function saveUserToDatabase(user: UserProfile): Promise<boolean> {
     console.warn('Supabase directory cache save warning:', err);
   }
 
+  // Khôi phục tài khoản nếu trước đó từng nằm trong danh sách đã xóa
+  try {
+    if (typeof window !== 'undefined') {
+      const deleted = getDeletedUserIds();
+      if (deleted.has(user.id)) {
+        deleted.delete(user.id);
+        localStorage.setItem(DELETED_USERS_KEY, JSON.stringify(Array.from(deleted)));
+      }
+    }
+  } catch {}
+
+  return true;
+}
+
+/**
+ * Xóa hoàn toàn một học sinh / người dùng khỏi hệ thống:
+ * - Xóa khỏi localStorage `chemai_registered_users`
+ * - Ghi nhận vào `chemai_deleted_user_ids` (đảm bảo không bị nạp lại từ seed/default)
+ * - Xóa khỏi bảng chuẩn Supabase `user_profiles` (có failover)
+ * - Xóa khỏi central directory cache trong bảng `experiments`
+ */
+export async function deleteUserFromDatabase(userId: string): Promise<boolean> {
+  if (!userId) return false;
+
+  // 1. Cập nhật localStorage
+  try {
+    if (typeof window !== 'undefined') {
+      const deleted = getDeletedUserIds();
+      deleted.add(userId);
+      localStorage.setItem(DELETED_USERS_KEY, JSON.stringify(Array.from(deleted)));
+
+      const currentLocal = getLocalRegisteredUsers().filter(u => u.id !== userId);
+      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(currentLocal));
+
+      const currentStored = localStorage.getItem(CURRENT_USER_KEY);
+      if (currentStored) {
+        try {
+          const parsed = JSON.parse(currentStored);
+          if (parsed && (parsed.id === userId || parsed.emailOrPhone === userId)) {
+            localStorage.removeItem(CURRENT_USER_KEY);
+          }
+        } catch {}
+      }
+    }
+  } catch (e) {
+    console.warn('Local storage delete error:', e);
+  }
+
+  // 2. Xóa khỏi bảng chuẩn `user_profiles` trên Supabase (kèm Failover)
+  try {
+    await executeWithFailover(async (client) => {
+      return await client
+        .from('user_profiles')
+        .delete()
+        .or(`user_id.eq.${userId},id.eq.${userId},email_or_phone.eq.${userId}`);
+    });
+  } catch (err) {
+    console.warn('Supabase delete user_profiles error:', err);
+  }
+
+  // 3. Xóa khỏi Central Directory Cache trong experiments (kèm Failover)
+  try {
+    await executeWithFailover(async (client) => {
+      const { data } = await client
+        .from('experiments')
+        .select('result_json')
+        .eq('cache_key', DIRECTORY_CACHE_KEY)
+        .maybeSingle();
+
+      if (data && Array.isArray(data.result_json)) {
+        const updatedDirectory = (data.result_json as UserProfile[]).filter(
+          u => u.id !== userId && (!u.emailOrPhone || u.emailOrPhone !== userId)
+        );
+        return await client.from('experiments').upsert({
+          cache_key: DIRECTORY_CACHE_KEY,
+          result_json: updatedDirectory,
+        }, { onConflict: 'cache_key' });
+      }
+      return { data: null, error: null };
+    });
+  } catch (err) {
+    console.warn('Supabase directory cache delete error:', err);
+  }
+
   return true;
 }
 
@@ -98,6 +195,11 @@ export async function saveUserToDatabase(user: UserProfile): Promise<boolean> {
 export async function fetchUserByIdentifierFromDatabase(identifier: string): Promise<UserProfile | null> {
   const clean = identifier.trim().toLowerCase();
   if (!clean) return null;
+
+  const deletedIds = getDeletedUserIds();
+  if (deletedIds.has(identifier) || deletedIds.has(clean)) {
+    return null;
+  }
 
   // 1. Check local cache first
   const localUsers = getLocalRegisteredUsers();
@@ -141,6 +243,9 @@ export async function fetchUserByIdentifierFromDatabase(identifier: string): Pro
         teacherEvaluation: r.teacher_evaluation || '',
         lastActiveDate: r.last_active_date || new Date().toISOString().split('T')[0],
       };
+      if (deletedIds.has(profile.id) || (profile.emailOrPhone && deletedIds.has(profile.emailOrPhone))) {
+        return null;
+      }
       saveLocalUser(profile);
       return profile;
     }
@@ -179,14 +284,22 @@ export async function fetchUserByIdentifierFromDatabase(identifier: string): Pro
  */
 export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
   const usersMap = new Map<string, UserProfile>();
+  const deletedIds = getDeletedUserIds();
 
-  // Add default accounts
-  usersMap.set(DEFAULT_TEACHER_ACCOUNT.id, DEFAULT_TEACHER_ACCOUNT);
-  usersMap.set(DEFAULT_STUDENT_ACCOUNT.id, DEFAULT_STUDENT_ACCOUNT);
+  // Add default accounts ONLY if not deleted
+  if (!deletedIds.has(DEFAULT_TEACHER_ACCOUNT.id)) {
+    usersMap.set(DEFAULT_TEACHER_ACCOUNT.id, DEFAULT_TEACHER_ACCOUNT);
+  }
+  if (!deletedIds.has(DEFAULT_STUDENT_ACCOUNT.id)) {
+    usersMap.set(DEFAULT_STUDENT_ACCOUNT.id, DEFAULT_STUDENT_ACCOUNT);
+  }
 
   // Helper to add or merge user into map
   const addOrMergeUser = (u: UserProfile) => {
     if (!u || (!u.id && !u.fullName)) return;
+    if (deletedIds.has(u.id) || (u.emailOrPhone && deletedIds.has(u.emailOrPhone))) {
+      return;
+    }
     
     // Find existing by ID, or by email, or by (fullName + className)
     let matchedKey: string | null = null;
@@ -250,7 +363,7 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
       loadedFromProfiles = true;
       (remoteProfiles as any[]).forEach((r: any) => {
         const uid = r.user_id || r.id;
-        if (uid) {
+        if (uid && !deletedIds.has(uid) && (!r.email_or_phone || !deletedIds.has(r.email_or_phone))) {
           addOrMergeUser({
             id: uid,
             fullName: r.full_name || 'Học sinh',
@@ -297,7 +410,9 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
     }
   }
 
-  const mergedList = Array.from(usersMap.values());
+  const mergedList = Array.from(usersMap.values()).filter(
+    u => u && u.id && !deletedIds.has(u.id) && (!u.emailOrPhone || !deletedIds.has(u.emailOrPhone))
+  );
 
   // Sync deduplicated merged list back to local storage
   try {
@@ -315,40 +430,42 @@ export async function fetchAllUsersFromDatabase(): Promise<UserProfile[]> {
 async function updateDirectoryIndex(newUser: UserProfile) {
   if (isDemoAccount(newUser)) return;
   try {
-    const { data } = await supabase
-      .from('experiments')
-      .select('result_json')
-      .eq('cache_key', DIRECTORY_CACHE_KEY)
-      .maybeSingle();
+    await executeWithFailover(async (client) => {
+      const { data } = await client
+        .from('experiments')
+        .select('result_json')
+        .eq('cache_key', DIRECTORY_CACHE_KEY)
+        .maybeSingle();
 
-    let list: UserProfile[] = [];
-    if (data && Array.isArray(data.result_json)) {
-      list = data.result_json;
-    }
+      let list: UserProfile[] = [];
+      if (data && Array.isArray(data.result_json)) {
+        list = data.result_json;
+      }
 
-    const idx = list.findIndex(u => 
-      u.id === newUser.id || 
-      (u.emailOrPhone && newUser.emailOrPhone && u.emailOrPhone.toLowerCase() === newUser.emailOrPhone.toLowerCase()) ||
-      (u.fullName && newUser.fullName && u.fullName.toLowerCase().trim() === newUser.fullName.toLowerCase().trim() && (u.className || '').toLowerCase().trim() === (newUser.className || '').toLowerCase().trim())
-    );
+      const idx = list.findIndex(u => 
+        u.id === newUser.id || 
+        (u.emailOrPhone && newUser.emailOrPhone && u.emailOrPhone.toLowerCase() === newUser.emailOrPhone.toLowerCase()) ||
+        (u.fullName && newUser.fullName && u.fullName.toLowerCase().trim() === newUser.fullName.toLowerCase().trim() && (u.className || '').toLowerCase().trim() === (newUser.className || '').toLowerCase().trim())
+      );
 
-    if (idx >= 0) {
-      list[idx] = { 
-        ...list[idx], 
-        ...newUser,
-        kahootExp: Math.max(list[idx].kahootExp || 0, newUser.kahootExp || 0),
-        kahootStreak: newUser.kahootStreak !== undefined ? newUser.kahootStreak : (list[idx].kahootStreak || 0),
-        totalKahootQuestions: Math.max(list[idx].totalKahootQuestions || 0, newUser.totalKahootQuestions || 0),
-        correctKahootQuestions: Math.max(list[idx].correctKahootQuestions || 0, newUser.correctKahootQuestions || 0),
-      };
-    } else {
-      list.push(newUser);
-    }
+      if (idx >= 0) {
+        list[idx] = { 
+          ...list[idx], 
+          ...newUser,
+          kahootExp: Math.max(list[idx].kahootExp || 0, newUser.kahootExp || 0),
+          kahootStreak: newUser.kahootStreak !== undefined ? newUser.kahootStreak : (list[idx].kahootStreak || 0),
+          totalKahootQuestions: Math.max(list[idx].totalKahootQuestions || 0, newUser.totalKahootQuestions || 0),
+          correctKahootQuestions: Math.max(list[idx].correctKahootQuestions || 0, newUser.correctKahootQuestions || 0),
+        };
+      } else {
+        list.push(newUser);
+      }
 
-    await supabase.from('experiments').upsert({
-      cache_key: DIRECTORY_CACHE_KEY,
-      result_json: list,
-    }, { onConflict: 'cache_key' });
+      return await client.from('experiments').upsert({
+        cache_key: DIRECTORY_CACHE_KEY,
+        result_json: list,
+      }, { onConflict: 'cache_key' });
+    });
   } catch (err) {
     console.warn('Directory update warning:', err);
   }
@@ -358,17 +475,25 @@ async function updateDirectoryIndex(newUser: UserProfile) {
  * Helper to get users from localStorage
  */
 export function getLocalRegisteredUsers(): UserProfile[] {
-  if (typeof window === 'undefined') return [DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT];
+  const deletedIds = getDeletedUserIds();
+  const getDefaults = () => {
+    const list: UserProfile[] = [];
+    if (!deletedIds.has(DEFAULT_TEACHER_ACCOUNT.id)) list.push(DEFAULT_TEACHER_ACCOUNT);
+    if (!deletedIds.has(DEFAULT_STUDENT_ACCOUNT.id)) list.push(DEFAULT_STUDENT_ACCOUNT);
+    return list;
+  };
+
+  if (typeof window === 'undefined') return getDefaults();
   try {
     const data = localStorage.getItem(LOCAL_USERS_KEY);
     if (data) {
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.filter(u => u && u.id && !deletedIds.has(u.id) && (!u.emailOrPhone || !deletedIds.has(u.emailOrPhone)));
       }
     }
   } catch {}
-  return [DEFAULT_TEACHER_ACCOUNT, DEFAULT_STUDENT_ACCOUNT];
+  return getDefaults();
 }
 
 function saveLocalUser(user: UserProfile) {
