@@ -716,7 +716,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
               </Box>
 
               {/* Action Buttons */}
-              <Stack direction="row" spacing={1}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: '100%' }}>
                 <Button
                   variant="outlined"
                   size="small"
@@ -770,7 +770,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                   size="small"
                   sx={{ bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', fontWeight: 'bold', fontSize: '11px' }}
                 />
-                <Stack direction="row" spacing={1}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: '100%' }}>
                   <Chip
                     icon={<Zap size={12} color="#eab308" />}
                     label={`+${quizScore} Điểm`}
@@ -872,7 +872,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
               )}
 
               {/* Action Buttons */}
-              <Stack direction="row" spacing={1}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: '100%' }}>
                 <Button
                   variant="outlined"
                   size="small"
@@ -1008,7 +1008,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
               </Box>
 
               {/* Action Buttons */}
-              <Stack direction="row" spacing={1}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: '100%' }}>
                 <Button
                   variant="outlined"
                   size="small"
@@ -1171,7 +1171,7 @@ export default function HomeMiniDemoWidget({ onNavigateTab }: HomeMiniDemoWidget
                   🔍 Xem Thông Tin Chi Tiết (9 Mục)
                 </Button>
 
-                <Stack direction="row" spacing={1}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: '100%' }}>
                   <Button
                     variant="outlined"
                     size="small"

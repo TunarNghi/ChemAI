@@ -14,7 +14,7 @@ export default function MobileViewManager({
   children,
 }: MobileViewManagerProps) {
   return (
-    <Box sx={{ width: '100%', position: 'relative' }}>
+    <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', position: 'relative', boxSizing: 'border-box' }}>
       {children}
     </Box>
   );

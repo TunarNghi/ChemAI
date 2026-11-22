@@ -161,7 +161,7 @@ export const NAV_GROUPS: NavGroup[] = [
         label: 'Gia Sư Hóa Học ChemAI',
         desc: 'Trợ lý học tập thông minh giải đáp 24/7 chuẩn GDPT 2018',
         icon: <Bot size={18} color="#818cf8" />,
-        badge: 'Trợ Lý ChemAI 2.0'
+        badge: 'Trợ Lý ChemAI'
       },
       {
         index: 14,
@@ -385,8 +385,8 @@ export default function AppContainer() {
                 <Box
                   className="brand-logo-mark"
                   sx={{
-                    width: 36,
-                    height: 36,
+                    width: { xs: 32, sm: 36 },
+                    height: { xs: 32, sm: 36 },
                     borderRadius: 2.2,
                     background: 'linear-gradient(135deg, #0284c7 0%, #6366f1 100%)',
                     border: '1px solid rgba(56, 189, 248, 0.45)',
@@ -394,42 +394,31 @@ export default function AppContainer() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    flexShrink: 0,
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
-                  <FlaskConical size={20} color="#ffffff" />
+                  <FlaskConical size={18} color="#ffffff" />
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography
                     sx={{
-                      fontSize: { xs: '18px', sm: '20px' },
+                      fontSize: { xs: '15px', sm: '18px', md: '20px' },
                       fontWeight: 900,
-                      letterSpacing: '-0.03em',
+                      letterSpacing: '-0.02em',
                       whiteSpace: 'nowrap',
                       background: 'linear-gradient(90deg, #38bdf8 0%, #818cf8 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                     }}
                   >
-                    ChemAI
+                    HCC - ChemAI
                   </Typography>
-                  <Chip
-                    label="2.0"
-                    size="small"
-                    sx={{
-                      height: 18,
-                      fontSize: '10px',
-                      fontWeight: 800,
-                      bgcolor: 'rgba(56, 189, 248, 0.12)',
-                      color: '#38bdf8',
-                      border: '1px solid rgba(56, 189, 248, 0.3)',
-                    }}
-                  />
                 </Box>
               </Box>
 
               {/* RIGHT CONTROLS: FEATURES DROPDOWN, ROLE TOGGLE, PROFILE & MOBILE DRAWER */}
-              <Box display="flex" alignItems="center" gap={{ xs: 0.8, sm: 1.2 }} flexShrink={0}>
+              <Box display="flex" alignItems="center" gap={{ xs: 0.6, sm: 1.2 }} flexShrink={0}>
                 {/* SINGLE COMPACT FEATURES DROPDOWN BUTTON (Desktop & Tablet) */}
                 <Box
                   component="nav"
@@ -689,10 +678,10 @@ export default function AppContainer() {
                   </Menu>
                 </Box>
 
-                {/* Role-Based Mode Switcher (Visible on both Mobile & Desktop) */}
+                {/* Role-Based Mode Switcher (Visible on Desktop/Tablet, moved into drawer for phone to prevent scale squeeze) */}
                 <Box
                   sx={{
-                    display: 'flex',
+                    display: { xs: 'none', md: 'flex' },
                     alignItems: 'center',
                     bgcolor: 'rgba(15, 23, 42, 0.75)',
                     p: { xs: '2px', sm: '3px' },
@@ -758,89 +747,117 @@ export default function AppContainer() {
 
                 {/* User Account / Profile Button */}
                 {currentUser ? (
-                  <Chip
-                    avatar={
-                      <Avatar
-                        sx={{
-                          bgcolor: isTeacher ? '#f59e0b' : '#0284c7',
-                          color: isTeacher ? '#000' : '#fff',
-                          fontWeight: 'bold',
-                          width: 24,
-                          height: 24,
-                          fontSize: '10.5px'
-                        }}
-                      >
-                        {isTeacher ? 'GV' : 'HS'}
-                      </Avatar>
-                    }
-                    label={isTeacher ? `${currentUser.title || (currentUser.gender === 'male' ? 'Thầy' : 'Cô')} ${(currentUser.fullName || 'Giáo Viên A').replace(/^(Cô|Thầy)\s+/i, '').trim() || 'Giáo Viên A'}` : currentUser.fullName}
-                    onClick={() => setAuthModalOpen(true)}
-                    variant="outlined"
-                    sx={{
-                      display: { xs: 'none', sm: 'inline-flex' },
-                      fontWeight: 700,
-                      fontSize: '12px',
-                      whiteSpace: 'nowrap',
-                      borderColor: isTeacher ? 'rgba(245, 158, 11, 0.5)' : 'rgba(56, 189, 248, 0.4)',
-                      color: isTeacher ? '#fbbf24' : '#38bdf8',
-                      bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.08)' : 'rgba(56, 189, 248, 0.08)',
-                      cursor: 'pointer',
-                      height: 32,
-                      maxWidth: { sm: 160, md: 220 },
-                      '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis' },
-                      '&:hover': { bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.2)' : 'rgba(56, 189, 248, 0.2)' }
-                    }}
-                  />
+                  <Tooltip title={isTeacher ? "Hồ sơ Giáo Viên" : "Hồ sơ Học Sinh"}>
+                    <Chip
+                      avatar={
+                        <Avatar
+                          sx={{
+                            bgcolor: isTeacher ? '#f59e0b' : '#0284c7',
+                            color: isTeacher ? '#000' : '#fff',
+                            fontWeight: 'bold',
+                            width: { xs: 22, sm: 24 },
+                            height: { xs: 22, sm: 24 },
+                            fontSize: { xs: '10px', sm: '10.5px' },
+                          }}
+                        >
+                          {isTeacher ? 'GV' : 'HS'}
+                        </Avatar>
+                      }
+                      label={
+                        isTeacher
+                          ? `${currentUser.title || (currentUser.gender === 'male' ? 'Thầy' : 'Cô')} ${(currentUser.fullName || 'Giáo Viên A').replace(/^(Cô|Thầy)\s+/i, '').trim() || 'Giáo Viên A'}`
+                          : currentUser.fullName
+                      }
+                      onClick={() => setAuthModalOpen(true)}
+                      variant="outlined"
+                      sx={{
+                        display: 'inline-flex',
+                        fontWeight: 700,
+                        fontSize: { xs: '11px', sm: '12px' },
+                        whiteSpace: 'nowrap',
+                        borderColor: isTeacher ? 'rgba(245, 158, 11, 0.5)' : 'rgba(56, 189, 248, 0.4)',
+                        color: isTeacher ? '#fbbf24' : '#38bdf8',
+                        bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.1)' : 'rgba(56, 189, 248, 0.1)',
+                        cursor: 'pointer',
+                        height: { xs: 28, sm: 32 },
+                        maxWidth: { xs: 110, sm: 160, md: 220 },
+                        flexShrink: 0,
+                        '& .MuiChip-label': {
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          px: { xs: 0.8, sm: 1.2 },
+                        },
+                        '&:hover': {
+                          bgcolor: isTeacher ? 'rgba(245, 158, 11, 0.2)' : 'rgba(56, 189, 248, 0.2)',
+                        },
+                      }}
+                    />
+                  </Tooltip>
                 ) : (
                   <Button
                     size="small"
                     variant="contained"
                     onClick={() => setAuthModalOpen(true)}
-                    startIcon={<User size={14} />}
+                    startIcon={<User size={13} />}
                     sx={{
-                        fontWeight: 700,
-                        fontSize: '12.5px',
-                        textTransform: 'none',
-                        whiteSpace: 'nowrap',
-                        bgcolor: '#0284c7',
-                        color: '#ffffff',
-                        height: 32,
-                        px: 1.8,
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 10px rgba(2, 132, 199, 0.4)',
-                        '&:hover': { bgcolor: '#0369a1' }
-                      }}
-                    >
-                      Đăng Nhập
-                    </Button>
+                      fontWeight: 800,
+                      fontSize: { xs: '11px', sm: '12.5px' },
+                      textTransform: 'none',
+                      whiteSpace: 'nowrap',
+                      background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                      color: '#ffffff',
+                      height: { xs: 28, sm: 32 },
+                      px: { xs: 1.1, sm: 1.8 },
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.35)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      flexShrink: 0,
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%)',
+                      },
+                    }}
+                  >
+                    <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+                      Đăng nhập
+                    </Box>
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                      Đăng nhập / Đăng ký
+                    </Box>
+                  </Button>
                 )}
 
                 {/* Mobile Menu & Hub Triggers */}
-                <Box sx={{ display: { xs: 'flex', lg: 'none' }, alignItems: 'center', gap: 0.8 }}>
+                <Box sx={{ display: { xs: 'flex', lg: 'none' }, alignItems: 'center', gap: { xs: 0.5, sm: 0.8 }, flexShrink: 0 }}>
                   <IconButton
                     color="inherit"
                     aria-label="open hub"
                     onClick={() => setHubModalOpen(true)}
+                    size="small"
                     sx={{
                       bgcolor: 'rgba(2, 132, 199, 0.15)',
                       border: '1px solid rgba(56, 189, 248, 0.3)',
-                      p: 0.8,
+                      p: { xs: 0.6, sm: 0.8 },
+                      width: { xs: 28, sm: 32 },
+                      height: { xs: 28, sm: 32 },
                     }}
                   >
-                    <Grid2X2 size={18} color="#38bdf8" />
+                    <Grid2X2 size={16} color="#38bdf8" />
                   </IconButton>
                   <IconButton
                     color="inherit"
                     aria-label="open drawer"
                     onClick={() => setDrawerOpen(true)}
+                    size="small"
                     sx={{
                       bgcolor: 'rgba(255, 255, 255, 0.06)',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
-                      p: 0.8,
+                      p: { xs: 0.6, sm: 0.8 },
+                      width: { xs: 28, sm: 32 },
+                      height: { xs: 28, sm: 32 },
                     }}
                   >
-                    <MenuIcon size={18} color="#f8fafc" />
+                    <MenuIcon size={16} color="#f8fafc" />
                   </IconButton>
                 </Box>
               </Box>
@@ -889,41 +906,63 @@ export default function AppContainer() {
                   borderRadius: 2,
                   bgcolor: 'rgba(2, 132, 199, 0.12)',
                   border: '1px solid rgba(56, 189, 248, 0.3)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.2,
                 }}
                 onClick={() => {
                   setDrawerOpen(false);
                   setAuthModalOpen(true);
                 }}
               >
-                <Typography variant="body2" fontWeight="bold" color="white">
-                  {currentUser.fullName}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {currentUser.className || 'Học sinh'} • {currentUser.school || 'THPT'}
-                </Typography>
+                <Avatar
+                  sx={{
+                    bgcolor: isTeacher ? '#f59e0b' : '#0284c7',
+                    color: isTeacher ? '#000' : '#fff',
+                    fontWeight: 'bold',
+                    width: 34,
+                    height: 34,
+                    fontSize: '12px',
+                  }}
+                >
+                  {isTeacher ? 'GV' : 'HS'}
+                </Avatar>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography variant="body2" fontWeight="bold" color="white" noWrap>
+                    {currentUser.fullName}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap display="block">
+                    {currentUser.className || (isTeacher ? 'Giáo viên' : 'Học sinh')} • {currentUser.school || 'THPT'}
+                  </Typography>
+                </Box>
               </Box>
             ) : (
-              <Chip
-                icon={<User size={16} color="#38bdf8" />}
-                label="Đăng nhập / Đăng ký"
+              <Button
+                fullWidth
+                variant="contained"
+                startIcon={<User size={16} />}
                 onClick={() => {
                   setDrawerOpen(false);
                   setAuthModalOpen(true);
                 }}
-                variant="outlined"
                 sx={{
-                  width: '100%',
-                  fontWeight: 'bold',
-                  borderColor: 'rgba(56, 189, 248, 0.5)',
-                  color: '#38bdf8',
-                  bgcolor: 'rgba(2, 132, 199, 0.1)',
-                  height: 38,
-                  justifyContent: 'flex-start',
-                  px: 1,
-                  '&:hover': { bgcolor: 'rgba(2, 132, 199, 0.25)' }
+                  background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                  color: '#ffffff',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  textTransform: 'none',
+                  py: 1.1,
+                  borderRadius: 2,
+                  border: '1px solid rgba(56, 189, 248, 0.4)',
+                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%)',
+                  }
                 }}
-              />
+              >
+                Đăng nhập / Đăng ký
+              </Button>
             )}
           </Box>
 
@@ -1086,10 +1125,14 @@ export default function AppContainer() {
         >
           <Container
             maxWidth="xl"
+            disableGutters
             sx={{
               mt: { xs: 1.5, sm: 2, md: 3 },
               px: { xs: 1, sm: 2, md: 3 },
               maxWidth: '100% !important',
+              width: '100%',
+              overflowX: 'hidden',
+              boxSizing: 'border-box',
             }}
           >
             {(!currentUser || currentTab === 0) && (
@@ -1149,7 +1192,7 @@ export default function AppContainer() {
               <Grid2X2 size={24} color="#38bdf8" />
               <Box>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: '#fff', fontSize: { xs: '16px', sm: '19px' } }}>
-                  Danh Mục Tất Cả Tính Năng — HCC ChemAI 2.0
+                  Danh Mục Tất Cả Tính Năng — HCC - ChemAI
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Chọn nhanh bất kỳ công cụ hoặc mô-đun học tập nào dưới đây:

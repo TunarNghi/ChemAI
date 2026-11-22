@@ -494,12 +494,14 @@ export default function UserAuthModal({
           borderRadius: 3,
           border: '1px solid rgba(56, 189, 248, 0.2)',
           boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          m: { xs: 1, sm: 2 },
+          maxHeight: { xs: 'calc(100% - 24px)', sm: 'calc(100% - 64px)' },
         }
       }}
     >
       {/* Header */}
-      <DialogTitle sx={{ p: 2.5, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <DialogTitle sx={{ p: { xs: 1.8, sm: 2.5 }, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box display="flex" alignItems="center" gap={1.2}>
           <Avatar
             sx={{
@@ -516,8 +518,8 @@ export default function UserAuthModal({
               {currentUser
                 ? (currentUser.role === 'teacher' ? 'Hồ Sơ Giáo Viên ChemAI' : 'Hồ Sơ Học Sinh ChemAI')
                 : (tabIndex === 0
-                    ? (loginRole === 'teacher' ? 'Đăng Nhập Tài Khoản Giáo Viên' : 'Đăng Nhập Tài Khoản Học Sinh')
-                    : (regRole === 'teacher' ? 'Đăng Ký Tài Khoản Giáo Viên' : 'Đăng Ký Tài Khoản Học Sinh'))}
+                    ? (loginRole === 'teacher' ? 'Đăng Nhập Giáo Viên' : 'Đăng Nhập Học Sinh')
+                    : (regRole === 'teacher' ? 'Đăng Ký Giáo Viên' : 'Đăng Ký Học Sinh'))}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
               Chương trình Hóa Học THPT 2018
@@ -529,7 +531,7 @@ export default function UserAuthModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 2.5, pt: 1 }}>
+      <DialogContent sx={{ p: { xs: 1.8, sm: 2.5 }, pt: 1 }}>
         {/* Navigation Tabs (Only if not logged in) */}
         {!currentUser && (
           <Tabs
@@ -557,7 +559,7 @@ export default function UserAuthModal({
             }}
           >
             <Tab icon={<LogIn size={15} />} iconPosition="start" label="Đăng Nhập" />
-            <Tab icon={<UserPlus size={15} />} iconPosition="start" label="Đăng Ký Tài Khoản" />
+            <Tab icon={<UserPlus size={15} />} iconPosition="start" label="Đăng Ký" />
           </Tabs>
         )}
 

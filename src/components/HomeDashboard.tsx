@@ -24,6 +24,7 @@ import {
   BookOpen,
   FileCheck2,
   Sparkles,
+  User,
   UserCheck,
   ArrowRight,
   Atom,
@@ -149,7 +150,7 @@ export const CORE_FEATURE_GROUPS: CoreFeatureGroup[] = [
         title: 'Gia Sư Hóa Học ChemAI Thông Minh',
         desc: 'Hỏi đáp 24/7 kiến thức Hóa 10, 11, 12 bám sát 3 bộ SGK mới. Giải thích từng bước cân bằng e, enthalpy phản ứng chuẩn xác.',
         icon: <Bot size={18} color="#818cf8" />,
-        badge: 'ChemAI Core 2.0',
+        badge: 'ChemAI Core',
       },
       {
         id: 'diagnostic',
@@ -380,22 +381,24 @@ export default function HomeDashboard({
   }).filter((g) => g.isVisible);
 
   return (
-    <Box sx={{ minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ minHeight: '100vh', pb: { xs: 10, sm: 8 }, width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
       {/* 1. HERO SECTION WITH VIBRANT AURORA BACKGROUND & METRICS */}
       <Box
         sx={{
           position: 'relative',
           borderRadius: { xs: 3, md: 4 },
           overflow: 'hidden',
-          p: { xs: 2.5, sm: 4, md: 5 },
-          mb: 4,
+          p: { xs: 1.8, sm: 3, md: 5 },
+          mb: { xs: 2.5, sm: 4 },
+          width: '100%',
+          boxSizing: 'border-box',
           bgcolor: '#0f172a',
           border: '1px solid rgba(56, 189, 248, 0.25)',
           boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
         <Box sx={{ position: 'relative', zIndex: 2 }}>
-          <Grid container spacing={{ xs: 3, md: 4 }} alignItems="stretch">
+          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} alignItems="stretch">
             {/* LEFT COLUMN: HERO HEADLINE, CTAs & STAT METRICS */}
             <Grid item xs={12} lg={6.5} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               {/* Top Badge with Live Beacon */}
@@ -453,7 +456,7 @@ export default function HomeDashboard({
                 component="h1"
                 sx={{
                   fontWeight: 900,
-                  fontSize: { xs: '28px', sm: '36px', md: '42px', lg: '48px' },
+                  fontSize: { xs: '22px', sm: '32px', md: '40px', lg: '48px' },
                   lineHeight: 1.15,
                   letterSpacing: '-0.03em',
                   mb: 2,
@@ -482,7 +485,7 @@ export default function HomeDashboard({
                   maxWidth: 720,
                 }}
               >
-                Nền tảng thực nghiệm số toàn diện bám sát 6 chủ đề SGK GDPT 2018: tích hợp <strong>11+ kịch bản thí nghiệm ảo WebGL</strong> chân thực, mô hình 3D nguyên tử & liên kết chuẩn IUPAC, trợ lý AI ChemAI 2.0 hỗ trợ 24/7, cùng công cụ soạn giáo án Công văn 5512 và ngân hàng đề thi chuẩn cấu trúc mới của Bộ GD&ĐT.
+                Nền tảng thực nghiệm số toàn diện bám sát 6 chủ đề SGK GDPT 2018: tích hợp <strong>11+ kịch bản thí nghiệm ảo WebGL</strong> chân thực, mô hình 3D nguyên tử & liên kết chuẩn IUPAC, trợ lý AI ChemAI hỗ trợ 24/7, cùng công cụ soạn giáo án Công văn 5512 và ngân hàng đề thi chuẩn cấu trúc mới của Bộ GD&ĐT.
               </Typography>
 
               {/* Hero Action CTA Buttons */}
@@ -687,29 +690,33 @@ export default function HomeDashboard({
       </Box>
 
       {/* 1.5. CỔNG CHỌN VAI TRÒ / TRẠNG THÁI ĐĂNG NHẬP */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: { xs: 2.5, sm: 4 }, width: '100%', maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
         {currentUser ? (
           /* Khi đã đăng nhập: Hiển thị Profile Banner */
           <Paper
             sx={{
-              p: { xs: 2.5, sm: 3 },
-              borderRadius: 3.5,
+              p: { xs: 1.8, sm: 2.5, md: 3 },
+              borderRadius: { xs: 2.5, sm: 3.5 },
               bgcolor: 'rgba(15, 23, 42, 0.85)',
               border: '1px solid rgba(56, 189, 248, 0.35)',
               boxShadow: '0 8px 32px rgba(2, 132, 199, 0.15)',
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'flex-start', sm: 'center' },
-              gap: 2,
+              alignItems: { xs: 'stretch', sm: 'center' },
+              gap: { xs: 1.5, sm: 2 },
+              width: '100%',
+              maxWidth: '100%',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
             }}
           >
-            <Box display="flex" alignItems="center" gap={2}>
+            <Box display="flex" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={{ xs: 1.2, sm: 2 }} sx={{ width: '100%', minWidth: 0, flex: 1 }}>
               <Box
                 sx={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: 3,
+                  width: { xs: 42, sm: 52 },
+                  height: { xs: 42, sm: 52 },
+                  borderRadius: { xs: 2, sm: 3 },
                   bgcolor: currentUser.role === 'teacher' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(2, 132, 199, 0.25)',
                   border: currentUser.role === 'teacher' ? '1px solid rgba(245, 158, 11, 0.5)' : '1px solid rgba(56, 189, 248, 0.5)',
                   display: 'flex',
@@ -719,24 +726,24 @@ export default function HomeDashboard({
                   flexShrink: 0
                 }}
               >
-                {currentUser.role === 'teacher' ? <UserCheck size={28} /> : <GraduationCap size={28} />}
+                {currentUser.role === 'teacher' ? <UserCheck size={22} /> : <GraduationCap size={22} />}
               </Box>
-              <Box>
-                <Box display="flex" alignItems="center" gap={1.2} flexWrap="wrap">
+              <Box sx={{ flex: 1, minWidth: 0, width: '100%' }}>
+                <Box display="flex" alignItems="center" gap={0.8} flexWrap="wrap">
                   <Typography
                     variant="h6"
                     fontWeight="bold"
                     color="white"
                     sx={{
-                      fontSize: { xs: '16px', sm: '18px' },
-                      whiteSpace: 'nowrap',
+                      fontSize: { xs: '14.5px', sm: '17px', md: '18px' },
                       letterSpacing: '-0.2px',
+                      wordBreak: 'break-word',
                     }}
                   >
                     👋 {getUserGreeting(currentUser)}
                   </Typography>
                   <Chip
-                    icon={currentUser.role === 'teacher' ? <UserCheck size={13} color="#000" /> : <GraduationCap size={13} color="#38bdf8" />}
+                    icon={currentUser.role === 'teacher' ? <UserCheck size={12} color="#000" /> : <GraduationCap size={12} color="#38bdf8" />}
                     label={currentUser.role === 'teacher' ? 'Giáo Viên Hóa Học' : `Học sinh • ${currentUser.className || 'Lớp 10'}`}
                     size="small"
                     sx={{
@@ -744,7 +751,8 @@ export default function HomeDashboard({
                       color: currentUser.role === 'teacher' ? '#000' : '#38bdf8',
                       border: currentUser.role === 'teacher' ? '1px solid #f59e0b' : '1px solid rgba(56, 189, 248, 0.3)',
                       fontWeight: 'bold',
-                      fontSize: '11.5px',
+                      fontSize: '11px',
+                      height: 22,
                     }}
                   />
                   <Chip
@@ -755,11 +763,12 @@ export default function HomeDashboard({
                       color: '#34d399',
                       border: '1px solid rgba(16, 185, 129, 0.3)',
                       fontWeight: 'bold',
-                      fontSize: '11px',
+                      fontSize: '10px',
+                      height: 22,
                     }}
                   />
                 </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '12.5px', display: 'block', mt: 0.3 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11.5px', display: 'block', mt: 0.4, wordBreak: 'break-word', lineHeight: 1.4 }}>
                   {currentUser.role === 'teacher'
                     ? `Đơn vị: ${currentUser.school || 'THPT'} • Bộ môn: ${currentUser.subject || 'Hóa Học THPT'} • Toàn quyền theo dõi học sinh, soạn giáo án 5512, ra đề thi & quản lý video.`
                     : `Trường: ${currentUser.school || 'THPT'} • Khám phá bài giảng video, phòng thí nghiệm ảo, gia sư 24/7 và thi đấu tại Đấu Trường Luyện Tập.`}
@@ -788,40 +797,49 @@ export default function HomeDashboard({
                   }
 
                   return (
-                    <Box sx={{ mt: 1.2, pt: 1, borderTop: '1px dashed rgba(255, 255, 255, 0.12)' }}>
-                      <Box display="flex" alignItems="center" gap={0.8} flexWrap="wrap">
+                    <Box sx={{ mt: 1, pt: 0.8, borderTop: '1px dashed rgba(255, 255, 255, 0.12)', width: '100%', minWidth: 0 }}>
+                      <Box display="flex" alignItems="center" gap={0.6} flexWrap="wrap" sx={{ width: '100%' }}>
                         <Chip
-                          icon={<Tag size={13} color="#f59e0b" />}
+                          icon={<Tag size={12} color="#f59e0b" />}
                           label={`Biệt danh: "${nickname}"`}
                           size="small"
-                          sx={{ bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', fontWeight: 'bold', border: '1px solid rgba(245, 158, 11, 0.3)' }}
+                          sx={{
+                            bgcolor: 'rgba(245, 158, 11, 0.15)',
+                            color: '#fbbf24',
+                            fontWeight: 'bold',
+                            border: '1px solid rgba(245, 158, 11, 0.3)',
+                            fontSize: '11px',
+                            height: 24,
+                            maxWidth: '100%',
+                            '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis', px: 1 }
+                          }}
                         />
                         <Chip
-                          icon={<Zap size={13} color="#eab308" />}
+                          icon={<Zap size={12} color="#eab308" />}
                           label={`⚡ ${exp.toLocaleString()} EXP (Lv.${level})`}
                           size="small"
-                          sx={{ bgcolor: 'rgba(234, 179, 8, 0.12)', color: '#eab308', fontWeight: 'bold' }}
+                          sx={{ bgcolor: 'rgba(234, 179, 8, 0.12)', color: '#eab308', fontWeight: 'bold', fontSize: '11px', height: 24 }}
                         />
                         <Chip
-                          icon={<Flame size={13} color="#f43f5e" />}
+                          icon={<Flame size={12} color="#f43f5e" />}
                           label={`🔥 Chuỗi: ${currentUser.kahootStreak || 2} trận`}
                           size="small"
-                          sx={{ bgcolor: 'rgba(244, 63, 94, 0.12)', color: '#f43f5e', fontWeight: 'bold' }}
+                          sx={{ bgcolor: 'rgba(244, 63, 94, 0.12)', color: '#f43f5e', fontWeight: 'bold', fontSize: '11px', height: 24 }}
                         />
                         <Chip
-                          icon={<Calendar size={13} color="#10b981" />}
+                          icon={<Calendar size={12} color="#10b981" />}
                           label={`📅 Đăng nhập: ${currentUser.loginStreak || 3} ngày`}
                           size="small"
-                          sx={{ bgcolor: 'rgba(16, 185, 129, 0.12)', color: '#34d399', fontWeight: 'bold' }}
+                          sx={{ bgcolor: 'rgba(16, 185, 129, 0.12)', color: '#34d399', fontWeight: 'bold', fontSize: '11px', height: 24 }}
                         />
                         <Chip
                           label={`🏆 Năng lực: ${rankLabel}`}
                           size="small"
-                          sx={{ bgcolor: `${rankColor}18`, color: rankColor, fontWeight: 'bold', border: `1px solid ${rankColor}40` }}
+                          sx={{ bgcolor: `${rankColor}18`, color: rankColor, fontWeight: 'bold', border: `1px solid ${rankColor}40`, fontSize: '11px', height: 24 }}
                         />
                       </Box>
                       {currentUser.teacherEvaluation && (
-                        <Typography variant="caption" color="#cbd5e1" sx={{ display: 'block', mt: 0.6, fontStyle: 'italic' }}>
+                        <Typography variant="caption" color="#cbd5e1" sx={{ display: 'block', mt: 0.6, fontStyle: 'italic', wordBreak: 'break-word', fontSize: '11px' }}>
                           💬 Lời nhận xét của Giáo viên: "{currentUser.teacherEvaluation}"
                         </Typography>
                       )}
@@ -831,68 +849,57 @@ export default function HomeDashboard({
               </Box>
             </Box>
 
-            <Stack direction="row" spacing={1.5} sx={{ alignSelf: { xs: 'stretch', sm: 'center' } }}>
+            <Stack direction="row" spacing={1} sx={{ alignSelf: { xs: 'stretch', sm: 'center' }, width: { xs: '100%', sm: 'auto' }, flexShrink: 0, mt: { xs: 0.5, sm: 0 } }}>
               <Button
                 variant="outlined"
                 size="small"
                 onClick={() => onOpenAuthModal?.(currentUser?.role || 'student')}
+                startIcon={<User size={14} />}
                 sx={{
                   borderRadius: 2,
                   textTransform: 'none',
                   fontWeight: 700,
-                  fontSize: '13px',
+                  fontSize: '12px',
                   borderColor: 'rgba(56, 189, 248, 0.45)',
                   color: '#38bdf8',
                   bgcolor: 'rgba(56, 189, 248, 0.08)',
-                  px: 2,
-                  py: 0.8,
-                  minWidth: 100,
+                  px: 1.2,
+                  py: 0.6,
+                  flex: 1,
                   whiteSpace: 'nowrap',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 0.8,
-                  flex: { xs: 1, sm: 'none' },
                   '&:hover': {
                     borderColor: '#38bdf8',
                     bgcolor: 'rgba(56, 189, 248, 0.2)',
                   }
                 }}
               >
-                <Users size={16} style={{ flexShrink: 0 }} />
-                <span>Hồ Sơ</span>
+                Hồ Sơ
               </Button>
-              {onLogout && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={onLogout}
-                  sx={{
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    borderColor: 'rgba(239, 68, 68, 0.5)',
-                    color: '#f87171',
-                    bgcolor: 'rgba(239, 68, 68, 0.08)',
-                    px: 2.2,
-                    py: 0.8,
-                    minWidth: 120,
-                    whiteSpace: 'nowrap',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.8,
-                    flex: { xs: 1, sm: 'none' },
-                    '&:hover': {
-                      borderColor: '#ef4444',
-                      bgcolor: 'rgba(239, 68, 68, 0.2)',
-                      color: '#ef4444',
-                    }
-                  }}
-                >
-                  <LogOut size={16} style={{ flexShrink: 0 }} />
-                  <span>Đăng Xuất</span>
-                </Button>
-              )}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => onLogout?.()}
+                startIcon={<LogOut size={14} />}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  borderColor: 'rgba(239, 68, 68, 0.45)',
+                  color: '#f87171',
+                  bgcolor: 'rgba(239, 68, 68, 0.08)',
+                  px: 1.2,
+                  py: 0.6,
+                  flex: 1,
+                  whiteSpace: 'nowrap',
+                  '&:hover': {
+                    borderColor: '#ef4444',
+                    bgcolor: 'rgba(239, 68, 68, 0.2)',
+                  }
+                }}
+              >
+                Đăng Xuất
+              </Button>
             </Stack>
           </Paper>
         ) : (
@@ -909,7 +916,7 @@ export default function HomeDashboard({
               </Box>
             </Box>
 
-            <Grid container spacing={2.5}>
+            <Grid container spacing={{ xs: 1.5, sm: 2, md: 2.5 }}>
               {/* CARD 1: CỔNG HỌC SINH */}
               <Grid item xs={12} md={6}>
                 <Paper
@@ -1336,7 +1343,7 @@ export default function HomeDashboard({
           />
         </Box>
 
-        <Grid container spacing={3} alignItems="stretch">
+        <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }} alignItems="stretch">
           {filteredGroups.map((group) => {
             const isStudentMode = activeRoleMode === 'student';
             const colSpan = isStudentMode ? 4 : 6;
@@ -1591,7 +1598,7 @@ export default function HomeDashboard({
           chính của 3 bộ SGK hiện hành (Kết Nối Tri Thức, Cánh Diều, Chân Trời Sáng Tạo).
         </Typography>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }}>
           {SYLLABUS_CHAPTERS.map((ch, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Paper
@@ -1675,7 +1682,7 @@ export default function HomeDashboard({
           />
         </Box>
 
-        <Grid container spacing={2.5}>
+        <Grid container spacing={{ xs: 1.5, sm: 2, md: 2.5 }}>
           {/* Card 1: Thuật toán Cân bằng Ma trận Redox */}
           <Grid item xs={12} md={6}>
             <Paper
@@ -1848,7 +1855,7 @@ export default function HomeDashboard({
           3 bước đơn giản giúp bạn biến kiến thức hóa học trừu tượng thành trải nghiệm trực quan và đạt kết quả học tập vượt trội.
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
           <Grid item xs={12} md={4}>
             <Box
               sx={{
@@ -2001,7 +2008,7 @@ export default function HomeDashboard({
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
           <Chip label="Next.js 16" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
           <Chip label="Three.js WebGL" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
-          <Chip label="Lõi ChemAI 2.0" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
+          <Chip label="Lõi HCC - ChemAI" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
           <Chip label="Supabase Realtime" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: '11px' }} />
           <Chip label="Chuẩn GDPT 2018" size="small" sx={{ bgcolor: 'rgba(16,185,129,0.15)', color: '#34d399', fontSize: '11px' }} />
         </Box>
